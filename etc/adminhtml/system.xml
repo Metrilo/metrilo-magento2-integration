@@ -1,0 +1,89 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © 2015 Magento. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../Config/etc/system_file.xsd">
+    <system>
+        <!-- Add new Tab -->
+        <tab id="metrilo" translate="label" sortOrder="300">
+            <label>Metrilo Extension</label>
+        </tab>
+        <section id="analytics" translate="label" type="text" sortOrder="140" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Analytics</label>
+            <tab>metrilo</tab>
+            <!-- resource tag name which we have to defined in the acl.xml -->
+            <resource>Metrilo_Analytics::config_slide</resource>
+            <group id="general" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>General Configuration</label>
+                <comment>
+                    <![CDATA[
+                    <div id="metrilo-info">
+                        <div class="metrilo-logo"></div>
+                        <div class="text">
+                            This module was developed by <a href="http://metrilo.com" target="_blank">Metrilo.com</a><br />
+                            If you encounter any issues, let us know at <a href="mailto:support@metrilo.com">support@metrilo.com</a>. We'll be happy to assist you!
+                        </div>
+                    </div>
+                    <div style="clear:both;"></div>
+                    ]]>
+                </comment>
+                <field id="enable" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enabled</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="api_key" sortOrder="20" type="text" translate="label" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>API Token</label>
+                </field>
+                <field id="api_secret" sortOrder="30" type="text" translate="label" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>API Secret</label>
+                </field>
+                <field id="import" sortOrder="40" type="button" translate="label" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Import orders</label>
+                    <button_label><![CDATA[Import orders]]></button_label>
+                    <button_url>
+                        <![CDATA[metrilo/analytics/import]]>
+                    </button_url>
+                    <frontend_model>Metrilo\Analytics\Block\System\Config\Button\Import</frontend_model>
+                    <comment>First set API token and secret before import orders</comment>
+                </field>
+            </group>
+            <group id="general2" translate="label" type="text" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>General Configuration 2</label>
+                <comment>
+                    <![CDATA[
+                    <div id="metrilo-info">
+                        <div class="metrilo-logo"></div>
+                        <div class="text">
+                            This module was developed by <a href="http://metrilo.com" target="_blank">Metrilo.com</a><br />
+                            If you encounter any issues, let us know at <a href="mailto:support@metrilo.com">support@metrilo.com</a>. We'll be happy to assist you!
+                        </div>
+                    </div>
+                    <div style="clear:both;"></div>
+                    ]]>
+                </comment>
+                <field id="enable" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enabled</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="api_key" sortOrder="20" type="text" translate="label" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>API Token</label>
+                </field>
+                <field id="api_secret" sortOrder="30" type="text" translate="label" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>API Secret</label>
+                </field>
+                <field id="import" sortOrder="40" type="button" translate="label" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Import orders</label>
+                    <button_label><![CDATA[Import orders]]></button_label>
+                    <button_url>
+                        <![CDATA[metrilo/analytics/import]]>
+                    </button_url>
+                    <frontend_model>Metrilo\Analytics\Block\System\Config\Button\Import</frontend_model>
+                    <comment>First set API token and secret before import orders</comment>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>
