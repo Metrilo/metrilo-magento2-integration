@@ -10,25 +10,19 @@ namespace Metrilo\Analytics\Helper;
 class Data extends \Magento\Framework\App\Helper\AbstractHelper
 {
 
-    const DATA_TAG = 'metrilo_events';
-
     /**
      * @var \Magento\Framework\App\Config\ScopeConfigInterface
      */
     protected $config;
 
     /**
-     * Dependency Injection
-     *
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
      * @param \Magento\Customer\Model\Session                    $customerSession
      */
     public function __construct(
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-        \Magento\Customer\Model\Session $customerSession
+        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
     ) {
         $this->config = $scopeConfig;
-        $this->customerSession = $customerSession;
     }
 
     /**
@@ -36,11 +30,10 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      *
      * @return boolean
      */
-    public function isEnabled()
-    {
-        return  $this->config->getValue('analytics/general/enable',
-                    \Magento\Store\Model\ScopeInterface::SCOPE_STORE
-                );
+    public function isEnabled() {
+        return $this->config->getValue('analytics/general/enable',
+                   \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+               );
     }
 
     /**
@@ -48,11 +41,10 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      *
      * @return string
      */
-    public function getApiToken()
-    {
-        return  $this->config->getValue('analytics/general/api_key',
-                    \Magento\Store\Model\ScopeInterface::SCOPE_STORE
-                );
+    public function getApiToken() {
+        return $this->config->getValue('analytics/general/api_key',
+                   \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+               );
     }
 
     /**
@@ -60,38 +52,10 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      *
      * @return string
      */
-    public function getApiSecret()
-    {
-        return  $this->config->getValue('analytics/general/api_secret',
-                    \Magento\Store\Model\ScopeInterface::SCOPE_STORE
-                );
-    }
-
-    /**
-     * Add event to queue
-     *
-     * @param string $method Can be identiy|track
-     * @param string $type
-     * @param array $data
-     * @param mixed $metaData
-     */
-    public function addEvent($method, $type, $data, $metaData = false)
-    {
-        $events = array();
-        if ($this->customerSession->getData(self::DATA_TAG) != '') {
-            $events = (array)$this->customerSession->getData(self::DATA_TAG);
-        }
-        $eventToAdd = [
-            'method' => $method,
-            'type' => $type,
-            'data' => $data,
-            'metaData' => false
-        ];
-        if ($metaData) {
-            $eventToAdd['metaData'] = $metaData;
-        }
-        array_push($events, $eventToAdd);
-        $this->customerSession->setData(self::DATA_TAG, $events);
+    public function getApiSecret() {
+        return $this->config->getValue('analytics/general/api_secret',
+                   \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+               );
     }
 
     /**

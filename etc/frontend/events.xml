@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../../../lib/internal/Magento/Framework/Event/etc/events.xsd">
-    <event name="layout_generate_blocks_after">
-        <observer name="metrilo_event_pageview" instance="Metrilo\Analytics\Observer\Pageview" />
-    </event>
     <event name="checkout_onepage_controller_success_action">
+        <observer name="metrilo_event_order" instance="Metrilo\Analytics\Observer\Order"/>
+    </event>
+    <event name="multishipping_checkout_controller_success_action">
         <observer name="metrilo_event_order" instance="Metrilo\Analytics\Observer\Order"/>
     </event>
 </config>
