@@ -7,8 +7,9 @@ namespace Metrilo\Analytics\Helper;
  *
  * @author Miroslav Petrov <miro91tn@gmail.com>
  */
-class Data extends \Magento\Framework\App\Helper\AbstractHelper
-{
+class Data extends \Magento\Framework\App\Helper\AbstractHelper {
+
+    const DATA_TAG = "metrilo_events";
 
     /**
      * @var \Magento\Framework\App\Config\ScopeConfigInterface
@@ -17,12 +18,13 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
     /**
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
-     * @param \Magento\Customer\Model\Session                    $customerSession
      */
     public function __construct(
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
+        \Magento\Customer\Model\Session $session
     ) {
         $this->config = $scopeConfig;
+        $this->session = $session;
     }
 
     /**
@@ -56,6 +58,44 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         return $this->config->getValue('analytics/general/api_secret',
                    \Magento\Store\Model\ScopeInterface::SCOPE_STORE
                );
+    }
+
+    /**
+     * Get session data with "metrilo_events" key
+     *
+     * @return array
+     */
+    public function getSessionEvents() {
+        $events = [];
+        if($this->session->getData(self::DATA_TAG)) {
+            $events = $this->session->getData(self::DATA_TAG);
+        }
+        return $events;
+    }
+
+    /**
+     * Add event to session
+     *
+     * @param string  $method
+     * @param string  $type
+     * @param array   $data
+     * @param boolean|string $metaData
+     */
+    public function addSessionEvent($method, $type, $data, $metaData = false) {
+        $events = [];
+        if ($this->session->getData(self::DATA_TAG) != '') {
+            $events = (array)$this->session->getData(self::DATA_TAG);
+        }
+        $eventToAdd = array(
+            'method' => $method,
+            'type' => $type,
+            'data' => $data
+        );
+        if ($metaData) {
+            $eventToAdd['metaData'] = $metaData;
+        }
+        array_push($events, $eventToAdd);
+        $this->session->setData(self::DATA_TAG, $events);
     }
 
     /**

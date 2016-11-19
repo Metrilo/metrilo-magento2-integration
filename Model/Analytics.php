@@ -6,24 +6,27 @@ use Magento\Framework\DataObject;
 
 class Analytics extends DataObject {
 
+    /**
+     * @var array
+     */
     protected $events = [];
 
+    /**
+     * @param \Magento\Framework\App\Action\Context              $context
+     * @param \Magento\Framework\Registry                        $registry
+     * @param \Magento\Search\Helper\Data                        $searchHelper
+     * @param \Magento\Framework\View\Page\Config                $pageConfig
+     */
     public function __construct(
         \Magento\Framework\App\Action\Context $context,
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-        \Magento\Customer\Model\Session $customerSession,
-        \Magento\Checkout\Model\Session $checkoutSession,
         \Magento\Framework\Registry $registry,
         \Magento\Search\Helper\Data $searchHelper,
-        \Magento\Framework\View\Page\Config $pageConfig
+        \Magento\Framework\View\Page\Title $pageTitle
     ) {
         $this->_context = $context;
-        $this->_scopeConfig = $scopeConfig;
-        $this->_customerSession = $customerSession;
-        $this->_checkoutSession = $checkoutSession;
         $this->_coreRegistry = $registry;
         $this->_searchHelper = $searchHelper;
-        $this->_pageConfig = $pageConfig;
+        $this->_pageTitle = $pageTitle;
         $this->fullActionName = $this->_context->getRequest()->getFullActionName();
 
         $this->addPageEvents();
@@ -102,8 +105,8 @@ class Analytics extends DataObject {
         }
 
         // CMS and any other pages
-        $title = $this->_pageConfig->getTitle();
-        $this->addEvent('track', 'pageview', $title->get(), array('backend_hook' => $this->fullActionName));
+        $title = $this->_pageTitle->getShort();
+        $this->addEvent('track', 'pageview', $title, array('backend_hook' => $this->fullActionName));
     }
 
     /**

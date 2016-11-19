@@ -7,4 +7,7 @@
     <event name="multishipping_checkout_controller_success_action">
         <observer name="metrilo_event_order" instance="Metrilo\Analytics\Observer\Order"/>
     </event>
+    <event name="customer_login">
+        <observer name="metrilo_event_login" instance="Metrilo\Analytics\Observer\CustomerLogin" />
+    </event>
 </config>

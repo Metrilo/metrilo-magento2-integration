@@ -8,25 +8,12 @@ use Magento\Framework\Event\ObserverInterface;
 class Order implements ObserverInterface {
 
     /**
-     * @param \Metrilo\Analytics\Helper\Data      $helper
-     * @param \Magento\Framework\Registry         $registry
-     * @param \Magento\Framework\App\Request\Http $request
-     * @param \Magento\Customer\Model\Session     $customerSession
+     * @param \Magento\Framework\View\LayoutInterface $layout
      */
     public function __construct(
-        \Magento\Framework\ObjectManagerInterface $objectManager,
-        \Metrilo\Analytics\Helper\Data $helper,
-        \Magento\Framework\Registry $registry,
-        \Magento\Framework\App\Request\Http $request,
-        \Magento\Customer\Model\Session $customerSession,
-        \Magento\Cms\Model\PageFactory $pageFactory
+        \Magento\Framework\View\LayoutInterface $layout
     ) {
-        $this->_objectManager = $objectManager;
-        $this->_helper = $helper;
-        $this->_registry = $registry;
-        $this->request = $request;
-        $this->customerSession = $customerSession;
-        $this->pageFactory = $pageFactory;
+        $this->_layout = $layout;
     }
 
     /**
@@ -37,7 +24,17 @@ class Order implements ObserverInterface {
      */
     public function execute(Observer $observer)
     {
-
+        $orderIds = $observer->getEvent()->getOrderIds();
+        if (empty($orderIds) || !is_array($orderIds)) {
+            return;
+        }
+        $block = $this->_layout->getBlock('metrilo_analytics');
+        \Zend_Debug::dump($orderIds);
+        \Zend_Debug::dump($block);
+        exit;
+        if ($block) {
+            $block->setOrderIds($orderIds);
+        }
     }
 
 }

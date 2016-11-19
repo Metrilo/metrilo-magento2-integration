@@ -17,22 +17,57 @@ class Analytics extends Template {
 
     /**
      * @param Context                                            $context
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
      * @param \Metrilo\Analytics\Helper\Data                     $helper
      * @param \Metrilo\Analytics\Model\Analytics                 $dataModel
      * @param array                                              $data
      */
     public function __construct(
         Context $context,
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Metrilo\Analytics\Helper\Data $helper,
         \Metrilo\Analytics\Model\Analytics $dataModel,
+        \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $salesOrderCollection,
+        \Magento\Customer\Model\Session $session,
         array $data = []
     ) {
-        $this->config = $scopeConfig;
         $this->_helper = $helper;
         $this->dataModel = $dataModel;
+        $this->_session = $session;
+        $this->_salesOrderCollection = $salesOrderCollection;
         parent::__construct($context, $data);
+    }
+
+    protected function _prepareLayout() {
+        $this->getNewOrderEvent();
+
+        parent::_prepareLayout();
+    }
+
+    protected function getNewOrderEvent() {
+        $collection = $this->getOrderCollection();
+
+        if(!$collection){
+            return;
+        }
+
+    }
+
+    /**
+     * Get order collection if "order_ids" data is populated
+     *
+     * @return mixed
+     */
+    public function getOrderCollection() {
+        $orderIds = $this->getOrderIds();
+        if (empty($orderIds) || !is_array($orderIds)) {
+            return;
+        }
+
+        if(!$this->_orderCollection){
+            $this->_orderCollection = $this->_salesOrderCollection->create();
+            $this->_orderCollection->addFieldToFilter('entity_id', ['in' => $orderIds]);
+        }
+
+        return $this->_orderCollection;
     }
 
     /**
@@ -50,7 +85,10 @@ class Analytics extends Template {
      * @return array
      */
     public function getEvents() {
-        return $this->dataModel->getEvents();
+        return array_merge(
+            $this->_helper->getSessionEvents(),
+            $this->dataModel->getEvents()
+        );
     }
 
     /**
