@@ -8,8 +8,9 @@ use Magento\Framework\Event\ObserverInterface;
 class AddToCart implements ObserverInterface {
 
     /**
-     * @param \Magento\Framework\App\RequestInterface $request
-     * @param \Metrilo\Analytics\Helper\Data          $helper
+     * @param \Metrilo\Analytics\Helper\Data           $helper
+     * @param \Magento\Catalog\Model\ProductRepository $productRepository
+     * @param \Magento\Framework\App\RequestInterface  $request
      */
     public function __construct(
         \Metrilo\Analytics\Helper\Data $helper,

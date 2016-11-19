@@ -8,7 +8,8 @@ use Magento\Framework\Event\ObserverInterface;
 class CustomerUpdate implements ObserverInterface {
 
     /**
-     * @param \Metrilo\Analytics\Helper\Data $helper
+     * @param \Metrilo\Analytics\Helper\Data                    $helper
+     * @param \Magento\Customer\Api\CustomerRepositoryInterface $customerRepository
      */
     public function __construct(
         \Metrilo\Analytics\Helper\Data $helper,
@@ -19,7 +20,8 @@ class CustomerUpdate implements ObserverInterface {
     }
 
     /**
-     * Collect orders details
+     * Track customer update profile information
+     * and trigger "identify" to Metrilo
      *
      * @param  \Magento\Framework\Event\Observer $observer
      * @return void
