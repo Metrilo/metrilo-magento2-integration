@@ -25,23 +25,27 @@ class CustomerUpdate implements ObserverInterface {
      * @return void
      */
     public function execute(Observer $observer) {
-        $email = $observer->getEvent()->getEmail();
-        if (empty($email) || !$email) {
-            return;
-        }
+        try {
+            $email = $observer->getEvent()->getEmail();
+            if (empty($email) || !$email) {
+                return;
+            }
 
-        $customer = $this->customerRepository->get($email);
-        if ($customer) {
-            $data = [
-                'id' => $customer->getEmail(),
-                'params' => [
-                    'email'         => $customer->getEmail(),
-                    'name'          => $customer->getFirstname() .' '.$customer->getLastname(),
-                    'first_name'    => $customer->getFirstname(),
-                    'last_name'     => $customer->getLastname(),
-                ]
-            ];
-            $this->helper->addSessionEvent('identify', 'identify', $data);
+            $customer = $this->customerRepository->get($email);
+            if ($customer) {
+                $data = [
+                    'id' => $customer->getEmail(),
+                    'params' => [
+                        'email'         => $customer->getEmail(),
+                        'name'          => $customer->getFirstname() .' '.$customer->getLastname(),
+                        'first_name'    => $customer->getFirstname(),
+                        'last_name'     => $customer->getLastname(),
+                    ]
+                ];
+                $this->helper->addSessionEvent('identify', 'identify', $data);
+            }
+        } catch (Exception $e) {
+            $this->helper->logError($e);
         }
     }
 }

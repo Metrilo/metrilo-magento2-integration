@@ -21,10 +21,12 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper {
      */
     public function __construct(
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-        \Magento\Customer\Model\Session $session
+        \Magento\Customer\Model\Session $session,
+        \Psr\Logger\LoggerInterface $logger
     ) {
         $this->config = $scopeConfig;
         $this->session = $session;
+        $this->logger = $logger;
     }
 
     /**
@@ -68,7 +70,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper {
     public function getSessionEvents() {
         $events = [];
         if($this->session->getData(self::DATA_TAG)) {
-            $events = $this->session->getData(self::DATA_TAG);
+            $events = $this->session->getData(self::DATA_TAG, true);
         }
         return $events;
     }
@@ -96,6 +98,20 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper {
         }
         array_push($events, $eventToAdd);
         $this->session->setData(self::DATA_TAG, $events);
+    }
+
+    /**
+     * Log error to logs
+     *
+     * @param  \Exception $exception
+     * @return void
+     */
+    public function logError($exception) {
+        if ($exception instanceof \Exception) {
+            $this->logger->critical($exception->getMessage());
+        } else {
+            $this->logger->critical($exception);
+        }
     }
 
     /**

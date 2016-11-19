@@ -17,27 +17,30 @@ class CustomerLogin implements ObserverInterface {
     }
 
     /**
-     * Collect orders details
+     * Track customer login and trigger "identify" to Metrilo
      *
      * @param  \Magento\Framework\Event\Observer $observer
      * @return void
      */
     public function execute(Observer $observer) {
-        $customer = $observer->getEvent()->getCustomer();
-        if (empty($customer) || !$customer) {
-            return;
+        try {
+            $customer = $observer->getEvent()->getCustomer();
+            if (empty($customer) || !$customer) {
+                return;
+            }
+
+            $data = [
+                'id' => $customer->getEmail(),
+                'params' => [
+                    'email'         => $customer->getEmail(),
+                    'name'          => $customer->getName(),
+                    'first_name'    => $customer->getFirstname(),
+                    'last_name'     => $customer->getLastname(),
+                ]
+            ];
+            $this->helper->addSessionEvent('identify', 'identify', $data);
+        } catch (Exception $e) {
+            $this->helper->logError($e);
         }
-
-        $data = [
-            'id' => $customer->getEmail(),
-            'params' => [
-                'email'         => $customer->getEmail(),
-                'name'          => $customer->getName(),
-                'first_name'    => $customer->getFirstname(),
-                'last_name'     => $customer->getLastname(),
-            ]
-        ];
-
-        $this->helper->addSessionEvent('identify', 'identify', $data);
     }
 }
