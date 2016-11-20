@@ -22,7 +22,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper {
     public function __construct(
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Magento\Customer\Model\Session $session,
-        \Psr\Logger\LoggerInterface $logger
+        \Psr\Log\LoggerInterface $logger
     ) {
         $this->config = $scopeConfig;
         $this->session = $session;
@@ -124,6 +124,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper {
     {
         $data = array(
             'order_id'          => $order->getIncrementId(),
+            'cart_id'           => $order->getQuoteId(),
             'order_status'      => $order->getStatus(),
             'amount'            => (float)$order->getGrandTotal(),
             'shipping_amount'   => (float)$order->getShippingAmount(),
