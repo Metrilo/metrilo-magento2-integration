@@ -22,11 +22,15 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper {
     public function __construct(
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Magento\Customer\Model\Session $session,
-        \Psr\Log\LoggerInterface $logger
+        \Psr\Log\LoggerInterface $logger,
+        \Magento\Framework\ObjectManagerInterface $objectManager,
+        \Magento\Catalog\Model\ProductRepository $productRepository
     ) {
         $this->config = $scopeConfig;
         $this->session = $session;
         $this->logger = $logger;
+        $this->_objectManager = $objectManager;
+        $this->productRepository = $productRepository;
     }
 
     /**
@@ -147,21 +151,14 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper {
                 'url'       => $item->getProduct()->getProductUrl(),
                 'quantity'  => (int)$item->getQtyOrdered()
             );
-            /*if ($item->getProductType() == 'configurable' || $item->getProductType() == 'grouped') {
-                if ($item->getProductType() == 'grouped') {
-                    // $parentIds = Mage::getModel('catalog/product_type_grouped')->getParentIdsByChild($item->getProductId());
-                    $parentId = $parentIds[0];
-                } else {
-                    $parentId = $item->getProductId();
-                }
-                $mainProduct = Mage::getModel('catalog/product')->load($parentId);
-                $dataItem['id']     = $mainProduct->getId();
-                $dataItem['name']   = $mainProduct->getName();
-                $dataItem['url']    = $mainProduct->getProductUrl();
-                $dataItem['option_id'] = $item->getSku();
-                $dataItem['option_name'] = trim(str_replace("-", " ", $item->getName()));
+            if ($item->getProductType() == 'configurable') {
+                $parentId = $item->getProductId();
+                $mainProduct = $this->productRepository->getById($parentId);
+                $options = (array)$item->getProductOptions();
+                $dataItem['option_id'] = $options['simple_sku'];
+                $dataItem['option_name'] = $options['simple_name'];
                 $dataItem['option_price'] = (float)$item->getPrice();
-            }*/
+            }
             $data['items'][] = $dataItem;
         }
         return $data;

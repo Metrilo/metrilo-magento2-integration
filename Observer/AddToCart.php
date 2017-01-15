@@ -39,7 +39,9 @@ class AddToCart implements ObserverInterface {
                 $options = $this->request->getParam('super_group');
                 if (is_array($options)) {
                     foreach ($options as $productId => $qty) {
-                        $this->_addToCart((int)$productId, $cartProduct, (int)$qty);
+                        if ($qty) { // check for grouped products
+                            $this->_addToCart((int)$productId, $cartProduct, (int)$qty);
+                        }
                     }
                 }
             } elseif($cartProduct->getTypeId() == 'configurable') {
