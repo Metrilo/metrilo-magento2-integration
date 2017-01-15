@@ -7,13 +7,19 @@ use Magento\Framework\Event\ObserverInterface;
 
 class Order implements ObserverInterface {
 
+    protected $_orderCollection;
+
     /**
      * @param \Magento\Framework\View\LayoutInterface $layout
      */
     public function __construct(
-        \Magento\Framework\View\LayoutInterface $layout
+        \Magento\Framework\View\LayoutInterface $layout,
+        \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $salesOrderCollection,
+        \Metrilo\Analytics\Helper\Data $helper
     ) {
         $this->_layout = $layout;
+        $this->_salesOrderCollection = $salesOrderCollection;
+        $this->_helper = $helper;
     }
 
     /**
@@ -28,13 +34,28 @@ class Order implements ObserverInterface {
         if (empty($orderIds) || !is_array($orderIds)) {
             return;
         }
-        $block = $this->_layout->getBlock('metrilo_analytics');
-        \Zend_Debug::dump($orderIds);
-        \Zend_Debug::dump($block);
-        exit;
-        if ($block) {
-            $block->setOrderIds($orderIds);
+
+        if(!$this->_orderCollection){
+            $this->_orderCollection = $this->_salesOrderCollection->create();
+            $this->_orderCollection->addFieldToFilter('entity_id', ['in' => $orderIds]);
+        }
+        if (count($this->_orderCollection)) {
+            foreach ($this->_orderCollection as $order) {
+                $data = $this->_helper->prepareOrderDetails($order);
+                if($order->getCustomerIsGuest()) {
+                    $identify = array(
+                        'id' => $order->getCustomerEmail(),
+                        'params' => array(
+                            'email'         => $order->getCustomerEmail(),
+                            'name'          => $order->getCustomerFirstname(). ' '. $order->getCustomerLastname(),
+                            'first_name'    => $order->getCustomerFirstname(),
+                            'last_name'     => $order->getCustomerLastname(),
+                        )
+                    );
+                    $this->_helper->addSessionEvent('identify', 'identify', $identify);
+                }
+                $this->_helper->addSessionEvent('track', 'order', $data);
+            }
         }
     }
-
 }
