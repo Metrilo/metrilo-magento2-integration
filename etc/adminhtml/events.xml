@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../../../lib/internal/Magento/Framework/Event/etc/events.xsd">
+    <event name="sales_order_save_after">
+        <observer name="metrilo_event_order" instance="Metrilo\Analytics\Observer\UpdateOrder"/>
+    </event>
+</config>
