@@ -27,7 +27,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         \Magento\Framework\ObjectManagerInterface $objectManager,
         \Magento\Catalog\Model\ProductRepository $productRepository,
         \Magento\Framework\Json\Helper\Data $jsonHelper,
-        Async $asyncHelper
+        Async $asyncHelper,
+        \Magento\Store\Model\StoreManagerInterface $storeManager
     ) {
         $this->config = $scopeConfig;
         $this->session = $session;
@@ -36,6 +37,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $this->productRepository = $productRepository;
         $this->jsonHelper = $jsonHelper;
         $this->asyncHelper = $asyncHelper;
+        $this->_storeManager = $storeManager;
     }
 
     /**
@@ -207,7 +209,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     {
         ksort($call);
         $basedCall = base64_encode($this->jsonHelper->jsonEncode($call));
-        $signature = md5($basedCall.$this->getApiSecret($storeId));
+        $signature = md5($basedCall . $this->getApiSecret($storeId));
         $requestBody = array(
             's'   => $signature,
             'hs'  => $basedCall
@@ -242,16 +244,19 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     {
         $orderDetails = $this->prepareOrderDetails($order);
         // initialize additional params
-        $callParameters = false;
+        $callParameters = [
+            'server_time' => round(microtime(true) * 1000)
+        ];
         // check if order has customer IP in it
         $ip = $order->getRemoteIp();
         if ($ip) {
-            $callParameters = array('use_ip' => $ip);
+            $callParameters['use_ip'] = $ip;
         }
         // initialize time
         $time = false;
         if ($order->getCreatedAt()) {
-            $time = $order->getCreatedAt();
+            $dateObj = new \DateTime($order->getCreatedAt());
+            $time = $dateObj->getTimestamp() * 1000;
         }
         $identityData = $this->_orderIdentityData($order);
         return $this->_buildEventArray(
@@ -345,5 +350,15 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         // Prepare keys is alphabetical order
         ksort($call);
         return $call;
+    }
+
+    /**
+    * Get storeId for the current request context
+    *
+    * @return string
+    */
+    public function getStoreId()
+    {
+        return $this->_storeManager->getStore()->getId();
     }
 }

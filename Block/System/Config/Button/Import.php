@@ -1,7 +1,9 @@
 <?php
 
 namespace Metrilo\Analytics\Block\System\Config\Button;
+
 use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\Data\Form\Element\AbstractElement;
 
 class Import extends \Magento\Config\Block\System\Config\Form\Field
 {
@@ -9,6 +11,16 @@ class Import extends \Magento\Config\Block\System\Config\Form\Field
      * Path to block template
      */
     const CHECK_TEMPLATE = 'system/config/button/import.phtml';
+
+    public function __construct(
+        \Magento\Backend\Block\Template\Context $context,
+        \Metrilo\Analytics\Helper\Data $helper,
+        array $data = []
+    ) {
+        $this->helper = $helper;
+        parent::__construct($context, $data);
+    }
+
     /**
      * Set template to itself
      *
@@ -22,25 +34,40 @@ class Import extends \Magento\Config\Block\System\Config\Form\Field
         }
         return $this;
     }
+
     /**
      * Render button
      *
-     * @param  \Magento\Framework\Data\Form\Element\AbstractElement $element
+     * @param  AbstractElement $element
      * @return string
      */
-    public function render(\Magento\Framework\Data\Form\Element\AbstractElement $element)
+    public function render(AbstractElement $element)
     {
         // Remove scope label
-        $element->unsScope()->unsCanUseWebsiteValue()->unsCanUseDefaultValue();
+        // $element->unsScope()->unsCanUseWebsiteValue()->unsCanUseDefaultValue();
         return parent::render($element);
     }
+
+    /**
+     * Get import instance
+     *
+     * @return boolean
+     */
+    public function buttonEnabled()
+    {
+        $helper = $this->helper;
+        $storeId = $helper->getStoreId();
+         return $helper->isEnabled($storeId) &&
+            $helper->getApiToken($storeId) && $helper->getApiSecret($storeId);
+    }
+
     /**
      * Get the button and scripts contents
      *
-     * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
+     * @param AbstractElement $element
      * @return string
      */
-    protected function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)
+    protected function _getElementHtml(AbstractElement $element)
     {
         $originalData = $element->getOriginalData();
         $this->addData(
