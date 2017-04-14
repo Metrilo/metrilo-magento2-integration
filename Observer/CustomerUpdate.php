@@ -5,7 +5,8 @@ namespace Metrilo\Analytics\Observer;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 
-class CustomerUpdate implements ObserverInterface {
+class CustomerUpdate implements ObserverInterface
+{
 
     /**
      * @param \Metrilo\Analytics\Helper\Data                    $helper
@@ -26,7 +27,8 @@ class CustomerUpdate implements ObserverInterface {
      * @param  \Magento\Framework\Event\Observer $observer
      * @return void
      */
-    public function execute(Observer $observer) {
+    public function execute(Observer $observer)
+    {
         try {
             $email = $observer->getEvent()->getEmail();
             if (empty($email) || !$email) {
@@ -46,7 +48,7 @@ class CustomerUpdate implements ObserverInterface {
                 ];
                 $this->helper->addSessionEvent('identify', 'identify', $data);
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $this->helper->logError($e);
         }
     }

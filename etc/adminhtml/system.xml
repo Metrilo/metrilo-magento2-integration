@@ -9,7 +9,7 @@
     <system>
         <!-- Add new Tab -->
         <tab id="metrilo" translate="label" sortOrder="300">
-            <label>Metrilo Extension</label>
+            <label>Metrilo</label>
         </tab>
         <section id="analytics" translate="label" type="text" sortOrder="140" showInDefault="1" showInWebsite="1" showInStore="1">
             <label>Analytics</label>

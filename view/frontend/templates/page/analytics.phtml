@@ -3,6 +3,9 @@
  * @see Metrilo\Analytics\Block\Analytics
  */
 $events = $block->getEvents();
+$title = $block->getLayout()->getBlock('page.main.title')->getPageTitle();
+//\Zend_Debug::dump(get_class($block));
+//\Zend_Debug::dump($title->getText());
 ?>
 <script type="text/javascript">
     window.metrilo||(window.metrilo=[]),window.metrilo.queue=[],window.metrilo.methods=["identify","track","event","pageview","purchase","debug","atr"],

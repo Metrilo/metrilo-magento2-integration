@@ -17,7 +17,10 @@ class Async extends \Magento\Framework\App\Helper\AbstractHelper
         $fp = fsockopen(
             $parsedUrl['host'],
             isset($parsedUrl['port']) ? $parsedUrl['port'] : 80,
-            $errno, $errstr, 30);
+            $errno,
+            $errstr,
+            30
+        );
         if ($fp) {
             fwrite($fp, $raw);
             fclose($fp);
@@ -39,7 +42,10 @@ class Async extends \Magento\Framework\App\Helper\AbstractHelper
         $fp = fsockopen(
             $parsedUrl['host'],
             isset($parsedUrl['port']) ? $parsedUrl['port'] : 80,
-            $errno, $errstr, 30);
+            $errno,
+            $errstr,
+            30
+        );
         if ($fp) {
             fwrite($fp, $raw);
             fclose($fp);

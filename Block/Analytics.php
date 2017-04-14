@@ -8,12 +8,13 @@ use Magento\Framework\View\Element\Template\Context;
 /**
  * @author Miroslav Petrov <miro91tn@gmail.com>
  */
-class Analytics extends Template {
+class Analytics extends Template
+{
 
     /**
      * @var \Metrilo\Analytics\Helper\Data
      */
-    protected $_helper;
+    protected $helper;
 
     /**
      * @param Context                            $context
@@ -29,7 +30,7 @@ class Analytics extends Template {
         \Magento\Customer\Model\Session $session,
         array $data = []
     ) {
-        $this->_helper = $helper;
+        $this->helper = $helper;
         $this->dataModel = $dataModel;
         $this->_session = $session;
         parent::__construct($context, $data);
@@ -40,8 +41,9 @@ class Analytics extends Template {
      *
      * @return bool|null|string
      */
-    public function getApiToken() {
-        return $this->_helper->getApiToken();
+    public function getApiToken()
+    {
+        return $this->helper->getApiToken();
     }
 
     /**
@@ -49,9 +51,10 @@ class Analytics extends Template {
      *
      * @return array
      */
-    public function getEvents() {
+    public function getEvents()
+    {
         return array_merge(
-            $this->_helper->getSessionEvents(),
+            $this->helper->getSessionEvents(),
             $this->dataModel->getEvents()
         );
     }
@@ -60,9 +63,12 @@ class Analytics extends Template {
      * Render metrilo js if module is enabled
      *
      * @return string
+     * @codeCoverageIgnore
      */
-    protected function _toHtml() {
-        if(!$this->_helper->isEnabled()) {
+    protected function _toHtml()
+    {
+        // echo $this->getLayout()->getBlock('page.main.title')->getPageTitle()->getText();
+        if (!$this->helper->isEnabled()) {
             return '';
         }
         return parent::_toHtml();

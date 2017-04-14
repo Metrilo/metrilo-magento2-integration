@@ -5,7 +5,8 @@ namespace Metrilo\Analytics\Observer;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 
-class AddToCart implements ObserverInterface {
+class AddToCart implements ObserverInterface
+{
 
     /**
      * @param \Metrilo\Analytics\Helper\Data           $helper
@@ -29,7 +30,8 @@ class AddToCart implements ObserverInterface {
      * @param  \Magento\Framework\Event\Observer $observer
      * @return void
      */
-    public function execute(Observer $observer) {
+    public function execute(Observer $observer)
+    {
         try {
             $item = $observer->getEvent()->getQuoteItem();
             $cartProduct = $observer->getEvent()->getProduct();
@@ -40,16 +42,16 @@ class AddToCart implements ObserverInterface {
                 if (is_array($options)) {
                     foreach ($options as $productId => $qty) {
                         if ($qty) { // check for grouped products
-                            $this->_addToCart((int)$productId, $cartProduct, (int)$qty);
+                            $this->addToCart((int) $productId, $cartProduct, (int) $qty);
                         }
                     }
                 }
-            } elseif($cartProduct->getTypeId() == 'configurable') {
-                $this->_addToCart($product->getId(), $cartProduct, $item->getQty());
+            } elseif ($cartProduct->getTypeId() == 'configurable') {
+                $this->addToCart($product->getId(), $cartProduct, $item->getQty());
             } else {
-                $this->_addToCart($cartProduct->getId(), $cartProduct, $item->getQty());
+                $this->addToCart($cartProduct->getId(), $cartProduct, $item->getQty());
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $this->helper->logError($e);
         }
     }
@@ -61,7 +63,8 @@ class AddToCart implements ObserverInterface {
      * @param \Magento\Catalog\Model\Product $item
      * @param int $qty
      */
-    private function _addToCart($productId, $item, $qty) {
+    private function addToCart($productId, $item, $qty)
+    {
         $product = $this->productRepository->getById($productId);
         $data = [
             'id' => (int)$product->getId(),

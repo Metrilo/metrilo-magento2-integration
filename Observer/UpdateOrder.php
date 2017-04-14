@@ -5,7 +5,8 @@ namespace Metrilo\Analytics\Observer;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 
-class UpdateOrder implements ObserverInterface {
+class UpdateOrder implements ObserverInterface
+{
 
     /**
      * @param \Metrilo\Analytics\Helper\Data $helper

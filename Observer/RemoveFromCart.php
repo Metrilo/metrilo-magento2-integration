@@ -5,7 +5,8 @@ namespace Metrilo\Analytics\Observer;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 
-class RemoveFromCart implements ObserverInterface {
+class RemoveFromCart implements ObserverInterface
+{
 
     /**
      * @param \Metrilo\Analytics\Helper\Data $helper
@@ -23,13 +24,14 @@ class RemoveFromCart implements ObserverInterface {
      * @param  \Magento\Framework\Event\Observer $observer
      * @return void
      */
-    public function execute(Observer $observer) {
+    public function execute(Observer $observer)
+    {
         try {
             $item = $observer->getEvent()->getQuoteItem();
             $product = $item->getProduct();
 
             $this->helper->addSessionEvent('track', 'remove_from_cart', ['id' => $product->getId()]);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $this->helper->logError($e);
         }
     }

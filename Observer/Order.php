@@ -5,7 +5,8 @@ namespace Metrilo\Analytics\Observer;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 
-class Order implements ObserverInterface {
+class Order implements ObserverInterface
+{
 
     protected $_orderCollection;
 
@@ -35,14 +36,14 @@ class Order implements ObserverInterface {
             return;
         }
 
-        if(!$this->_orderCollection){
+        if (!$this->_orderCollection) {
             $this->_orderCollection = $this->_salesOrderCollection->create();
             $this->_orderCollection->addFieldToFilter('entity_id', ['in' => $orderIds]);
         }
         if (count($this->_orderCollection)) {
             foreach ($this->_orderCollection as $order) {
                 $data = $this->_helper->prepareOrderDetails($order);
-                if($order->getCustomerIsGuest()) {
+                if ($order->getCustomerIsGuest()) {
                     $identify = array(
                         'id' => $order->getCustomerEmail(),
                         'params' => array(

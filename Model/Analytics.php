@@ -4,7 +4,8 @@ namespace Metrilo\Analytics\Model;
 
 use Magento\Framework\DataObject;
 
-class Analytics extends DataObject {
+class Analytics extends DataObject
+{
 
     /**
      * @var array
@@ -37,7 +38,8 @@ class Analytics extends DataObject {
      *
      * @return mixed
      */
-    public function addPageEvents() {
+    public function addPageEvents()
+    {
         if (!$this->fullActionName || $this->_isRejected($this->fullActionName)) {
             return;
         }
@@ -53,7 +55,7 @@ class Analytics extends DataObject {
         }
 
         // category view pages
-        if($this->fullActionName == 'catalog_category_view') {
+        if ($this->fullActionName == 'catalog_category_view') {
             $category = $this->_coreRegistry->registry('current_category');
 
             $data =  [
@@ -93,7 +95,7 @@ class Analytics extends DataObject {
         }
 
         // cart view
-        if($this->fullActionName == 'checkout_cart_index') {
+        if ($this->fullActionName == 'checkout_cart_index') {
             $this->addEvent('track', 'view_cart', array());
             return;
         }
@@ -131,7 +133,8 @@ class Analytics extends DataObject {
      * @param array $data
      * @param mixed $metaData
      */
-    public function addEvent($method, $type, $data, $metaData = false) {
+    public function addEvent($method, $type, $data, $metaData = false)
+    {
         $eventToAdd = [
             'method' => $method,
             'type' => $type,
@@ -149,7 +152,8 @@ class Analytics extends DataObject {
      *
      * @return array
      */
-    public function getEvents() {
+    public function getEvents()
+    {
         return $this->events;
     }
 }

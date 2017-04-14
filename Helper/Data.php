@@ -47,9 +47,10 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function isEnabled()
     {
-        return $this->config->getValue('analytics/general/enable',
-                   \Magento\Store\Model\ScopeInterface::SCOPE_STORE
-               );
+        return $this->config->getValue(
+            'analytics/general/enable',
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+        );
     }
 
     /**
@@ -59,9 +60,10 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getApiToken()
     {
-        return $this->config->getValue('analytics/general/api_key',
-                   \Magento\Store\Model\ScopeInterface::SCOPE_STORE
-               );
+        return $this->config->getValue(
+            'analytics/general/api_key',
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+        );
     }
 
     /**
@@ -71,9 +73,10 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getApiSecret()
     {
-        return $this->config->getValue('analytics/general/api_secret',
-                   \Magento\Store\Model\ScopeInterface::SCOPE_STORE
-               );
+        return $this->config->getValue(
+            'analytics/general/api_secret',
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+        );
     }
 
     /**
@@ -84,7 +87,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function getSessionEvents()
     {
         $events = [];
-        if($this->session->getData(self::DATA_TAG)) {
+        if ($this->session->getData(self::DATA_TAG)) {
             $events = $this->session->getData(self::DATA_TAG, true);
         }
         return $events;
@@ -158,7 +161,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         }
         $skusAdded = array();
         foreach ($order->getAllItems() as $item) {
-            if (in_array($item->getSku(), $skusAdded)) continue;
+            if (in_array($item->getSku(), $skusAdded)) {
+                continue;
+            }
             $skusAdded[] = $item->getSku();
             $dataItem = array(
                 'id'        => $item->getProductId(),
@@ -190,10 +195,10 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function callBatchApi($storeId, $orders)
     {
         try {
-            $ordersForSubmition = $this->_buildOrdersForSubmition($orders);
-            $call = $this->_buildCall($storeId, $ordersForSubmition);
+            $ordersForSubmission = $this->_buildOrdersForSubmission($orders);
+            $call = $this->_buildCall($storeId, $ordersForSubmission);
             $this->_callMetriloApiAsync($storeId, $call);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $this->logError($e);
         }
     }
@@ -205,7 +210,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @param  array $call
      * @return void
      */
-    private function _callMetriloApiAsync($storeId, $call)
+    protected function _callMetriloApiAsync($storeId, $call)
     {
         ksort($call);
         $basedCall = base64_encode($this->jsonHelper->jsonEncode($call));
@@ -221,17 +226,17 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * Create submition ready arrays from Array of \Magento\Sales\Model\Order
      *
      * @param \Magento\Sales\Model\Order[] $orders
-     * @return Array
+     * @return array
      */
-    private function _buildOrdersForSubmition($orders)
+    protected function _buildOrdersForSubmission($orders)
     {
-        $ordersForSubmition = array();
+        $ordersForSubmission = [];
         foreach ($orders as $order) {
             if ($order->getId()) {
-                array_push($ordersForSubmition, $this->_buildOrderForSubmition($order));
+                array_push($ordersForSubmission, $this->_buildOrderForSubmission($order));
             }
         }
-        return $ordersForSubmition;
+        return $ordersForSubmission;
     }
 
     /**
@@ -240,7 +245,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @param  \Magento\Sales\Model\Order $order
      * @return array
      */
-    private function _buildOrderForSubmition($order)
+    protected function _buildOrderForSubmission($order)
     {
         $orderDetails = $this->prepareOrderDetails($order);
         // initialize additional params
@@ -260,7 +265,12 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         }
         $identityData = $this->_orderIdentityData($order);
         return $this->_buildEventArray(
-            $identityData['email'], 'order', $orderDetails, $identityData, $time, $callParameters
+            $identityData['email'],
+            'order',
+            $orderDetails,
+            $identityData,
+            $time,
+            $callParameters
         );
     }
 
@@ -270,7 +280,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @param  \Magento\Sales\Model\Order $order
      * @return array
      */
-    private function _orderIdentityData($order)
+    protected function _orderIdentityData($order)
     {
         return array(
             'email'         => $order->getCustomerEmail(),
@@ -284,14 +294,14 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * Create call array
      *
      * @param  int $storeId
-     * @param  array $ordersForSubmition
+     * @param  array $ordersForSubmission
      * @return array
      */
-    private function _buildCall($storeId, $ordersForSubmition)
+    protected function _buildCall($storeId, $ordersForSubmission)
     {
         return array(
             'token'    => $this->getApiToken($storeId),
-            'events'   => $ordersForSubmition,
+            'events'   => $ordersForSubmission,
             // for debugging/support purposes
             // 'platform' => 'Magento ' . Mage::getEdition() . ' ' . Mage::getVersion(),
             // 'version'  => (string)Mage::getConfig()->getModuleConfig("Metrilo_Analytics")->version
@@ -305,7 +315,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @param  \Magento\Sales\Model\Order $order
      * @return void
      */
-    private function _assignBillingInfo(&$data, $order)
+    protected function _assignBillingInfo(&$data, $order)
     {
         $billingAddress = $order->getBillingAddress();
         // Assign billing data to order data array
@@ -327,24 +337,24 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @param  boolean|array $identityData
      * @param  boolean|int $time
      * @param  boolean|array $callParameters
-     * @return void
+     * @return array
      */
-    public function _buildEventArray($ident, $event, $params, $identityData = false, $time = false, $callParameters = false)
+    protected function _buildEventArray($ident, $event, $params, $identityData = false, $time = false, $callParameters = false)
     {
         $call = array(
             'event_type'    => $event,
             'params'        => $params,
             'uid'           => $ident
         );
-        if($time) {
+        if ($time) {
             $call['time'] = $time;
         }
         // check for special parameters to include in the API call
-        if($callParameters && $callParameters['use_ip']) {
+        if ($callParameters && $callParameters['use_ip']) {
             $call['use_ip'] = $callParameters['use_ip'];
         }
         // put identity data in call if available
-        if($identityData) {
+        if ($identityData) {
             $call['identity'] = $identityData;
         }
         // Prepare keys is alphabetical order
@@ -353,10 +363,12 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-    * Get storeId for the current request context
-    *
-    * @return string
-    */
+     * Get storeId for the current request context
+     *
+     * @param null $request
+     *
+     * @return int
+     */
     public function getStoreId()
     {
         return $this->_storeManager->getStore()->getId();

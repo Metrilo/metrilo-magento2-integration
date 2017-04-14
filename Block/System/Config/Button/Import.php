@@ -7,17 +7,26 @@ use Magento\Framework\Data\Form\Element\AbstractElement;
 
 class Import extends \Magento\Config\Block\System\Config\Form\Field
 {
-	/**
+    /**
      * Path to block template
      */
     const CHECK_TEMPLATE = 'system/config/button/import.phtml';
 
+    /**
+     * Import constructor.
+     *
+     * @param \Magento\Backend\Block\Template\Context $context
+     * @param \Metrilo\Analytics\Helper\Data $helper
+     * @param array $data
+     */
     public function __construct(
         \Magento\Backend\Block\Template\Context $context,
         \Metrilo\Analytics\Helper\Data $helper,
+        \Metrilo\Analytics\Model\Import $import,
         array $data = []
     ) {
         $this->helper = $helper;
+        $this->import = $import;
         parent::__construct($context, $data);
     }
 
@@ -30,52 +39,43 @@ class Import extends \Magento\Config\Block\System\Config\Form\Field
     {
         parent::_prepareLayout();
         if (!$this->getTemplate()) {
-            $this->setTemplate(static::CHECK_TEMPLATE);
+            $this->setTemplate(self::CHECK_TEMPLATE);
         }
         return $this;
     }
 
     /**
-     * Render button
+     * Render button and remove scope label
      *
      * @param  AbstractElement $element
      * @return string
      */
     public function render(AbstractElement $element)
     {
-        // Remove scope label
-        // $element->unsScope()->unsCanUseWebsiteValue()->unsCanUseDefaultValue();
+        $element->unsScope()->unsCanUseWebsiteValue()->unsCanUseDefaultValue();
         return parent::render($element);
     }
 
     /**
-     * Get import instance
+     * Check if button is enabled
      *
      * @return boolean
      */
     public function buttonEnabled()
     {
-        $helper = $this->helper;
-        $storeId = $helper->getStoreId();
-         return $helper->isEnabled($storeId) &&
-            $helper->getApiToken($storeId) && $helper->getApiSecret($storeId);
+        $storeId = $this->helper->getStoreId();
+         return $this->helper->isEnabled($storeId)
+             && $this->helper->getApiToken($storeId)
+             && $this->helper->getApiSecret($storeId);
     }
 
     /**
-     * Get the button and scripts contents
+     * Import model
      *
-     * @param AbstractElement $element
-     * @return string
+     * @return \Metrilo\Analytics\Model\Import
      */
-    protected function _getElementHtml(AbstractElement $element)
+    public function getImport()
     {
-        $originalData = $element->getOriginalData();
-        $this->addData(
-            [
-                'intern_url' => $this->getUrl($originalData['button_url']),
-                'html_id' => $element->getHtmlId(),
-            ]
-        );
-        return $this->_toHtml();
+        return $this->import;
     }
 }
