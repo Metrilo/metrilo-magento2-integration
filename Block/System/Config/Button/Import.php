@@ -57,6 +57,24 @@ class Import extends \Magento\Config\Block\System\Config\Form\Field
     }
 
     /**
+     * Get block custom template html for the button
+     *
+     * @param  AbstractElement $element
+     * @return string
+     */
+    protected function _getElementHtml(AbstractElement $element)
+    {
+        $originalData = $element->getOriginalData();
+        $this->addData(
+            [
+                'intern_url' => $this->getUrl($originalData['button_url']),
+                'html_id' => $element->getHtmlId(),
+            ]
+        );
+        return $this->_toHtml();
+    }
+
+    /**
      * Check if button is enabled
      *
      * @return boolean
@@ -67,6 +85,16 @@ class Import extends \Magento\Config\Block\System\Config\Form\Field
          return $this->helper->isEnabled($storeId)
              && $this->helper->getApiToken($storeId)
              && $this->helper->getApiSecret($storeId);
+    }
+
+    /**
+     * Generate URL for AJAX import controller
+     *
+     * @return string
+     */
+    public function getAjaxUrl()
+    {
+        return $this->getUrl('metrilo/import/ajax');
     }
 
     /**

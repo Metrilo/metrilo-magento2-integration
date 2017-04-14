@@ -12,12 +12,23 @@
             <span><?php echo __('Import orders'); ?></span>
         </button>
     </div>
-
+    <script>
+    require([
+        'jquery',
+        'metriloImport'
+    ], function($, metrilo) {
+        $("#<?php echo $block->getHtmlId() ?>").import({
+            storeId: <?php echo $storeId; ?>,
+            totalChunks: <?php echo $import->getChunks($storeId); ?>
+        });
+    });
+    </script>
+    <?php return; ?>
+    <?php // ------------------------- move code below to import.js file ?>
     <script>
         require(['jquery'], function ($) {
             var htmlId = "#<?php echo $block->getHtmlId() ?>";
             $("#<?php echo $block->getHtmlId() ?>").on("click", function() {
-                alert('hello');
                 var store_id     = <?php echo $storeId; ?>;
                 var total_chunks = <?php echo $import->getChunks($storeId); ?>;
                 var chunk_percentage = 100;
