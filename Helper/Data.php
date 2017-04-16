@@ -10,7 +10,9 @@ namespace Metrilo\Analytics\Helper;
 class Data extends \Magento\Framework\App\Helper\AbstractHelper
 {
 
-    const DATA_TAG = "metrilo_events";
+    const DATA_TAG = 'metrilo_events';
+
+    const MODULE_NAME = 'Metrilo_Analytics';
 
     /**
      * @var \Magento\Framework\App\Config\ScopeConfigInterface
@@ -18,26 +20,36 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     protected $config;
 
     /**
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+     * @param \Magento\Framework\App\Config\ScopeConfigInterface $config
+     * @param \Magento\Customer\Model\Session                    $session
+     * @param \Psr\Log\LoggerInterface                           $logger
+     * @param \Magento\Catalog\Model\ProductRepository           $productRepository
+     * @param \Magento\Framework\Json\Helper\Data                $jsonHelper
+     * @param Async                                              $asyncHelper
+     * @param \Magento\Store\Model\StoreManagerInterface         $storeManager
+     * @param \Magento\Framework\App\ProductMetadata             $metaData
+     * @param \Magento\Framework\Module\ModuleListInterface      $moduleList
      */
     public function __construct(
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
+        \Magento\Framework\App\Config\ScopeConfigInterface $config,
         \Magento\Customer\Model\Session $session,
         \Psr\Log\LoggerInterface $logger,
-        \Magento\Framework\ObjectManagerInterface $objectManager,
         \Magento\Catalog\Model\ProductRepository $productRepository,
         \Magento\Framework\Json\Helper\Data $jsonHelper,
         Async $asyncHelper,
-        \Magento\Store\Model\StoreManagerInterface $storeManager
+        \Magento\Store\Model\StoreManagerInterface $storeManager,
+        \Magento\Framework\App\ProductMetadata $metaData,
+        \Magento\Framework\Module\ModuleListInterface $moduleList
     ) {
-        $this->config = $scopeConfig;
+        $this->config = $config;
         $this->session = $session;
         $this->logger = $logger;
-        $this->_objectManager = $objectManager;
         $this->productRepository = $productRepository;
         $this->jsonHelper = $jsonHelper;
         $this->asyncHelper = $asyncHelper;
-        $this->_storeManager = $storeManager;
+        $this->storeManager = $storeManager;
+        $this->metaData = $metaData;
+        $this->moduleList = $moduleList;
     }
 
     /**
@@ -166,7 +178,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             }
             $skusAdded[] = $item->getSku();
             $dataItem = array(
-                'id'        => $item->getProductId(),
+                'id'        => (int)$item->getProductId(),
                 'price'     => (float)$item->getPrice() ? $item->getPrice() : $item->getProduct()->getFinalPrice(),
                 'name'      => $item->getName(),
                 'url'       => $item->getProduct()->getProductUrl(),
@@ -194,13 +206,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function callBatchApi($storeId, $orders)
     {
-        try {
-            $ordersForSubmission = $this->_buildOrdersForSubmission($orders);
-            $call = $this->_buildCall($storeId, $ordersForSubmission);
-            $this->_callMetriloApiAsync($storeId, $call);
-        } catch (\Exception $e) {
-            $this->logError($e);
-        }
+        $ordersForSubmission = $this->_buildOrdersForSubmission($orders);
+        $call = $this->_buildCall($storeId, $ordersForSubmission);
+        $this->_callMetriloApiAsync($storeId, $call);
     }
 
     /**
@@ -215,10 +223,10 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         ksort($call);
         $basedCall = base64_encode($this->jsonHelper->jsonEncode($call));
         $signature = md5($basedCall . $this->getApiSecret($storeId));
-        $requestBody = array(
+        $requestBody = [
             's'   => $signature,
             'hs'  => $basedCall
-        );
+        ];
         $this->asyncHelper->post('http://p.metrilo.com/bt', $requestBody);
     }
 
@@ -303,8 +311,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             'token'    => $this->getApiToken($storeId),
             'events'   => $ordersForSubmission,
             // for debugging/support purposes
-            // 'platform' => 'Magento ' . Mage::getEdition() . ' ' . Mage::getVersion(),
-            // 'version'  => (string)Mage::getConfig()->getModuleConfig("Metrilo_Analytics")->version
+            'platform' => 'Magento ' . $this->metaData->getEdition() . ' ' . $this->metaData->getVersion(),
+            'version'  => $this->moduleList->getOne(self::MODULE_NAME)['setup_version']
         );
     }
 
@@ -319,13 +327,17 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     {
         $billingAddress = $order->getBillingAddress();
         // Assign billing data to order data array
-        $data['billing_phone']    = $billingAddress->getTelephone();
-        $data['billing_country']  = $billingAddress->getCountryId();
-        $data['billing_region']   = $billingAddress->getRegion();
-        $data['billing_city']     = $billingAddress->getCity();
-        $data['billing_postcode'] = $billingAddress->getPostcode();
-        $data['billing_address']  = $billingAddress->getStreetFull();
-        $data['billing_company']  = $billingAddress->getCompany();
+        $data = [
+            'billing_phone' => $billingAddress->getTelephone(),
+            'billing_country' => $billingAddress->getCountryId(),
+            'billing_region' => $billingAddress->getRegion(),
+            'billing_city' => $billingAddress->getCity(),
+            'billing_postcode' => $billingAddress->getPostcode(),
+            'billing_address' => '', // Populate below
+            'billing_company' => $billingAddress->getCompany()
+        ];
+        $street = $billingAddress->getStreet();
+        $data['billing_address'] = is_array($street) ? implode(PHP_EOL, $street) : $street;
     }
 
     /**
@@ -350,7 +362,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             $call['time'] = $time;
         }
         // check for special parameters to include in the API call
-        if ($callParameters && $callParameters['use_ip']) {
+        if ($callParameters && isset($callParameters['use_ip'])) {
             $call['use_ip'] = $callParameters['use_ip'];
         }
         // put identity data in call if available
@@ -371,6 +383,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getStoreId()
     {
-        return $this->_storeManager->getStore()->getId();
+        return $this->storeManager->getStore()->getId();
     }
 }

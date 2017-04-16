@@ -19,10 +19,13 @@
     ], function($, metrilo) {
         $("#<?php echo $block->getHtmlId() ?>").import({
             storeId: <?php echo $storeId; ?>,
-            totalChunks: <?php echo $import->getChunks($storeId); ?>
+            totalChunks: <?php echo $import->getChunks($storeId); ?>,
+            submitUrl: '<?php echo $block->getAjaxUrl(); ?>',
+            messageSelector: '#metrilo_import_status'
         });
     });
     </script>
+    <div id="metrilo_import_status"></div>
     <?php return; ?>
     <?php // ------------------------- move code below to import.js file ?>
     <script>
@@ -69,8 +72,8 @@
         <div style="float: left;">
             <h3>Importing your orders and customers</h3>
             <p>
-                This tool helps you sync all your orders and customers to Metrilo and can take <strong>up to 20 minutes</strong> to complete. <br />
-                It will not affect your website's performance at all since it sends your orders to your Metrilo account in small chunks.  <br /><br />
+                This tool helps you sync all your orders and customers to Metrilo and can take <strong>up to 20 minutes</strong> to complete.<br />
+                It will not affect your website's performance at all since it sends your orders to your Metrilo account in small chunks.<br /><br />
                 Make sure to <strong>not close this page</strong> while importing. Coffee, maybe?
             </p>
         </div>
