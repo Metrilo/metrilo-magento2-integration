@@ -1,5 +1,7 @@
 /**
  * Import orders widget
+ *
+ * @author Miroslav Petrov <miro91tn@gmail.com>
  */
 define([
     'jquery',

@@ -3,7 +3,7 @@
 namespace Metrilo\Analytics\Helper;
 
 /**
- * helper class
+ * Helper class
  *
  * @author Miroslav Petrov <miro91tn@gmail.com>
  */
@@ -13,11 +13,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     const DATA_TAG = 'metrilo_events';
 
     const MODULE_NAME = 'Metrilo_Analytics';
-
-    /**
-     * @var \Magento\Framework\App\Config\ScopeConfigInterface
-     */
-    protected $config;
 
     /**
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $config
@@ -327,15 +322,13 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     {
         $billingAddress = $order->getBillingAddress();
         // Assign billing data to order data array
-        $data = [
-            'billing_phone' => $billingAddress->getTelephone(),
-            'billing_country' => $billingAddress->getCountryId(),
-            'billing_region' => $billingAddress->getRegion(),
-            'billing_city' => $billingAddress->getCity(),
-            'billing_postcode' => $billingAddress->getPostcode(),
-            'billing_address' => '', // Populate below
-            'billing_company' => $billingAddress->getCompany()
-        ];
+        $data['billing_phone'] = $billingAddress->getTelephone();
+        $data['billing_country'] = $billingAddress->getCountryId();
+        $data['billing_region'] = $billingAddress->getRegion();
+        $data['billing_city'] = $billingAddress->getCity();
+        $data['billing_postcode'] = $billingAddress->getPostcode();
+        $data['billing_address'] = ''; // Populate below
+        $data['billing_company'] = $billingAddress->getCompany();
         $street = $billingAddress->getStreet();
         $data['billing_address'] = is_array($street) ? implode(PHP_EOL, $street) : $street;
     }

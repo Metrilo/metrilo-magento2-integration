@@ -3,13 +3,17 @@
 namespace Metrilo\Analytics\Controller\Adminhtml\Import;
 
 /**
- * @author Miroslav Petrov
+ * AJAX Controller for sending chunks to Metrilo
+ *
+ * @author Miroslav Petrov <miro91tn@gmail.com>
  */
 class Ajax extends \Magento\Backend\App\Action
 {
     /**
-     *
      * @param \Magento\Framework\App\Action\Context            $context
+     * @param \Metrilo\Analytics\Helper\Data                   $helper
+     * @param \Metrilo\Analytics\Model\Import                  $import
+     * @param \Magento\Framework\App\Request\Http              $request
      * @param \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory
      */
     public function __construct(
@@ -29,6 +33,7 @@ class Ajax extends \Magento\Backend\App\Action
     /**
      * Import orders history by chunks
      *
+     * @throws \Exception
      * @return string
      */
     public function execute()

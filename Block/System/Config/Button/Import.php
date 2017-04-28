@@ -5,6 +5,11 @@ namespace Metrilo\Analytics\Block\System\Config\Button;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\Data\Form\Element\AbstractElement;
 
+/**
+ * Block for import button in metrilo configuration
+ *
+ * @author Miroslav Petrov <miro91tn@gmail.com>
+ */
 class Import extends \Magento\Config\Block\System\Config\Form\Field
 {
     /**

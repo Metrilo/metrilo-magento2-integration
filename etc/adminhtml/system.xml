@@ -1,11 +1,12 @@
 <?xml version="1.0"?>
 <!--
 /**
- * Copyright © 2015 Magento. All rights reserved.
- * See COPYING.txt for license details.
+ * Store configurations for Metrilo extension
+ *
+ * @author Miroslav Petrov <miro91tn@gmail.com>
  */
 -->
-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../Config/etc/system_file.xsd">
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
     <system>
         <!-- Add new Tab -->
         <tab id="metrilo" translate="label" sortOrder="300">
@@ -15,7 +16,7 @@
             <label>Analytics</label>
             <tab>metrilo</tab>
             <!-- resource tag name which we have to defined in the acl.xml -->
-            <resource>Metrilo_Analytics::config_slide</resource>
+            <resource>Metrilo_Analytics::configuration</resource>
             <group id="general" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>General Configuration</label>
                 <comment>

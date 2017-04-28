@@ -4,6 +4,11 @@ namespace Metrilo\Analytics\Model;
 
 use Magento\Framework\DataObject;
 
+/**
+ * Model object holding events data
+ *
+ * @author Miroslav Petrov <miro91tn@gmail.com>
+ */
 class Analytics extends DataObject
 {
 
@@ -116,7 +121,7 @@ class Analytics extends DataObject
     *
     * @param string full action name
     */
-    private function _isRejected($action)
+    protected function _isRejected($action)
     {
         $rejected = [
             'catalogsearch_advanced_index',

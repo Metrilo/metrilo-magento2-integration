@@ -2,6 +2,11 @@
 
 namespace Metrilo\Analytics\Helper;
 
+/**
+ * Helper for sending async requests to Metrilo end points
+ *
+ * @author Miroslav Petrov <miro91tn@gmail.com>
+ */
 class Async extends \Magento\Framework\App\Helper\AbstractHelper
 {
     /**

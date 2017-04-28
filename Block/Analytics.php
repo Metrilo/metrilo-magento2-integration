@@ -6,6 +6,8 @@ use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
 
 /**
+ * Block rendering events to frontend
+ *
  * @author Miroslav Petrov <miro91tn@gmail.com>
  */
 class Analytics extends Template
@@ -67,7 +69,6 @@ class Analytics extends Template
      */
     protected function _toHtml()
     {
-        // echo $this->getLayout()->getBlock('page.main.title')->getPageTitle()->getText();
         if (!$this->helper->isEnabled()) {
             return '';
         }

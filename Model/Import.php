@@ -5,7 +5,11 @@
 
 namespace Metrilo\Analytics\Model;
 
-
+/**
+ * Model getting orders by chunks for Metrilo import
+ *
+ * @author Miroslav Petrov <miro91tn@gmail.com>
+ */
 class Import
 {
     private $ordersTotal = 0;
@@ -70,7 +74,7 @@ class Import
      *
      * @return mixed
      */
-    private function getOrderQuery($storeId = 0)
+    protected function getOrderQuery($storeId = 0)
     {
         return $this->orderCollection->create()->addAttributeToFilter('store_id', $storeId);
     }
