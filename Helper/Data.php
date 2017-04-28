@@ -151,7 +151,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     {
         $data = [
             'order_id'          => $order->getIncrementId(),
-            'cart_id'           => $order->getQuoteId(),
+            'quote_id'           => $order->getQuoteId(),
             'order_status'      => $order->getStatus(),
             'amount'            => (float)$order->getGrandTotal(),
             'shipping_amount'   => (float)$order->getShippingAmount(),
