@@ -5,8 +5,9 @@
  */
 define([
     'jquery',
-    'mage/translate'
-    ], function($, $t) {
+    'mage/translate',
+    'jquery/ui'
+    ], function($, $t, $ui) {
         "use strict";
         $.widget('metrilo.import', {
 
@@ -59,7 +60,7 @@ define([
             chunkSync: function(chunkId) {
                 var self = this;
                 var progress = Math.round(chunkId * self.options.percentage);
-                self.updateImportingMessage('Please wait... ' + progress + '% done', true);
+                self.updateImportingMessage($t('Please wait... ' + progress + '% done'), true);
 
                 var data = {
                     'store_id': self.options.storeId,
@@ -74,8 +75,8 @@ define([
                                 self.chunkSync(newChunkId);
                             }, 100);
                         } else {
-                            self.updateImportingMessage("<span style='color: green;'>Done! Please expect up to 30 minutes for your historical data to appear in Metrilo.</span>");
-                            self.element.removeClass('disabled').addClass('success').text('Orders imported');
+                            self.updateImportingMessage("<span style='color: green;'>" + $t('Done! Please expect up to 30 minutes for your historical data to appear in Metrilo.') + "</span>");
+                            self.element.removeClass('disabled').addClass('success').text($t('Orders imported'));
                         }
                     } else {
                         self.updateImportingMessage("<span style='color: red;'>" + response.message + "</span>");
