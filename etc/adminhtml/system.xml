@@ -41,7 +41,7 @@
                 <field id="api_secret" sortOrder="30" type="text" translate="label" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>API Secret</label>
                 </field>
-                <field id="import" sortOrder="40" type="button" translate="label" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="import" sortOrder="40" type="button" translate="label" showInDefault="0" showInWebsite="0" showInStore="1">
                     <label>Import orders</label>
                     <button_label><![CDATA[Import orders]]></button_label>
                     <button_url>
