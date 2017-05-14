@@ -76,6 +76,6 @@ class Import
      */
     protected function getOrderQuery($storeId = 0)
     {
-        return $this->orderCollection->create()->addAttributeToFilter('store_id', $storeId);
+        return $this->orderCollection->create()->addAttributeToFilter('store_id', $storeId)->setOrder('entity_id', 'asc');
     }
 }
