@@ -197,13 +197,14 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      *
      * @param  int $storeId
      * @param  array $orders
+     * @param  bool $async
      * @return void
      */
-    public function callBatchApi($storeId, $orders)
+    public function callBatchApi($storeId, $orders, $async = true)
     {
         $ordersForSubmission = $this->_buildOrdersForSubmission($orders);
         $call = $this->_buildCall($storeId, $ordersForSubmission);
-        $this->_callMetriloApiAsync($storeId, $call);
+        $this->_callMetriloApi($storeId, $call, $async);
     }
 
     /**
@@ -211,9 +212,10 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      *
      * @param  int $storeId
      * @param  array $call
+     * @param  bool $async
      * @return void
      */
-    protected function _callMetriloApiAsync($storeId, $call)
+    protected function _callMetriloApi($storeId, $call, $async = true)
     {
         ksort($call);
         $basedCall = base64_encode($this->jsonHelper->jsonEncode($call));
@@ -222,7 +224,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             's'   => $signature,
             'hs'  => $basedCall
         ];
-        $this->asyncHelper->post('http://p.metrilo.com/bt', $requestBody);
+        $this->asyncHelper->post('http://p.metrilo.com/bt', $requestBody, $async);
     }
 
     /**
