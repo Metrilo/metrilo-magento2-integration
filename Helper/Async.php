@@ -37,9 +37,10 @@ class Async extends \Magento\Framework\App\Helper\AbstractHelper
     *
     * @param String $url
     * @param Array $bodyArray
+     * @param $async
     * @return void
     */
-    public function post($url, $bodyArray = false)
+    public function post($url, $bodyArray = false, $async = true)
     {
         $parsedUrl = parse_url($url);
         $encodedBody = $bodyArray ? json_encode($bodyArray) : '';
@@ -53,6 +54,11 @@ class Async extends \Magento\Framework\App\Helper\AbstractHelper
         );
         if ($fp) {
             fwrite($fp, $raw);
+
+            if(!$async) {
+                $this->_waitForResponse($fp);
+            }
+
             fclose($fp);
         }
     }
@@ -91,5 +97,15 @@ class Async extends \Magento\Framework\App\Helper\AbstractHelper
         $out .= "Connection: Close\r\n\r\n";
         $out .= $encodedCall;
         return $out;
+    }
+
+    /**
+     * @param $fp
+     */
+    private function _waitForResponse($fp)
+    {
+        while (!feof($fp)) {
+            fgets($fp, 1024);
+        }
     }
 }

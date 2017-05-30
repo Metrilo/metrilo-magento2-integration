@@ -47,7 +47,7 @@ class Ajax extends \Magento\Backend\App\Action
             // Get orders from the Database
             $orders = $this->import->getOrders($storeId, $chunkId);
             // Send orders via API helper method
-            $this->helper->callBatchApi($storeId, $orders);
+            $this->helper->callBatchApi($storeId, $orders, false);
             $result['success'] = true;
             return $jsonFactory->setData($result);
         } catch (\Exception $e) {
