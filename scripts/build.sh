@@ -16,6 +16,7 @@ image_name='metrilo/magento2-plugin'
 docker build \
     -f Dockerfile \
     -t $image_name:$RELEASE_VERSION \
+    --no-cache \
     $app_dir
 
 docker tag $image_name:$RELEASE_VERSION $docker_registry/$image_name:$RELEASE_VERSION
