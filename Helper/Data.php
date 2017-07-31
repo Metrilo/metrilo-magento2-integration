@@ -3,7 +3,7 @@
 namespace Metrilo\Analytics\Helper;
 
 /**
- * helper class
+ * Helper class
  *
  * @author Miroslav Petrov <miro91tn@gmail.com>
  */
@@ -12,23 +12,39 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
     const DATA_TAG = 'metrilo_events';
 
-    /**
-     * @var \Magento\Framework\App\Config\ScopeConfigInterface
-     */
-    protected $config;
+    const MODULE_NAME = 'Metrilo_Analytics';
 
     /**
-     * Dependency Injection
-     *
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
-     * @param \Magento\Customer\Model\Session                    $customerSession
+     * @param \Magento\Framework\App\Config\ScopeConfigInterface $config
+     * @param \Magento\Customer\Model\Session                    $session
+     * @param \Psr\Log\LoggerInterface                           $logger
+     * @param \Magento\Catalog\Model\ProductRepository           $productRepository
+     * @param \Magento\Framework\Json\Helper\Data                $jsonHelper
+     * @param Async                                              $asyncHelper
+     * @param \Magento\Store\Model\StoreManagerInterface         $storeManager
+     * @param \Magento\Framework\App\ProductMetadata             $metaData
+     * @param \Magento\Framework\Module\ModuleListInterface      $moduleList
      */
     public function __construct(
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-        \Magento\Customer\Model\Session $customerSession
+        \Magento\Framework\App\Config\ScopeConfigInterface $config,
+        \Magento\Customer\Model\Session $session,
+        \Psr\Log\LoggerInterface $logger,
+        \Magento\Catalog\Model\ProductRepository $productRepository,
+        \Magento\Framework\Json\Helper\Data $jsonHelper,
+        Async $asyncHelper,
+        \Magento\Store\Model\StoreManagerInterface $storeManager,
+        \Magento\Framework\App\ProductMetadata $metaData,
+        \Magento\Framework\Module\ModuleListInterface $moduleList
     ) {
-        $this->config = $scopeConfig;
-        $this->customerSession = $customerSession;
+        $this->config = $config;
+        $this->session = $session;
+        $this->logger = $logger;
+        $this->productRepository = $productRepository;
+        $this->jsonHelper = $jsonHelper;
+        $this->asyncHelper = $asyncHelper;
+        $this->storeManager = $storeManager;
+        $this->metaData = $metaData;
+        $this->moduleList = $moduleList;
     }
 
     /**
@@ -38,9 +54,10 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function isEnabled()
     {
-        return  $this->config->getValue('analytics/general/enable',
-                    \Magento\Store\Model\ScopeInterface::SCOPE_STORE
-                );
+        return $this->config->getValue(
+            'analytics/general/enable',
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+        );
     }
 
     /**
@@ -50,9 +67,10 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getApiToken()
     {
-        return  $this->config->getValue('analytics/general/api_key',
-                    \Magento\Store\Model\ScopeInterface::SCOPE_STORE
-                );
+        return $this->config->getValue(
+            'analytics/general/api_key',
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+        );
     }
 
     /**
@@ -62,36 +80,65 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getApiSecret()
     {
-        return  $this->config->getValue('analytics/general/api_secret',
-                    \Magento\Store\Model\ScopeInterface::SCOPE_STORE
-                );
+        return $this->config->getValue(
+            'analytics/general/api_secret',
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+        );
     }
 
     /**
-     * Add event to queue
+     * Get session data with "metrilo_events" key
      *
-     * @param string $method Can be identiy|track
-     * @param string $type
-     * @param array $data
-     * @param mixed $metaData
+     * @return array
      */
-    public function addEvent($method, $type, $data, $metaData = false)
+    public function getSessionEvents()
     {
-        $events = array();
-        if ($this->customerSession->getData(self::DATA_TAG) != '') {
-            $events = (array)$this->customerSession->getData(self::DATA_TAG);
+        $events = [];
+        if ($this->session->getData(self::DATA_TAG)) {
+            $events = $this->session->getData(self::DATA_TAG, true);
         }
-        $eventToAdd = [
+        return $events;
+    }
+
+    /**
+     * Add event to session
+     *
+     * @param string  $method
+     * @param string  $type
+     * @param array   $data
+     * @param boolean|string $metaData
+     */
+    public function addSessionEvent($method, $type, $data, $metaData = false)
+    {
+        $events = [];
+        if ($this->session->getData(self::DATA_TAG) != '') {
+            $events = (array)$this->session->getData(self::DATA_TAG);
+        }
+        $eventToAdd = array(
             'method' => $method,
             'type' => $type,
-            'data' => $data,
-            'metaData' => false
-        ];
+            'data' => $data
+        );
         if ($metaData) {
             $eventToAdd['metaData'] = $metaData;
         }
         array_push($events, $eventToAdd);
-        $this->customerSession->setData(self::DATA_TAG, $events);
+        $this->session->setData(self::DATA_TAG, $events);
+    }
+
+    /**
+     * Log error to logs
+     *
+     * @param  \Exception $exception
+     * @return void
+     */
+    public function logError($exception)
+    {
+        if ($exception instanceof \Exception) {
+            $this->logger->critical($exception->getMessage());
+        } else {
+            $this->logger->critical($exception);
+        }
     }
 
     /**
@@ -102,43 +149,42 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function prepareOrderDetails($order)
     {
-        $data = array(
+        $data = [
             'order_id'          => $order->getIncrementId(),
+            'quote_id'           => $order->getQuoteId(),
             'order_status'      => $order->getStatus(),
             'amount'            => (float)$order->getGrandTotal(),
             'shipping_amount'   => (float)$order->getShippingAmount(),
             'tax_amount'        => $order->getTaxAmount(),
-            'items'             => array(),
+            'items'             => [],
             'shipping_method'   => $order->getShippingDescription(),
             'payment_method'    => $order->getPayment()->getMethodInstance()->getTitle(),
-        );
+        ];
+
+        $this->_assignBillingInfo($data, $order);
+
         if ($order->getCouponCode()) {
             $data['coupons'] = array($order->getCouponCode());
         }
         $skusAdded = array();
         foreach ($order->getAllItems() as $item) {
-            if (in_array($item->getSku(), $skusAdded)) continue;
+            if (in_array($item->getSku(), $skusAdded)) {
+                continue;
+            }
             $skusAdded[] = $item->getSku();
             $dataItem = array(
-                'id'        => $item->getProductId(),
+                'id'        => (int)$item->getProductId(),
                 'price'     => (float)$item->getPrice() ? $item->getPrice() : $item->getProduct()->getFinalPrice(),
                 'name'      => $item->getName(),
                 'url'       => $item->getProduct()->getProductUrl(),
                 'quantity'  => (int)$item->getQtyOrdered()
             );
-            if ($item->getProductType() == 'configurable' || $item->getProductType() == 'grouped') {
-                if ($item->getProductType() == 'grouped') {
-                    $parentIds = Mage::getModel('catalog/product_type_grouped')->getParentIdsByChild($item->getProductId());
-                    $parentId = $parentIds[0];
-                } else {
-                    $parentId = $item->getProductId();
-                }
-                $mainProduct = Mage::getModel('catalog/product')->load($parentId);
-                $dataItem['id']     = $mainProduct->getId();
-                $dataItem['name']   = $mainProduct->getName();
-                $dataItem['url']    = $mainProduct->getProductUrl();
-                $dataItem['option_id'] = $item->getSku();
-                $dataItem['option_name'] = trim(str_replace("-", " ", $item->getName()));
+            if ($item->getProductType() == 'configurable') {
+                $parentId = $item->getProductId();
+                $mainProduct = $this->productRepository->getById($parentId);
+                $options = (array)$item->getProductOptions();
+                $dataItem['option_id'] = $options['simple_sku'];
+                $dataItem['option_name'] = $options['simple_name'];
                 $dataItem['option_price'] = (float)$item->getPrice();
             }
             $data['items'][] = $dataItem;
@@ -147,76 +193,146 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * Create HTTP request to metrilo server
+     * API call to Metrilo to submit information asynchronously
      *
-     * @param  string  $ident
-     * @param  string  $event
-     * @param  array  $params
-     * @param  boolean|array $identityData
-     * @param  boolean|int $time
-     * @param  boolean|array $callParameters
+     * @param  int $storeId
+     * @param  array $orders
+     * @param  bool $async
      * @return void
      */
-    public function callApi($ident, $event, $params, $identityData = false, $time = false, $callParameters = false)
+    public function callBatchApi($storeId, $orders, $async = true)
     {
-        try {
-            $call = $this->buildEventArray($ident, $event, $params, $identityData, $time, $callParameters);
-            // We should handle the setting of token parameter, as it's part of the request
-            $call['token'] = $this->getApiToken();
-            // Additional ksort here because of adding token param
-            ksort($call);
-            $basedCall = base64_encode(Mage::helper('core')->jsonEncode($call));
-            $signature = md5($basedCall.$this->getApiSecret());
-            // Use Varien_Http_Client
-            // to generate API call end point and call it
-            $url = 'http://p.metrilo.com/t?s='.$signature.'&hs='.$basedCall;
-            $client = new Varien_Http_Client($url);
-            $response = $client->request();
-            $result = Mage::helper('core')->jsonDecode($response->getBody());
-            if (!$result['status']) {
-                Mage::log($result['error'], null, 'Metrilo_Analytics.log');
-            }
-        } catch (Exception $e){
-            Mage::log($e->getMessage(), null, 'Metrilo_Analytics.log');
-        }
+        $ordersForSubmission = $this->_buildOrdersForSubmission($orders);
+        $call = $this->_buildCall($storeId, $ordersForSubmission);
+        $this->_callMetriloApi($storeId, $call, $async);
     }
 
     /**
-     * [callBatchApi description]
-     * @param  [type] $ordersForSubmition [description]
-     * @return [type]                     [description]
+     * Submit orders to Metrilo API via post request
+     *
+     * @param  int $storeId
+     * @param  array $call
+     * @param  bool $async
+     * @return void
      */
-    public function callBatchApi($ordersForSubmition)
+    protected function _callMetriloApi($storeId, $call, $async = true)
     {
-        try {
-            // Consider token is in the first level in the hashed json
-            $version = (string)Mage::getConfig()->getModuleConfig("Metrilo_Analytics")->version;
-            $call = array(
-                'token'    => $this->getApiToken(),
-                'events'   => $ordersForSubmition,
-                // for debugging/support purposes
-                'platform' => 'Magento ' . Mage::getEdition() . ' ' . Mage::getVersion(),
-                'version'  => $version
-            );
-            // Additional ksort here because of adding token param
-            ksort($call);
-            $basedCall = base64_encode(Mage::helper('core')->jsonEncode($call));
-            $signature = md5($basedCall.$this->getApiSecret());
-            $url = 'http://p.metrilo.com/bt';
-            $client = new Varien_Http_Client($url);
-            $requestBody = array(
-                's'   => $signature,
-                'hs'  => $basedCall
-            );
-            // This method supports passing named array as well as key, value
-            $client->setParameterPost($requestBody);
-            $response = $client->request('POST');
-            if ($response->isError()) {
-                Mage::log($response->getBody(), null, 'Metrilo_Analytics.log');
+        ksort($call);
+        $basedCall = base64_encode($this->jsonHelper->jsonEncode($call));
+        $signature = md5($basedCall . $this->getApiSecret($storeId));
+        $requestBody = [
+            's'   => $signature,
+            'hs'  => $basedCall
+        ];
+        $this->asyncHelper->post('http://p.metrilo.com/bt', $requestBody, $async);
+    }
+
+    /**
+     * Create submition ready arrays from Array of \Magento\Sales\Model\Order
+     *
+     * @param \Magento\Sales\Model\Order[] $orders
+     * @return array
+     */
+    protected function _buildOrdersForSubmission($orders)
+    {
+        $ordersForSubmission = [];
+        foreach ($orders as $order) {
+            if ($order->getId()) {
+                array_push($ordersForSubmission, $this->_buildOrderForSubmission($order));
             }
-        } catch (Exception $e) {
-            Mage::log($e->getMessage(), null, 'Metrilo_Analytics.log');
         }
+        return $ordersForSubmission;
+    }
+
+    /**
+     * Build individual order data
+     *
+     * @param  \Magento\Sales\Model\Order $order
+     * @return array
+     */
+    protected function _buildOrderForSubmission($order)
+    {
+        $orderDetails = $this->prepareOrderDetails($order);
+        // initialize additional params
+        $callParameters = [
+            'server_time' => round(microtime(true) * 1000)
+        ];
+        // check if order has customer IP in it
+        $ip = $order->getRemoteIp();
+        if ($ip) {
+            $callParameters['use_ip'] = $ip;
+        }
+        // initialize time
+        $time = false;
+        if ($order->getCreatedAt()) {
+            $dateObj = new \DateTime($order->getCreatedAt());
+            $time = $dateObj->getTimestamp() * 1000;
+        }
+        $identityData = $this->_orderIdentityData($order);
+        return $this->_buildEventArray(
+            $identityData['email'],
+            'order',
+            $orderDetails,
+            $identityData,
+            $time,
+            $callParameters
+        );
+    }
+
+    /**
+     * Get Order Customer identity data
+     *
+     * @param  \Magento\Sales\Model\Order $order
+     * @return array
+     */
+    protected function _orderIdentityData($order)
+    {
+        return array(
+            'email'         => $order->getCustomerEmail(),
+            'first_name'    => $order->getBillingAddress()->getFirstname(),
+            'last_name'     => $order->getBillingAddress()->getLastname(),
+            'name'          => $order->getBillingAddress()->getName(),
+        );
+    }
+
+    /**
+     * Create call array
+     *
+     * @param  int $storeId
+     * @param  array $ordersForSubmission
+     * @return array
+     */
+    protected function _buildCall($storeId, $ordersForSubmission)
+    {
+        return array(
+            'token'    => $this->getApiToken($storeId),
+            'events'   => $ordersForSubmission,
+            // for debugging/support purposes
+            'platform' => 'Magento ' . $this->metaData->getEdition() . ' ' . $this->metaData->getVersion(),
+            'version'  => $this->moduleList->getOne(self::MODULE_NAME)['setup_version']
+        );
+    }
+
+    /**
+     * Assign billing information
+     *
+     * @param  array $data
+     * @param  \Magento\Sales\Model\Order $order
+     * @return void
+     */
+    protected function _assignBillingInfo(&$data, $order)
+    {
+        $billingAddress = $order->getBillingAddress();
+        // Assign billing data to order data array
+        $data['billing_phone'] = $billingAddress->getTelephone();
+        $data['billing_country'] = $billingAddress->getCountryId();
+        $data['billing_region'] = $billingAddress->getRegion();
+        $data['billing_city'] = $billingAddress->getCity();
+        $data['billing_postcode'] = $billingAddress->getPostcode();
+        $data['billing_address'] = ''; // Populate below
+        $data['billing_company'] = $billingAddress->getCompany();
+        $street = $billingAddress->getStreet();
+        $data['billing_address'] = is_array($street) ? implode(PHP_EOL, $street) : $street;
     }
 
     /**
@@ -228,30 +344,40 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @param  boolean|array $identityData
      * @param  boolean|int $time
      * @param  boolean|array $callParameters
-     * @return void
+     * @return array
      */
-    public function buildEventArray($ident, $event, $params, $identityData = false, $time = false, $callParameters = false)
+    protected function _buildEventArray($ident, $event, $params, $identityData = false, $time = false, $callParameters = false)
     {
-      $call = array(
-          'event_type'    => $event,
-          'params'        => $params,
-          'uid'           => $ident
-      );
-      if($time) {
-          $call['time'] = $time;
-      }
-      // check for special parameters to include in the API call
-      if($callParameters) {
-          if($callParameters['use_ip']) {
-              $call['use_ip'] = $callParameters['use_ip'];
-          }
-      }
-      // put identity data in call if available
-      if($identityData) {
-          $call['identity'] = $identityData;
-      }
-      // Prepare keys is alphabetical order
-      ksort($call);
-      return $call;
+        $call = array(
+            'event_type'    => $event,
+            'params'        => $params,
+            'uid'           => $ident
+        );
+        if ($time) {
+            $call['time'] = $time;
+        }
+        // check for special parameters to include in the API call
+        if ($callParameters && isset($callParameters['use_ip'])) {
+            $call['use_ip'] = $callParameters['use_ip'];
+        }
+        // put identity data in call if available
+        if ($identityData) {
+            $call['identity'] = $identityData;
+        }
+        // Prepare keys is alphabetical order
+        ksort($call);
+        return $call;
+    }
+
+    /**
+     * Get storeId for the current request context
+     *
+     * @param null $request
+     *
+     * @return int
+     */
+    public function getStoreId()
+    {
+        return $this->storeManager->getStore()->getId();
     }
 }

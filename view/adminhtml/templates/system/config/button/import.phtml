@@ -1,14 +1,96 @@
-<div class="pp-buttons-container">
-    <button id="<?php echo $block->getHtmlId() ?>" onclick="return false;">
-        <span><span><span><?php echo __('Import orders'); ?></span></span></span>
-    </button>
-</div>
-<script>
-	require(['jquery'], function ($) {
-		var params = {internUrl:"<?php echo $block->getInternUrl() ?>",  apiKeyId: "#<?php echo $block->getApiKeyId() ?>", htmlId: "#<?php echo $block->getHtmlId() ?>", loadConfigUrl: "<?php echo $block->getLoadConfigUrl() ?>"};  
-		$("#<?php echo $block->getHtmlId() ?>").on( "click", function() {
-			alert('hello');
-			console.log(params);
-		});
-	});
-</script>
+<?php
+/**
+ * @var $block \Metrilo\Analytics\Block\System\Config\Button\Import
+ */
+?>
+<?php if ($block->buttonEnabled()): ?>
+    <?php /** @var \Metrilo\Analytics\Model\Import $import */
+    $import = $block->getImport(); ?>
+    <?php $storeId = $import->getStoreId(); ?>
+    <div class="pp-buttons-container">
+        <button id="<?php echo $block->getHtmlId() ?>" onclick="return false;">
+            <span><?php echo __('Import orders'); ?></span>
+        </button>
+    </div>
+    <script>
+    require([
+        'jquery',
+        'metriloImport'
+    ], function($, metrilo) {
+        $("#<?php echo $block->getHtmlId() ?>").import({
+            storeId: <?php echo $storeId; ?>,
+            totalChunks: <?php echo $import->getChunks($storeId); ?>,
+            submitUrl: '<?php echo $block->getAjaxUrl(); ?>',
+            messageSelector: '#metrilo_import_status'
+        });
+    });
+    </script>
+    <div id="metrilo_import_status"></div>
+    <?php return; ?>
+    <?php // ------------------------- move code below to import.js file ?>
+    <script>
+        require(['jquery'], function ($) {
+            var htmlId = "#<?php echo $block->getHtmlId() ?>";
+            $("#<?php echo $block->getHtmlId() ?>").on("click", function() {
+                var store_id     = <?php echo $storeId; ?>;
+                var total_chunks = <?php echo $import->getChunks($storeId); ?>;
+                var chunk_percentage = 100;
+                if(total_chunks > 0){
+                    chunk_percentage = (100 / total_chunks);
+                }
+                // Update button state and text
+                $(this).addClass('disabled').attr('disabled', 'disabled').text('Importing orders');
+
+                var sync_chunk = function(chunk_id) {
+                    progress_percents = Math.round(chunk_id * chunk_percentage);
+                    update_importing_message('Please wait... '+progress_percents+'% done', true);
+                    // add form_key for magento controller check
+                    data = {'store_id': store_id, 'chunk_id': chunk_id, 'form_key': window.FORM_KEY};
+                    jQuery.post('<?php echo $block->getAjaxUrl(); ?>', data, function(response) {
+                        new_chunk_id = chunk_id + 1;
+                        if(new_chunk_id < total_chunks){
+                            setTimeout(function() {
+                                sync_chunk(new_chunk_id);
+                            }, 100);
+                        }else{
+                            update_importing_message("<span style='color: green;'>Done! Please expect up to 30 minutes for your historical data to appear in Metrilo.</span>", false);
+                            jQuery('#metrilo_button').removeClass('disabled').addClass('success').text('Orders imported');
+                        }
+                    });
+                };
+                var update_importing_message = function(message, show_loader){
+                    if (show_loader)
+                        message = '<img src="<?php // echo $this->getSkinUrl("metrilo/loader.gif"); ?>" />' + message;
+                    jQuery('#metrilo_import_status').html(message);
+                }
+                sync_chunk(0);
+            });
+        });
+    </script>
+    <?php // \Zend_Debug::dump(array_keys($block->getData())); return; ?>
+    <?php if ($block->showInStore()): ?>
+        <div style="float: left;">
+            <h3>Importing your orders and customers</h3>
+            <p>
+                This tool helps you sync all your orders and customers to Metrilo and can take <strong>up to 20 minutes</strong> to complete.<br />
+                It will not affect your website's performance at all since it sends your orders to your Metrilo account in small chunks.<br /><br />
+                Make sure to <strong>not close this page</strong> while importing. Coffee, maybe?
+            </p>
+        </div>
+        <div style="clear:both"></div>
+        <?php echo $this->getButtonHtml() ?>
+        <div style="clear:both"></div>
+        <div id="metrilo_import_status"></div>
+        <div style="clear:both"></div>
+    <?php else: ?>
+        <div style="float: left;">
+            <p>
+                In order to import your orders, please pick a store from
+                <strong>Current Configuration Scope</strong> on the top left
+                to make the import for the selected store.
+            </p>
+        </div>
+        <div style="clear:both"></div>
+    <?php endif; ?>
+<?php endif; ?>
+

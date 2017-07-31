@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/**
+ * Register adminhtml events
+ *
+ * @author Miroslav Petrov <miro91tn@gmail.com>
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
+    <event name="sales_order_save_after">
+        <observer name="metrilo_event_order" instance="Metrilo\Analytics\Observer\UpdateOrder"/>
+    </event>
+</config>

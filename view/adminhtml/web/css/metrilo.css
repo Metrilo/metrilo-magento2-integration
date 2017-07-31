@@ -8,6 +8,8 @@
     height: 50px;
     background-size: 50px 50px;
     line-height:36px;
+    float: left;
+    margin-right: 10px;
 }
 #metrilo-info {
     float:left;

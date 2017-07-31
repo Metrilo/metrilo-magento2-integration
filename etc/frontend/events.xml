@@ -1,10 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../../../lib/internal/Magento/Framework/Event/etc/events.xsd">
-    <event name="layout_generate_blocks_after">
-        <observer name="metrilo_event_pageview" instance="Metrilo\Analytics\Observer\Pageview" />
-    </event>
+<!--
+/**
+ * Register frontend events
+ *
+ * @author Miroslav Petrov <miro91tn@gmail.com>
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
     <event name="checkout_onepage_controller_success_action">
         <observer name="metrilo_event_order" instance="Metrilo\Analytics\Observer\Order"/>
+    </event>
+    <event name="multishipping_checkout_controller_success_action">
+        <observer name="metrilo_event_order" instance="Metrilo\Analytics\Observer\Order"/>
+    </event>
+    <event name="customer_login">
+        <observer name="metrilo_event_login" instance="Metrilo\Analytics\Observer\CustomerLogin" />
+    </event>
+    <event name="customer_account_edited">
+    	<observer name="metrilo_event_account_update" instance="Metrilo\Analytics\Observer\CustomerUpdate" />
+    </event>
+    <event name="checkout_cart_product_add_after">
+        <observer name="metrilo_event_addtocart" instance="Metrilo\Analytics\Observer\AddToCart" />
+    </event>
+    <event name="sales_quote_remove_item">
+        <observer name="metrilo_event_removefromcart" instance="Metrilo\Analytics\Observer\RemoveFromCart" />
     </event>
 </config>

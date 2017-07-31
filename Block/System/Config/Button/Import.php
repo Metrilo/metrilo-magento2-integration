@@ -1,14 +1,40 @@
 <?php
 
 namespace Metrilo\Analytics\Block\System\Config\Button;
-use Magento\Framework\App\Config\ScopeConfigInterface;
 
+use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\Data\Form\Element\AbstractElement;
+
+/**
+ * Block for import button in metrilo configuration
+ *
+ * @author Miroslav Petrov <miro91tn@gmail.com>
+ */
 class Import extends \Magento\Config\Block\System\Config\Form\Field
 {
-	/**
+    /**
      * Path to block template
      */
     const CHECK_TEMPLATE = 'system/config/button/import.phtml';
+
+    /**
+     * Import constructor.
+     *
+     * @param \Magento\Backend\Block\Template\Context $context
+     * @param \Metrilo\Analytics\Helper\Data $helper
+     * @param array $data
+     */
+    public function __construct(
+        \Magento\Backend\Block\Template\Context $context,
+        \Metrilo\Analytics\Helper\Data $helper,
+        \Metrilo\Analytics\Model\Import $import,
+        array $data = []
+    ) {
+        $this->helper = $helper;
+        $this->import = $import;
+        parent::__construct($context, $data);
+    }
+
     /**
      * Set template to itself
      *
@@ -18,29 +44,30 @@ class Import extends \Magento\Config\Block\System\Config\Form\Field
     {
         parent::_prepareLayout();
         if (!$this->getTemplate()) {
-            $this->setTemplate(static::CHECK_TEMPLATE);
+            $this->setTemplate(self::CHECK_TEMPLATE);
         }
         return $this;
     }
+
     /**
-     * Render button
+     * Render button and remove scope label
      *
-     * @param  \Magento\Framework\Data\Form\Element\AbstractElement $element
+     * @param  AbstractElement $element
      * @return string
      */
-    public function render(\Magento\Framework\Data\Form\Element\AbstractElement $element)
+    public function render(AbstractElement $element)
     {
-        // Remove scope label
         $element->unsScope()->unsCanUseWebsiteValue()->unsCanUseDefaultValue();
         return parent::render($element);
     }
+
     /**
-     * Get the button and scripts contents
+     * Get block custom template html for the button
      *
-     * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
+     * @param  AbstractElement $element
      * @return string
      */
-    protected function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)
+    protected function _getElementHtml(AbstractElement $element)
     {
         $originalData = $element->getOriginalData();
         $this->addData(
@@ -50,5 +77,38 @@ class Import extends \Magento\Config\Block\System\Config\Form\Field
             ]
         );
         return $this->_toHtml();
+    }
+
+    /**
+     * Check if button is enabled
+     *
+     * @return boolean
+     */
+    public function buttonEnabled()
+    {
+        $storeId = $this->helper->getStoreId();
+         return $this->helper->isEnabled($storeId)
+             && $this->helper->getApiToken($storeId)
+             && $this->helper->getApiSecret($storeId);
+    }
+
+    /**
+     * Generate URL for AJAX import controller
+     *
+     * @return string
+     */
+    public function getAjaxUrl()
+    {
+        return $this->getUrl('metrilo/import/ajax');
+    }
+
+    /**
+     * Import model
+     *
+     * @return \Metrilo\Analytics\Model\Import
+     */
+    public function getImport()
+    {
+        return $this->import;
     }
 }
