@@ -1,0 +1,58 @@
+---
+kind: Template
+apiVersion: v1
+
+objects:
+  - kind: Deployment
+    apiVersion: extensions/v1beta1
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: magento2-testenv
+        name: magento2-testenv-web
+      name: magento2-testenv-web
+
+    spec:
+      strategy: {}
+      template:
+        metadata:
+          creationTimestamp: null
+          labels:
+            app: magento2-testenv
+            name: magento2-testenv-web
+        spec:
+          imagePullSecrets:
+          - name: "acr-registry-secret"
+          containers:
+          - name: magento2-testenv-web
+            image: metrilo.azurecr.io/metrilo/magento2-plugin:$(RELEASE_VERSION)
+            env:
+            - name: MAGENTO_LANGUAGE
+              value: en_GB
+            - name: MAGENTO_TIMEZONE
+              value: Europe/Sofia
+            - name: MAGENTO_DEFAULT_CURRENCY
+              value: USD
+            - name: MAGENTO_URL
+              value: https://mage2-test.metrilo.com
+            - name: MAGENTO_ADMIN_FIRSTNAME
+              value: Metrilo
+            - name: MAGENTO_ADMIN_LASTNAME
+              value: TheGreatest
+            - name: MAGENTO_ADMIN_EMAIL
+              value: admin@metrilo.com
+            - name: MAGENTO_ADMIN_USERNAME
+              value: metrilo
+            - name: MAGENTO_ADMIN_PASSWORD
+              value: metrilomaina!
+            - name: MYSQL_USER
+              value: magento
+            - name: MYSQL_PASSWORD
+              value: magento
+            - name: MYSQL_DATABASE
+              value: magento
+parameters:
+  - name: RELEASE_VERSION
+    description: "Release version"
+    required: true
+    parameterType: string

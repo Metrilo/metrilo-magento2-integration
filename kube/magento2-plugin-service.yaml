@@ -1,0 +1,21 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: magento2-testenv
+  name: magento2-testenv-service
+
+spec:
+  ports:
+  - name: "http"
+    port: 80
+    targetPort: 80
+  selector:
+    app: magento2-testenv
+    name: magento2-testenv-web
+  type: LoadBalancer
+
+status:
+  loadBalancer: {}
