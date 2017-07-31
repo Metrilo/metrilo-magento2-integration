@@ -11,7 +11,6 @@ objects:
         app: magento2-testenv
         name: magento2-testenv-web
       name: magento2-testenv-web
-
     spec:
       strategy: {}
       template:
@@ -45,12 +44,7 @@ objects:
               value: metrilo
             - name: MAGENTO_ADMIN_PASSWORD
               value: metrilomaina!
-            - name: MYSQL_USER
-              value: magento
-            - name: MYSQL_PASSWORD
-              value: magento
-            - name: MYSQL_DATABASE
-              value: magento
+
 parameters:
   - name: RELEASE_VERSION
     description: "Release version"
