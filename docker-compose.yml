@@ -1,0 +1,20 @@
+version: '2'
+services:
+  web:
+    build: .
+    ports:
+      - "8080:80"
+    links:
+      - db
+    env_file:
+      - docker/.env
+  db:
+    image: mysql:5.6.23
+    volumes_from:
+      - dbdata
+    env_file:
+      - docker/.env
+  dbdata:
+    image: alexcheng/data
+    volumes:
+      - /var/lib/mysql
