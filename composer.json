@@ -19,7 +19,6 @@
   "extra": {
     "map": [
       [
-        "*",
         "Metrilo/Analytics"
       ]
     ]
