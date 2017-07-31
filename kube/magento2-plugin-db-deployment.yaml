@@ -38,6 +38,3 @@ spec:
         - name: magento2-testenv-db-pvc
           persistentVolumeClaim:
             claimName: magento2-plugin-db-pvc
-        - name: magento2-testenv-db-config
-          configMap:
-            name: magento2-plugin-db-cfgmap
