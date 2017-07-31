@@ -44,6 +44,14 @@ objects:
               value: metrilo
             - name: MAGENTO_ADMIN_PASSWORD
               value: metrilomaina!
+            - name: MAGENTO_DB_HOST
+              value: magento2-testenv-db
+            - name: MAGENTO_DB_NAME
+              value: magento
+            - name: MAGENTO_DB_USERNAME
+              value: magento
+            - name: MAGENTO_DB_PASSWORD
+              value: magento
 
 parameters:
   - name: RELEASE_VERSION
