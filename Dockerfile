@@ -8,7 +8,10 @@ RUN chown www-data:www-data app/etc/env.php
 
 USER www-data
 
-RUN composer config github-oauth.github.com "53951ecc51f64c62bfb2b2ba9dc9e7f75696b978"
+ARG GITHUB_TOKEN
+ENV GITHUB_TOKEN $GITHUB_TOKEN
+
+RUN composer config github-oauth.github.com $GITHUB_TOKEN
 RUN composer config repositories.repo-name vcs https://github.com/metrilo/magento2-plugin
 RUN composer require metrilo/analytics-magento2-extension:master@dev
 

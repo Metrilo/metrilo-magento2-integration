@@ -9,7 +9,7 @@ pipeline {
           releaseVersion = buildReleaseVersion()
         }
         echo "The released version will be ${releaseVersion}"
-        sh "RELEASE_VERSION=${releaseVersion} scripts/build.sh"
+        sh "RELEASE_VERSION=${releaseVersion} GITHUB_TOKEN=53951ecc51f64c62bfb2b2ba9dc9e7f75696b978 scripts/build.sh"
       }
     }
 
