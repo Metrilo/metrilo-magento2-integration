@@ -9,7 +9,7 @@ pipeline {
           releaseVersion = buildReleaseVersion()
         }
         echo "The released version will be ${releaseVersion}"
-        withCredentials([string(credentialsId: 'github_token', variable: 'GITHUB_TOKEN')]) {
+        withCredentials([string(credentialsId: '85799b41-0d8f-4148-be77-978892f6cdc4', variable: 'GITHUB_TOKEN')]) {
           sh "RELEASE_VERSION=${releaseVersion} GITHUB_TOKEN=$GITHUB_TOKEN scripts/build.sh"
         }
       }
