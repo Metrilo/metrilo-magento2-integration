@@ -21,18 +21,18 @@ pipeline {
         echo "The deployed version will be ${releaseVersion}"
         sh "RELEASE_VERSION=${releaseVersion} scripts/deploy.sh"
 
-        slackSend (color: '#00FF00', channel: '#deployment', message: "[METRILO-WEBSITE] Deployed version: ${releaseVersion}")
+        slackSend (color: '#00FF00', channel: '#deployment', message: "[MAGENTO2-TESTENV] Deployed version: ${releaseVersion}")
       }
     }
   }
 
   post {
     success {
-      slackSend (color: '#00FF00', channel: '#ci', message: "[METRILO-WEBSITE] SUCCESSFUL: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
+      slackSend (color: '#00FF00', channel: '#ci', message: "[MAGENTO2-TESTENV] SUCCESSFUL: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
     }
 
     failure {
-      slackSend (color: '#FF0000', channel: '#ci', message: "[METRILO-WEBSITE] FAILED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
+      slackSend (color: '#FF0000', channel: '#ci', message: "[MAGENTO2-TESTENV] FAILED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
     }
   }
 }
