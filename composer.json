@@ -15,13 +15,5 @@
     "files": [
         "registration.php"
     ]
-  },
-  "extra": {
-    "map": [
-      [
-        "Metrilo/Analytics"
-      ]
-    ]
   }
-
 }
