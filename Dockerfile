@@ -1,7 +1,7 @@
 FROM alexcheng/magento2
 
 RUN apt-get update
-RUN apt-get install -y git
+RUN apt-get install -y git-core
 
 COPY scripts/env.php /var/www/html/app/etc
 RUN chown www-data:www-data app/etc/env.php
