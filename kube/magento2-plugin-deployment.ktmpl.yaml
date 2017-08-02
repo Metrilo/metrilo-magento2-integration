@@ -52,7 +52,6 @@ objects:
               value: magento
             - name: MAGENTO_DB_PASSWORD
               value: magento
-
 parameters:
   - name: RELEASE_VERSION
     description: "Release version"

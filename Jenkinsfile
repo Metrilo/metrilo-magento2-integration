@@ -3,20 +3,25 @@ pipeline {
 
   stages {
     stage("Release") {
-      when { branch 'master' }
+      when { branch 'MET-1655/add-test-data-into-the-magento-2-database' }
       steps {
         script {
           releaseVersion = buildReleaseVersion()
         }
         echo "The released version will be ${releaseVersion}"
-        withCredentials([string(credentialsId: '85799b41-0d8f-4148-be77-978892f6cdc4', variable: 'GITHUB_TOKEN')]) {
-          sh "RELEASE_VERSION=${releaseVersion} GITHUB_TOKEN=$GITHUB_TOKEN scripts/build.sh"
+        withCredentials(
+          [
+            string(credentialsId: '85799b41-0d8f-4148-be77-978892f6cdc4', variable: 'GITHUB_TOKEN'),
+            usernamePassword(credentialsId: 'magento2_store', usernameVariable: 'MAGE_DEV_UNAME', passwordVariable: 'MAGE_DEV_PASSWORD')
+          ]
+        ) {
+          sh "RELEASE_VERSION=${releaseVersion} GITHUB_TOKEN=$GITHUB_TOKEN MAGE_DEV_UNAME=$MAGE_DEV_UNAME MAGE_DEV_PASSWORD=$MAGE_DEV_PASSWORD scripts/build.sh"
         }
       }
     }
 
     stage("Deploy") {
-      when { branch 'master' }
+      when { branch 'MET-1655/add-test-data-into-the-magento-2-database' }
       steps {
         echo "The deployed version will be ${releaseVersion}"
         sh "RELEASE_VERSION=${releaseVersion} scripts/deploy.sh"
