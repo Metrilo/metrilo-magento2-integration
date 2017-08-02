@@ -31,7 +31,6 @@ image_name='metrilo/magento2-plugin'
 docker build \
     -f Dockerfile \
     -t $image_name:$RELEASE_VERSION \
-    --no-cache \
     --build-arg GITHUB_TOKEN=$GITHUB_TOKEN \
     --build-arg MAGE_DEV_UNAME=$MAGE_DEV_UNAME \
     --build-arg MAGE_DEV_PASSWORD=$MAGE_DEV_PASSWORD \

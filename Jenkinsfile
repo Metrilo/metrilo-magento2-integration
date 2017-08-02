@@ -3,7 +3,7 @@ pipeline {
 
   stages {
     stage("Release") {
-      when { branch 'MET-1655/add-test-data-into-the-magento-2-database' }
+      when { branch 'master' }
       steps {
         script {
           releaseVersion = buildReleaseVersion()
@@ -21,7 +21,7 @@ pipeline {
     }
 
     stage("Deploy") {
-      when { branch 'MET-1655/add-test-data-into-the-magento-2-database' }
+      when { branch 'master' }
       steps {
         echo "The deployed version will be ${releaseVersion}"
         sh "RELEASE_VERSION=${releaseVersion} scripts/deploy.sh"
