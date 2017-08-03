@@ -11,17 +11,8 @@ USER www-data
 ARG GITHUB_TOKEN
 ENV GITHUB_TOKEN $GITHUB_TOKEN
 
-ARG MAGE_DEV_UNAME
-ENV MAGE_DEV_UNAME $MAGE_DEV_UNAME
-
-ARG MAGE_DEV_PASSWORD
-ENV MAGE_DEV_PASSWORD $MAGE_DEV_PASSWORD
-
 RUN composer config github-oauth.github.com $GITHUB_TOKEN
-RUN composer config http-basic.repo.magento.com $MAGE_DEV_UNAME $MAGE_DEV_PASSWORD
-
 RUN composer config repositories.repo-name vcs https://github.com/metrilo/magento2-plugin
-# RUN composer config repositories.magento composer https://repo.magento.com/packages.json
 
 USER root
 

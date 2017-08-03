@@ -1,21 +1,16 @@
 pipeline {
   agent any
 
+
   stages {
     stage("Release") {
       when { branch 'master' }
       steps {
-        script {
-          releaseVersion = buildReleaseVersion()
-        }
+        script { releaseVersion = buildReleaseVersion() }
         echo "The released version will be ${releaseVersion}"
-        withCredentials(
-          [
-            string(credentialsId: '85799b41-0d8f-4148-be77-978892f6cdc4', variable: 'GITHUB_TOKEN'),
-            usernamePassword(credentialsId: 'magento2_store', usernameVariable: 'MAGE_DEV_UNAME', passwordVariable: 'MAGE_DEV_PASSWORD')
-          ]
-        ) {
-          sh "RELEASE_VERSION=${releaseVersion} make build"
+
+        withCredentials([string(credentialsId: '85799b41-0d8f-4148-be77-978892f6cdc4', variable: 'GITHUB_TOKEN')]) {
+          sh "RELEASE_VERSION=${releaseVersion} MAGENTO_VERSION=2.1.7 make build"
         }
       }
     }
