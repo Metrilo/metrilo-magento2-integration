@@ -8,7 +8,10 @@ pipeline {
         script { releaseVersion = buildReleaseVersion() }
         echo "The released version will be ${releaseVersion}"
 
-        withCredentials([string(credentialsId: '85799b41-0d8f-4148-be77-978892f6cdc4', variable: 'GITHUB_TOKEN')]) {
+        withCredentials([
+          string(credentialsId: '85799b41-0d8f-4148-be77-978892f6cdc4', variable: 'GITHUB_TOKEN'),
+          usernamePassword(credentialsId: 'magento2_store', usernameVariable: 'MAGE2_MARKET_USERNAME', passwordVariable: 'MAGE2_MARKET_PASSWORD')
+        ]) {
           sh "RELEASE_VERSION=${releaseVersion} make build"
         }
       }

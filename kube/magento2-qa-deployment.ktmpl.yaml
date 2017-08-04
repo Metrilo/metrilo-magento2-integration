@@ -3,26 +3,43 @@ kind: Template
 apiVersion: v1
 
 objects:
-  kind: Deployment
-  apiVersion: extensions/v1beta1
-  metadata:
-    creationTimestamp: null
-    labels:
-      app: magento2-qa
+  - kind: Deployment
+    apiVersion: extensions/v1beta1
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: magento2-qa
+        name: magento2-qa-web
       name: magento2-qa-web
-    name: magento2-qa-web
-  spec:
-    strategy: {}
-    template:
-      metadata:
-        creationTimestamp: null
-        labels:
-          app: magento2-qa
-          name: magento2-qa-web
-      spec:
-        containers:
-        - name: magento2-qa-web
-          image: metrilo.azurecr.io/metrilo/magento2-plugin:$(RELEASE_VERSION)
+    spec:
+      strategy: {}
+      template:
+        metadata:
+          creationTimestamp: null
+          labels:
+            app: magento2-qa
+            name: magento2-qa-web
+        spec:
+          containers:
+          - name: magento2-qa-web
+            image: metrilo.azurecr.io/metrilo/magento2-plugin:$(RELEASE_VERSION)
+            volumeMounts:
+              - name: magento2-qa-mysql-pvc
+                mountPath: /tmp/mysql
+              - name: magento2-qa-mage-pub-pvc
+                mountPath: /tmp/pub
+              - name: magento2-qa-mage-var-pvc
+                mountPath: /tmp/var
+          volumes:
+            - name: magento2-qa-mysql-pvc
+              persistentVolumeClaim:
+                claimName: magento2-qa-mysql-pvc
+            - name: magento2-qa-mage-pub-pvc
+              persistentVolumeClaim:
+                claimName: magento2-qa-mage-pub-pvc
+            - name: magento2-qa-mage-var-pvc
+              persistentVolumeClaim:
+                claimName: magento2-qa-mage-var-pvc
 
 parameters:
   - name: RELEASE_VERSION
