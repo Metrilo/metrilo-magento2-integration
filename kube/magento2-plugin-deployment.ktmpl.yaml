@@ -38,7 +38,7 @@ objects:
             - name: magento2-testenv-web-pub-pvc
               mountPath: /var/www/html/pub
             - name: magento2-testenv-web-var-pvc
-              mountPath: /var/www/hhtml/var
+              mountPath: /var/www/html/var
 
             env:
             - name: MAGENTO_LANGUAGE

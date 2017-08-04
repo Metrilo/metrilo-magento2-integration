@@ -1,7 +1,6 @@
 pipeline {
   agent any
 
-
   stages {
     stage("Release") {
       when { branch 'master' }
@@ -10,7 +9,7 @@ pipeline {
         echo "The released version will be ${releaseVersion}"
 
         withCredentials([string(credentialsId: '85799b41-0d8f-4148-be77-978892f6cdc4', variable: 'GITHUB_TOKEN')]) {
-          sh "RELEASE_VERSION=${releaseVersion} MAGENTO_VERSION=2.1.7 make build"
+          sh "RELEASE_VERSION=${releaseVersion} make build"
         }
       }
     }
@@ -24,6 +23,14 @@ pipeline {
         slackSend (color: '#00FF00', channel: '#deployment', message: "[MAGENTO2-TESTENV] Deployed version: ${releaseVersion}")
       }
     }
+
+    // stages("Update plugin") {
+    //   when { branch 'master' }
+    //   steps {
+    //     sh 'make update_plugin'
+    //     slackSend (color: '#00FF00', channel: '#deployment', message: "[MAGENTO2-TESTENV] Deployed version: ${releaseVersion}")
+    //   }
+    // }
   }
 
   post {
