@@ -6,7 +6,7 @@ return array (
   ),
   'crypt' =>
   array (
-    'key' => '6f89ade9569ea1ef34bf68a0adcee8f4',
+    'key' => '891dcf9b62b70c6efca47d0607ecfab6',
   ),
   'session' =>
   array (
@@ -23,10 +23,10 @@ return array (
         'dbname' => getenv('MAGENTO_DB_NAME'),
         'username' => getenv('MAGENTO_DB_USERNAME'),
         'password' => getenv('MAGENTO_DB_PASSWORD'),
+        'active' => '1',
         'model' => 'mysql4',
         'engine' => 'innodb',
         'initStatements' => 'SET NAMES utf8;',
-        'active' => '1',
       ),
     ),
   ),
@@ -57,6 +57,6 @@ return array (
   ),
   'install' =>
   array (
-    'date' => 'Mon, 31 Jul 2017 15:15:05 +0000',
+    'date' => 'Fri, 04 Aug 2017 09:21:15 +0000',
   ),
 );

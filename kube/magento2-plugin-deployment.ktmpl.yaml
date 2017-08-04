@@ -22,9 +22,24 @@ objects:
         spec:
           imagePullSecrets:
           - name: "acr-registry-secret"
+
+          volumes:
+          - name: magento2-testenv-web-pub-pvc
+            persistentVolumeClaim:
+              claimName: magento2-testenv-web-pub-pvc
+          - name: magento2-testenv-web-var-pvc
+            persistentVolumeClaim:
+              claimName: magento2-testenv-web-var-pvc
+
           containers:
           - name: magento2-testenv-web
             image: metrilo.azurecr.io/metrilo/magento2-plugin:$(RELEASE_VERSION)
+            volumeMounts:
+            - name: magento2-testenv-web-pub-pvc
+              mountPath: /var/www/html/pub
+            - name: magento2-testenv-web-var-pvc
+              mountPath: /var/www/hhtml/var
+
             env:
             - name: MAGENTO_LANGUAGE
               value: en_GB
@@ -52,6 +67,7 @@ objects:
               value: magento
             - name: MAGENTO_DB_PASSWORD
               value: magento
+
 parameters:
   - name: RELEASE_VERSION
     description: "Release version"
