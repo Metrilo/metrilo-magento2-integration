@@ -4,8 +4,8 @@ kind: Service
 metadata:
   creationTimestamp: null
   labels:
-    app: magento2-testenv
-  name: magento2-testenv-service
+    app: magento2-qa
+  name: magento2-qa-service
 
 spec:
   ports:
@@ -13,8 +13,8 @@ spec:
     port: 80
     targetPort: 80
   selector:
-    app: magento2-testenv
-    name: magento2-testenv-web
+    app: magento2-qa
+    name: magento2-qa-web
   type: LoadBalancer
 
 status:

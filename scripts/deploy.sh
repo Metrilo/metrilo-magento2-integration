@@ -7,4 +7,4 @@ if [[ -z "${RELEASE_VERSION}" ]]; then
   exit 1
 fi
 
-ktmpl kube/magento2-plugin-deployment.ktmpl.yaml --parameter RELEASE_VERSION $RELEASE_VERSION | kubectl replace -f -
+ktmpl kube/magento2-qa-deployment.ktmpl.yaml --parameter RELEASE_VERSION $RELEASE_VERSION | kubectl replace -f -

@@ -2,8 +2,10 @@
 
 set -e
 
-su -c "composer require metrilo/analytics-magento2-extension:master@dev" www-data
-su -c "bin/magento module:enable --all" www-data
+# Require and update magento2 extension
+su -c "composer require metrilo/analytics-magento2-extension:master@dev --no-update" www-data
+su -c "composer update" www-data
+
 # Update the modules
 su -c "bin/magento setup:upgrade" www-data
 # Flush the cache
