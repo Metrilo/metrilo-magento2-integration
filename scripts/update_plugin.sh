@@ -8,8 +8,6 @@ su -c "composer update" magento
 
 # Update the modules
 su -c "bin/magento setup:upgrade" magento
-# Flush the cache
-su -c "bin/magento cache:flush" magento
-# Deploy static content and reindex
 su -c "bin/magento setup:static-content:deploy" magento
 su -c "bin/magento indexer:reindex" magento
+su -c "bin/magento cache:flush" magento
