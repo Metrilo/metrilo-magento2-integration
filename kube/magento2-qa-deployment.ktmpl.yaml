@@ -20,6 +20,8 @@ objects:
             app: magento2-qa
             name: magento2-qa-web
         spec:
+          imagePullSecrets:
+          - name: "acr-registry-secret"
           containers:
           - name: magento2-qa-web
             image: metrilo.azurecr.io/metrilo/magento2-plugin:$(RELEASE_VERSION)

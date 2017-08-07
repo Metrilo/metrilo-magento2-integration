@@ -22,4 +22,6 @@ ENV GITHUB_TOKEN $GITHUB_TOKEN
 RUN composer config github-oauth.github.com $GITHUB_TOKEN
 RUN composer config repositories.repo-name vcs https://github.com/metrilo/magento2-plugin
 
+RUN composer update
+
 USER root
