@@ -10,14 +10,14 @@ namespace Metrilo\Analytics\Controller\Adminhtml\Import;
 class Ajax extends \Magento\Backend\App\Action
 {
     /**
-     * @param \Magento\Framework\App\Action\Context            $context
+     * @param \Magento\Backend\App\Action\Context              $context
      * @param \Metrilo\Analytics\Helper\Data                   $helper
      * @param \Metrilo\Analytics\Model\Import                  $import
      * @param \Magento\Framework\App\Request\Http              $request
      * @param \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory
      */
     public function __construct(
-        \Magento\Framework\App\Action\Context $context,
+        \Magento\Backend\App\Action\Context $context,
         \Metrilo\Analytics\Helper\Data $helper,
         \Metrilo\Analytics\Model\Import $import,
         \Magento\Framework\App\Request\Http $request,

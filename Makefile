@@ -5,4 +5,4 @@ build:
 deploy:
 	./scripts/deploy.sh
 update_plugin:
-	kubectl exec -it $(WEB_POD) -- source /update_plugin.sh
+	kubectl exec -it $(WEB_POD) -- su -c "/update_plugin.sh" magento
