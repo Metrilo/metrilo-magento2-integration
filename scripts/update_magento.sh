@@ -4,7 +4,7 @@ set -e
 
 cd /magento2
 
-RUN composer require magento/product-community-edition 2.1.7 --no-update
+composer require magento/product-community-edition 2.1.7 --no-update
 composer update
 
 bin/magento setup:upgrade

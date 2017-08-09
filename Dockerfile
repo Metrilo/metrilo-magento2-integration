@@ -15,7 +15,6 @@ USER mysql
 VOLUME ["/var/lib/mysql"]
 
 USER magento
-
 VOLUME ["/magento2/pub"]
 VOLUME ["/magento2/var"]
 
