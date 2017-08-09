@@ -3,7 +3,7 @@ pipeline {
 
   stages {
     stage("Release") {
-      when { branch 'master' }
+      when { branch 'MET-1688/magento2-deployment-volumes-are-overwritten-during-deploy' }
       steps {
         script { releaseVersion = buildReleaseVersion() }
         echo "The released version will be ${releaseVersion}"
@@ -18,7 +18,7 @@ pipeline {
     }
 
     stage("Deploy") {
-      when { branch 'master' }
+      when { branch 'MET-1688/magento2-deployment-volumes-are-overwritten-during-deploy' }
       steps {
         echo "The deployed version will be ${releaseVersion}"
         sh "RELEASE_VERSION=${releaseVersion} make deploy"

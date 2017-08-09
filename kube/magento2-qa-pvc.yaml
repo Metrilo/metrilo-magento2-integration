@@ -1,3 +1,4 @@
+# Those could be used with different image.
 ---
 kind: PersistentVolumeClaim
 apiVersion: v1
