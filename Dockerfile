@@ -37,10 +37,3 @@ RUN chmod +x bin/magento
 
 RUN composer require metrilo/analytics-magento2-extension:master@dev --no-update
 RUN composer update
-
-RUN bin/magento setup:upgrade
-RUN bin/magento setup:static-content:deploy
-RUN bin/magento indexer:reindex
-RUN bin/magento cache:flush
-
-RUN source /update_plugin.sh
