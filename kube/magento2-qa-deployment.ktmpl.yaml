@@ -27,11 +27,11 @@ objects:
             image: metrilo.azurecr.io/metrilo/magento2-plugin:$(RELEASE_VERSION)
             volumeMounts:
               - name: magento2-qa-mysql-pvc
-                mountPath: /tmp/mysql
+                mountPath: /var/lib/mysql
               - name: magento2-qa-mage-pub-pvc
-                mountPath: /tmp/pub
+                mountPath: /magento2/pub
               - name: magento2-qa-mage-var-pvc
-                mountPath: /tmp/var
+                mountPath: /magento2/var
           volumes:
             - name: magento2-qa-mysql-pvc
               persistentVolumeClaim:
