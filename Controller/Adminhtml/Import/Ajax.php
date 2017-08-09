@@ -16,6 +16,7 @@ class Ajax extends \Magento\Backend\App\Action
      * @param \Magento\Framework\App\Request\Http              $request
      * @param \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory
      */
+     # TODO: Ask Miro why \Magento\Framework|App\Action|Context won't compile
     public function __construct(
         \Magento\Backend\App\Action\Context $context,
         \Metrilo\Analytics\Helper\Data $helper,
