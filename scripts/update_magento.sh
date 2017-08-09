@@ -4,7 +4,7 @@ set -e
 
 cd /magento2
 
-composer require metrilo/analytics-magento2-extension:master@dev --no-update
+composer require magento/product-community-edition 2.1.7 --no-update
 composer update
 
 bin/magento setup:upgrade
