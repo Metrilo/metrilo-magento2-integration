@@ -8,5 +8,6 @@ composer require metrilo/analytics-magento2-extension:master@dev --no-update
 composer update
 
 bin/magento setup:upgrade
-bin/magento indexer:reindex
+bin/magento setup:static-content:deploy
+bin/magento cache:clean
 bin/magento cache:flush
