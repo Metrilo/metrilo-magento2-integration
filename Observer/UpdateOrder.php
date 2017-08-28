@@ -8,6 +8,8 @@ use Magento\Framework\Event\ObserverInterface;
 class UpdateOrder implements ObserverInterface
 {
 
+    private $_helper;
+
     /**
      * @param \Metrilo\Analytics\Helper\Data $helper
      */

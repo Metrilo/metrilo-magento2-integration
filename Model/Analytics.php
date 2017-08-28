@@ -16,6 +16,10 @@ class Analytics extends DataObject
      * @var array
      */
     protected $events = [];
+    /**
+     * @var \Magento\Catalog\Helper\ImageFactory
+     */
+    private $imageHelperFactory;
 
     /**
      * @param \Magento\Framework\App\Action\Context              $context
@@ -27,15 +31,18 @@ class Analytics extends DataObject
         \Magento\Framework\App\Action\Context $context,
         \Magento\Framework\Registry $registry,
         \Magento\Search\Helper\Data $searchHelper,
-        \Magento\Framework\View\Page\Title $pageTitle
+        \Magento\Framework\View\Page\Title $pageTitle,
+        \Magento\Catalog\Helper\ImageFactory $imageHelperFactory
     ) {
         $this->_context = $context;
         $this->_coreRegistry = $registry;
         $this->_searchHelper = $searchHelper;
         $this->_pageTitle = $pageTitle;
         $this->fullActionName = $this->_context->getRequest()->getFullActionName();
+        $this->imageHelperFactory = $imageHelperFactory;
 
         $this->addPageEvents();
+
     }
 
     /**
@@ -74,6 +81,7 @@ class Analytics extends DataObject
 
         // product view pages
         if ($this->fullActionName == 'catalog_product_view') {
+            /** @var \Magento\Catalog\Model\Product $product */
             $product = $this->_coreRegistry->registry('current_product');
             $data =  [
                 'id'    => $product->getId(),
@@ -82,11 +90,19 @@ class Analytics extends DataObject
                 'url'   => $product->getProductUrl()
             ];
             // Additional information ( image and categories )
-            /*if($product->getImage())
-                $data['image_url'] = (string)Mage::helper('catalog/image')->init($product, 'image');
+            if($product->getImage()) {
+
+                $imageUrl = $this->imageHelperFactory->create()
+                    ->init($product, 'product_thumbnail_image')->getUrl();
+                $data['image_url'] = $imageUrl;
+            }
+
             if(count($product->getCategoryIds())) {
                 $categories = array();
-                $collection = $product->getCategoryCollection()->addAttributeToSelect('*');
+                $collection = $product->getCategoryCollection()
+                    ->addAttributeToSelect('id')
+                    ->addAttributeToSelect('name');
+
                 foreach ($collection as $category) {
                     $categories[] = array(
                         'id' => $category->getId(),
@@ -94,7 +110,8 @@ class Analytics extends DataObject
                     );
                 }
                 $data['categories'] = $categories;
-            }*/
+            }
+            
             $this->addEvent('track', 'view_product', $data);
             return;
         }
