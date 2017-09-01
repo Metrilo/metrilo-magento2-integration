@@ -224,7 +224,14 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             's'   => $signature,
             'hs'  => $basedCall
         ];
+
+        $this->logger->debug("===== Metrilo order update =====");
+        $this->logger->debug($this->jsonHelper->jsonEncode($call));
+        $this->logger->debug($signature);
+
         $this->asyncHelper->post('http://p.metrilo.com/bt', $requestBody, $async);
+
+        $this->logger->debug("===== Metrilo order update [end] =====");
     }
 
     /**
