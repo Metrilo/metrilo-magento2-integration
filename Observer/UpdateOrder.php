@@ -28,6 +28,6 @@ class UpdateOrder implements ObserverInterface
     public function execute(Observer $observer)
     {
         $order = $observer->getEvent()->getOrder();
-        $this->_helper->callBatchApi($order->getStoreId(), [$order]);
+        $this->_helper->callBatchApi($order->getStoreId(), [$order], false);
     }
 }
