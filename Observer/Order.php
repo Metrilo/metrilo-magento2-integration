@@ -41,6 +41,7 @@ class Order implements ObserverInterface
             $this->_orderCollection->addFieldToFilter('entity_id', ['in' => $orderIds]);
         }
         if (count($this->_orderCollection)) {
+            /** @var \Magento\Sales\Model\Order $order */
             foreach ($this->_orderCollection as $order) {
                 $data = $this->_helper->prepareOrderDetails($order);
                 if ($order->getCustomerIsGuest()) {
@@ -48,9 +49,9 @@ class Order implements ObserverInterface
                         'id' => $order->getCustomerEmail(),
                         'params' => array(
                             'email'         => $order->getCustomerEmail(),
-                            'name'          => $order->getCustomerFirstname(). ' '. $order->getCustomerLastname(),
-                            'first_name'    => $order->getCustomerFirstname(),
-                            'last_name'     => $order->getCustomerLastname(),
+                            'first_name'    => $order->getBillingAddress()->getFirstname(),
+                            'last_name'     => $order->getBillingAddress()->getLastname(),
+                            'name'          => $order->getBillingAddress()->getName()
                         )
                     );
                     $this->_helper->addSessionEvent('identify', 'identify', $identify);
