@@ -32,6 +32,24 @@ class Async extends \Magento\Framework\App\Helper\AbstractHelper
         }
     }
 
+    private function _curlPost($url, $body)
+    {
+        $ch = curl_init();
+
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $body);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json', 'Content-Length: ' . strlen($body)]);
+
+        $server_output = curl_exec ($ch);
+
+        $this->_logger->debug($server_output);
+
+        curl_close($ch);
+
+    }
+
     /**
     * Create HTTP POSTasync request to URL
     *
@@ -42,25 +60,10 @@ class Async extends \Magento\Framework\App\Helper\AbstractHelper
     */
     public function post($url, $bodyArray = false, $async = true)
     {
-        $parsedUrl = parse_url($url);
+
         $encodedBody = $bodyArray ? json_encode($bodyArray) : '';
-        $raw = $this->_buildRawPost($parsedUrl['host'], $parsedUrl['path'], $encodedBody);
-        $fp = fsockopen(
-            $parsedUrl['host'],
-            isset($parsedUrl['port']) ? $parsedUrl['port'] : 80,
-            $errno,
-            $errstr,
-            30
-        );
-        if ($fp) {
-            fwrite($fp, $raw);
 
-            if(!$async) {
-                $this->_waitForResponse($fp);
-            }
-
-            fclose($fp);
-        }
+        $this->_curlPost($url, $encodedBody);
     }
 
     /**
