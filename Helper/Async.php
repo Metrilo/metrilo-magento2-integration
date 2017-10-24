@@ -37,32 +37,51 @@ class Async extends \Magento\Framework\App\Helper\AbstractHelper
     *
     * @param String $url
     * @param Array $bodyArray
-     * @param $async
+    * @param $async
     * @return void
     */
     public function post($url, $bodyArray = false, $async = true)
     {
-        $parsedUrl = parse_url($url);
-        $encodedBody = $bodyArray ? json_encode($bodyArray) : '';
-        $raw = $this->_buildRawPost($parsedUrl['host'], $parsedUrl['path'], $encodedBody);
-        $fp = fsockopen(
-            $parsedUrl['host'],
-            isset($parsedUrl['port']) ? $parsedUrl['port'] : 80,
-            $errno,
-            $errstr,
-            30
-        );
-        if ($fp) {
-            fwrite($fp, $raw);
-
-            if(!$async) {
-                $this->_waitForResponse($fp);
-            }
-
-            fclose($fp);
-        }
+		$encodedBody = $bodyArray ? json_encode($bodyArray) : '';
+		$parsedUrl = parse_url($url);
+		$headers = [
+		    'Content-Type: application/json',
+		    'Accept: */*',
+		    'User-Agent: AsyncHttpClient/1.0.0',
+		    'Connection: Close',
+		    'Host: '.$parsedUrl['host']
+		];
+		$this->curlCall($url, $headers, $encodedBody);
     }
+	
+	
+    /**
+    * CURL call
+    *
+    * @param string $url
+    * @param array $headers
+	* @param string $body
+    * @param string $method
+    * @return void
+    */
+	public function curlCall($url, $headers = [], $body = '', $method = "POST")
+	{
+        $curl = curl_init();
+        curl_setopt($curl, CURLOPT_URL, $url);
+        curl_setopt($curl, CURLOPT_COOKIESESSION, true);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLOPT_CONNECTTIMEOUT_MS, 2000);
+        curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($curl, CURLOPT_ENCODING, 'gzip');
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
+        curl_setopt($curl, CURLOPT_POSTFIELDS, $body);
+        $return = curl_exec($curl);
+		// todo : log curl $return
+        curl_close($curl);
+	}
 
+  
     /**
      * Build headers as string for GET requests
      *
