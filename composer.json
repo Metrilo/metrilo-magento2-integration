@@ -2,8 +2,7 @@
   "name": "metrilo/analytics-magento2-extension",
   "description": "Metrilo Analytics module for magento 2",
   "require": {
-    "php": "~5.5.0|~5.6.0|~7.0.0",
-    "magento/magento-composer-installer": "*"
+    "php": "~5.5.0|~5.6.0|~7.0.0|~7.1.0"
   },
   "type": "magento2-module",
   "version": "1.0.0",
@@ -13,10 +12,10 @@
   ],
   "autoload": {
     "files": [
-        "registration.php"
+      "registration.php"
     ],
     "psr-4": {
-        "Metrilo\\Analytics\\": ""
+      "Metrilo\\Analytics\\": ""
     }
   }
 }
