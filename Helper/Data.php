@@ -55,7 +55,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function isEnabled()
     {
         return $this->config->getValue(
-            'analytics/general/enable',
+            'metrilo_analytics/general/enable',
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE
         );
     }
@@ -68,7 +68,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function getApiToken()
     {
         return $this->config->getValue(
-            'analytics/general/api_key',
+            'metrilo_analytics/general/api_key',
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE
         );
     }
@@ -81,7 +81,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function getApiSecret()
     {
         return $this->config->getValue(
-            'analytics/general/api_secret',
+            'metrilo_analytics/general/api_secret',
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE
         );
     }

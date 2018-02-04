@@ -12,7 +12,7 @@
         <tab id="metrilo" translate="label" sortOrder="300">
             <label>Metrilo</label>
         </tab>
-        <section id="analytics" translate="label" type="text" sortOrder="140" showInDefault="1" showInWebsite="1" showInStore="1">
+        <section id="metrilo_analytics" translate="label" type="text" sortOrder="140" showInDefault="1" showInWebsite="1" showInStore="1">
             <label>Analytics</label>
             <tab>metrilo</tab>
             <!-- resource tag name which we have to defined in the acl.xml -->
