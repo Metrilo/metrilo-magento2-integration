@@ -15,6 +15,11 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     const MODULE_NAME = 'Metrilo_Analytics';
 
     /**
+     * @var \Magento\Catalog\Helper\ImageFactory
+     */
+    private $imageHelperFactory;
+
+    /**
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $config
      * @param \Magento\Customer\Model\Session                    $session
      * @param \Psr\Log\LoggerInterface                           $logger
@@ -34,7 +39,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         Async $asyncHelper,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Magento\Framework\App\ProductMetadata $metaData,
-        \Magento\Framework\Module\ModuleListInterface $moduleList
+        \Magento\Framework\Module\ModuleListInterface $moduleList,
+        \Magento\Catalog\Helper\ImageFactory $imageHelperFactory
     ) {
         $this->config = $config;
         $this->session = $session;
@@ -45,6 +51,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $this->storeManager = $storeManager;
         $this->metaData = $metaData;
         $this->moduleList = $moduleList;
+        $this->imageHelperFactory = $imageHelperFactory;
     }
 
     /**
@@ -179,6 +186,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                 'url'       => $item->getProduct()->getProductUrl(),
                 'quantity'  => (int)$item->getQtyOrdered()
             );
+
+            $mainProduct = $item->getProduct();
+
             if ($item->getProductType() == 'configurable') {
                 $parentId = $item->getProductId();
                 $mainProduct = $this->productRepository->getById($parentId);
@@ -187,6 +197,13 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                 $dataItem['option_name'] = $options['simple_name'];
                 $dataItem['option_price'] = (float)$item->getPrice();
             }
+
+            if($mainProduct->getImage()) {
+                $imageUrl = $this->imageHelperFactory->create()
+                    ->init($mainProduct, 'product_thumbnail_image')->getUrl();
+                $dataItem['image_url'] = $imageUrl;
+            }
+
             $data['items'][] = $dataItem;
         }
         return $data;
