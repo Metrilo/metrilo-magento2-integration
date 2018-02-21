@@ -37,10 +37,9 @@ class Async extends \Magento\Framework\App\Helper\AbstractHelper
     *
     * @param String $url
     * @param Array $bodyArray
-    * @param $async
     * @return void
     */
-    public function post($url, $bodyArray = false, $async = true)
+    public function post($url, $bodyArray = false)
     {
 		$encodedBody = $bodyArray ? json_encode($bodyArray) : '';
 		$parsedUrl = parse_url($url);
@@ -53,8 +52,8 @@ class Async extends \Magento\Framework\App\Helper\AbstractHelper
 		];
 		$this->curlCall($url, $headers, $encodedBody);
     }
-	
-	
+
+
     /**
     * CURL call
     *
@@ -81,7 +80,7 @@ class Async extends \Magento\Framework\App\Helper\AbstractHelper
         curl_close($curl);
 	}
 
-  
+
     /**
      * Build headers as string for GET requests
      *
