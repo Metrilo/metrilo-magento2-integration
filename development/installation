@@ -1,0 +1,20 @@
+install-magento
+install-sampledata
+
+su www-data
+
+composer config repositories.local path /plugin
+composer config repo.magento false
+composer require "metrilo/analytics-magento2-extension"
+
+bin/magento config:set admin/security/session_lifetime 90000
+bin/magento config:set dev/template/allow_symlink 1
+
+# Needed to enable template symlinks for Magento 2.1
+composer config repositories.metrilo vcs git@github.com:metrilo/magento2-templatesymlinks.git
+composer require "fishpig/module-templatesymlinks @dev"
+#
+
+bin/magento setup:upgrade
+bin/magento cache:clean
+bin/magento cache:flush

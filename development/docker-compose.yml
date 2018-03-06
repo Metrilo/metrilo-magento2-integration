@@ -1,0 +1,18 @@
+version: '3.0'
+services:
+  web:
+    image: alexcheng/magento2:2.2.1
+    container_name: magento2
+    ports:
+      - "80:80"
+    links:
+      - db
+    env_file:
+      - env
+    volumes:
+      - ../:/plugin
+  db:
+    image: mysql:5.6.23
+    container_name: mysql-magento2
+    env_file:
+      - env
