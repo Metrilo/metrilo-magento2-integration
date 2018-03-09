@@ -37,7 +37,7 @@
                 </field>
                 <field id="api_key" sortOrder="20" type="text" translate="label" showInDefault="1" showInWebsite="1" showInStore="1">
                     <depends><field id="enable">1</field></depends>
-                    <label>API Token 111</label>
+                    <label>API Token</label>
                     <backend_model>Metrilo\Analytics\Model\Trimmed</backend_model>
                 </field>
                 <field id="api_secret" sortOrder="30" type="text" translate="label" showInDefault="1" showInWebsite="1" showInStore="1">
