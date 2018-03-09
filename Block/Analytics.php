@@ -16,7 +16,7 @@ class Analytics extends Template
     /**
      * @var \Metrilo\Analytics\Helper\Data
      */
-    protected $helper;
+    public $helper;
 
     /**
      * @param Context                            $context

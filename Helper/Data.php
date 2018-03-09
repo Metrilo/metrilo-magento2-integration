@@ -14,6 +14,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
     const MODULE_NAME = 'Metrilo_Analytics';
 
+    public $js_domain = 't.metrilo.com';
+    private $push_domain = 'http://p.metrilo.com';
+
     /**
      * @var \Magento\Catalog\Helper\ImageFactory
      */
@@ -239,7 +242,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             's'   => $signature,
             'hs'  => $basedCall
         ];
-        $this->asyncHelper->post('http://p.metrilo.com/bt', $requestBody);
+        $this->asyncHelper->post($this->push_domain . '/bt', $requestBody);
     }
 
     /**
@@ -394,5 +397,23 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function getStoreId()
     {
         return $this->storeManager->getStore()->getId();
+    }
+
+    public function checkCredentials()
+    {
+        $type = 'integrated';
+        $key = $this->getApiToken();
+        $secret = $this->getApiSecret();
+
+        $data = array(
+            'type' => $type,
+            'signature' => md5($key . $type . $secret)
+        );
+
+        $url = $this->push_domain.'/tracking/' . $key . '/activity';
+
+        $responseCode = $this->asyncHelper->post($url, $data)['code'];
+
+        return $responseCode == 200;
     }
 }

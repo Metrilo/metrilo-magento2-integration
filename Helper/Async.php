@@ -50,7 +50,7 @@ class Async extends \Magento\Framework\App\Helper\AbstractHelper
 		    'Connection: Close',
 		    'Host: '.$parsedUrl['host']
 		];
-		$this->curlCall($url, $headers, $encodedBody);
+		return $this->curlCall($url, $headers, $encodedBody);
     }
 
 
@@ -75,9 +75,16 @@ class Async extends \Magento\Framework\App\Helper\AbstractHelper
         curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
         curl_setopt($curl, CURLOPT_POSTFIELDS, $body);
-        $return = curl_exec($curl);
-		// todo : log curl $return
+
+        $response = curl_exec($curl);
+        $code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+
         curl_close($curl);
+
+        return array(
+            'response' => $response,
+            'code' => $code
+        );
 	}
 
 
