@@ -36,10 +36,14 @@
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
                 <field id="api_key" sortOrder="20" type="text" translate="label" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>API Token</label>
+                    <depends><field id="enable">1</field></depends>
+                    <label>API Token 111</label>
+                    <backend_model>Metrilo\Analytics\Model\Trimmed</backend_model>
                 </field>
                 <field id="api_secret" sortOrder="30" type="text" translate="label" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <depends><field id="enable">1</field></depends>
                     <label>API Secret</label>
+                    <backend_model>Metrilo\Analytics\Model\Trimmed</backend_model>
                 </field>
                 <field id="import" sortOrder="40" type="button" translate="label" showInDefault="0" showInWebsite="0" showInStore="1">
                     <label>Import orders</label>
