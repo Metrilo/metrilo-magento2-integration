@@ -20,7 +20,7 @@ class Config implements ObserverInterface
 
     public function execute(Observer $observer)
     {
-        if (!$this->_helper->checkCredentials()) {
+        if (!$this->_helper->createActivity('integrated')) {
             $this->messageManager->addError('The API Token and/or API Secret you have entered are invalid. You can find the correct ones in Settings -> Installation in your Metrilo account.');
         }
     }

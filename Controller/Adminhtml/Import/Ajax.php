@@ -43,13 +43,24 @@ class Ajax extends \Magento\Backend\App\Action
             $jsonFactory = $this->resultJsonFactory->create();
             $result = ['success' => false];
 
-            $storeId = (int)$this->request->getParam('store_id');
-            $chunkId = (int)$this->request->getParam('chunk_id');
+            $storeId = (int)$this->request->getParam('storeId');
+            $chunkId = (int)$this->request->getParam('chunkId');
+            $totalChunks = (int)$this->request->getParam('totalChunks');
+
+            if ($chunkId == 0) {
+                $this->helper->createActivity('import_start');
+            }
+
             // Get orders from the Database
             $orders = $this->import->getOrders($storeId, $chunkId);
             // Send orders via API helper method
             $this->helper->callBatchApi($storeId, $orders, false);
             $result['success'] = true;
+
+            if ($chunkId == $totalChunks - 1) {
+                $this->helper->createActivity('import_end');
+            }
+
             return $jsonFactory->setData($result);
         } catch (\Exception $e) {
             return $jsonFactory->setData([

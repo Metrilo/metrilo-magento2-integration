@@ -399,9 +399,15 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         return $this->storeManager->getStore()->getId();
     }
 
-    public function checkCredentials()
+    /**
+     * Creates project activity
+     *
+     * @param string $type The type of the activity to create
+     *
+     * @return boolean Indicates if the creation was successful
+     */
+    public function createActivity($type)
     {
-        $type = 'integrated';
         $key = $this->getApiToken();
         $secret = $this->getApiSecret();
 
