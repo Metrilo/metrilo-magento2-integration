@@ -63,8 +63,9 @@ define([
                 self.updateImportingMessage($t('Please wait... ' + progress + '% done'), true);
 
                 var data = {
-                    'store_id': self.options.storeId,
-                    'chunk_id': chunkId,
+                    'storeId': self.options.storeId,
+                    'chunkId': chunkId,
+                    'totalChunks': self.options.totalChunks,
                     'form_key': window.FORM_KEY
                 };
                 $.post(self.options.submitUrl, data, function(response) {
