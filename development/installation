@@ -1,7 +1,7 @@
 install-magento
 install-sampledata
 
-su www-data
+su www-data <<EOSU
 
 composer config repositories.local path /plugin
 composer config repo.magento false
@@ -14,7 +14,9 @@ bin/magento config:set dev/template/allow_symlink 1
 composer config repositories.metrilo vcs git@github.com:metrilo/magento2-templatesymlinks.git
 composer require "fishpig/module-templatesymlinks @dev"
 #
+EOSU
 
 bin/magento setup:upgrade
+bin/magento setup:di:compile
 bin/magento cache:clean
 bin/magento cache:flush
