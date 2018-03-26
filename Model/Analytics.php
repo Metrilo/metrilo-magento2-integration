@@ -85,6 +85,7 @@ class Analytics extends DataObject
             $product = $this->_coreRegistry->registry('current_product');
             $data =  [
                 'id'    => $product->getId(),
+                'sku'   => $product->getSku(),
                 'name'  => $product->getName(),
                 'price' => $product->getFinalPrice(),
                 'url'   => $product->getProductUrl()
@@ -111,7 +112,7 @@ class Analytics extends DataObject
                 }
                 $data['categories'] = $categories;
             }
-            
+
             $this->addEvent('track', 'view_product', $data);
             return;
         }
