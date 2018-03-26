@@ -184,6 +184,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             $skusAdded[] = $item->getSku();
             $dataItem = array(
                 'id'        => (int)$item->getProductId(),
+                'sku'       => $item->getSku(),
                 'price'     => (float)$item->getPrice() ? $item->getPrice() : $item->getProduct()->getFinalPrice(),
                 'name'      => $item->getName(),
                 'url'       => $item->getProduct()->getProductUrl(),
@@ -197,6 +198,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                 $mainProduct = $this->productRepository->getById($parentId);
                 $options = (array)$item->getProductOptions();
                 $dataItem['option_id'] = $options['simple_sku'];
+                // for legacy reasons - we have been passing the SKU as ID for the child products
+                $dataItem['option_sku'] = $options['simple_sku'];
                 $dataItem['option_name'] = $options['simple_name'];
                 $dataItem['option_price'] = (float)$item->getPrice();
             }

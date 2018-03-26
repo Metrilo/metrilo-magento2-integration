@@ -33,23 +33,21 @@ class AddToCart implements ObserverInterface
     public function execute(Observer $observer)
     {
         try {
-            $item = $observer->getEvent()->getQuoteItem();
-            $cartProduct = $observer->getEvent()->getProduct();
-            $product = $item->getProduct();
+            $quantity = $observer->getEvent()->getQuoteItem()->getQty();
+            $mainProduct = $observer->getEvent()->getProduct();
 
-            if ($cartProduct->getTypeId() == 'grouped') {
+            if ($mainProduct->getTypeId() == 'grouped') {
                 $options = $this->request->getParam('super_group');
                 if (is_array($options)) {
                     foreach ($options as $productId => $qty) {
-                        if ($qty) { // check for grouped products
-                            $this->addToCart((int) $productId, $cartProduct, (int) $qty);
+                        if ($qty) {
+                            $product = $this->productRepository->getById($productId);
+                            $this->addToCart($product, (int) $qty);
                         }
                     }
                 }
-            } elseif ($cartProduct->getTypeId() == 'configurable') {
-                $this->addToCart($product->getId(), $cartProduct, $item->getQty());
             } else {
-                $this->addToCart($cartProduct->getId(), $cartProduct, $item->getQty());
+                $this->addToCart($mainProduct, $quantity);
             }
         } catch (\Exception $e) {
             $this->helper->logError($e);
@@ -59,30 +57,31 @@ class AddToCart implements ObserverInterface
     /**
      * Track product to Metrilo
      *
-     * @param int $productId
-     * @param \Magento\Catalog\Model\Product $item
+     * @param \Magento\Catalog\Model\Product $product
      * @param int $qty
      */
-    private function addToCart($productId, $item, $qty)
+    private function addToCart($product, $quantity)
     {
-        $product = $this->productRepository->getById($productId);
-        $data = [
-            'id' => (int)$product->getId(),
-            'price' => (float)$product->getFinalPrice(),
-            'name' => $product->getName(),
-            'url' => $product->getProductUrl(),
-            'quantity' => $qty
-        ];
-        // Add options for grouped or configurable products
-        if ($item->getTypeId() == 'grouped' || $item->getTypeId() == 'configurable') {
-            $data['id']     = $item->getId();
-            $data['name']   = $item->getName();
-            $data['url']    = $item->getProductUrl();
-            // Options
-            $data['option_id'] = $product->getSku();
-            $data['option_name'] = trim(str_replace("-", " ", $product->getName()));
-            $data['option_price'] = (float)$product->getFinalPrice();
+        $data = ['quantity' => $quantity];
+
+        $childProduct = $this->productRepository->get($product->getSku());
+
+        // if configurable
+        if ($product->getId() != $childProduct->getId()) {
+            $product = $this->productRepository->getById($product->getId());
+            // for legacy reasons - we have been passing the SKU as ID for the child products
+            $data['option_id'] = $childProduct->getSku();
+            $data['option_sku'] = $childProduct->getSku();
+            $data['option_name'] = $childProduct->getName();
+            $data['option_price'] = (float)$childProduct->getFinalPrice();
         }
+
+        $data['id'] = (string)$product->getId();
+        $data['sku'] = $product->getSku();
+        $data['name'] = $product->getName();
+        $data['price'] = (float)$product->getFinalPrice();
+        $data['url'] = $product->getProductUrl();
+
         $this->helper->addSessionEvent('track', 'add_to_cart', $data);
     }
 }
