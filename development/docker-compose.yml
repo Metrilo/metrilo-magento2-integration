@@ -10,9 +10,16 @@ services:
     env_file:
       - env
     volumes:
+      - magento2:/var/www
       - ../:/plugin
   db:
     image: mysql:5.6.23
     container_name: mysql-magento2
     env_file:
       - env
+    volumes:
+      - mysql2:/var/lib/mysql/data
+
+volumes:
+  magento2:
+  mysql2:
