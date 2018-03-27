@@ -184,7 +184,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             $skusAdded[] = $item->getSku();
             $dataItem = array(
                 'id'        => (int)$item->getProductId(),
-                'sku'       => $item->getSku(),
                 'price'     => (float)$item->getPrice() ? $item->getPrice() : $item->getProduct()->getFinalPrice(),
                 'name'      => $item->getName(),
                 'url'       => $item->getProduct()->getProductUrl(),
@@ -210,6 +209,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                 $dataItem['image_url'] = $imageUrl;
             }
 
+            $dataItem['sku'] = $mainProduct->getSku();
             $data['items'][] = $dataItem;
         }
         return $data;
