@@ -1,4 +1,4 @@
-version: '3.0'
+version: '3.4'
 services:
   web:
     image: alexcheng/magento2:2.2.1
@@ -22,4 +22,6 @@ services:
 
 volumes:
   magento2:
+    name: magento2
   mysql2:
+    name: mysql-magento2
