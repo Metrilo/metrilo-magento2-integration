@@ -7,6 +7,10 @@ composer config repositories.local path /plugin
 composer config repo.magento false
 composer require "metrilo/analytics-magento2-extension"
 
+bin/magento config:set metrilo_analytics/general/enable 1
+bin/magento config:set metrilo_analytics/general/api_key 1111111111111111
+bin/magento config:set metrilo_analytics/general/api_secret 222222222222222222222222
+
 bin/magento config:set admin/security/session_lifetime 90000
 bin/magento config:set dev/template/allow_symlink 1
 
