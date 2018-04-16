@@ -53,7 +53,6 @@ class OrderSerializer extends \Magento\Framework\App\Helper\AbstractHelper
     {
         $data = [
             'order_id'          => $order->getIncrementId(),
-            'quote_id'           => $order->getQuoteId(),
             'order_status'      => $order->getStatus(),
             'amount'            => (float)$order->getGrandTotal(),
             'shipping_amount'   => (float)$order->getShippingAmount(),
@@ -174,7 +173,7 @@ class OrderSerializer extends \Magento\Framework\App\Helper\AbstractHelper
         if ($identityData) {
             $call['identity'] = $identityData;
         }
-        // Prepare keys is alphabetical order
+        // Prepare keys in alphabetical order
         ksort($call);
         return $call;
     }

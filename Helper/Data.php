@@ -21,7 +21,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @param \Magento\Customer\Model\Session                    $session
      * @param \Psr\Log\LoggerInterface                           $logger
      * @param \Magento\Framework\Json\Helper\Data                $jsonHelper
-     * @param Async                                              $asyncHelper
+     * @param Client                                             $clientHelper
      * @param OrderSerializer                                    $orderSerializer
      * @param \Magento\Store\Model\StoreManagerInterface         $storeManager
      * @param \Magento\Framework\App\ProductMetadata             $metaData
@@ -32,7 +32,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         \Magento\Customer\Model\Session $session,
         \Psr\Log\LoggerInterface $logger,
         \Magento\Framework\Json\Helper\Data $jsonHelper,
-        \Metrilo\Analytics\Helper\Async $asyncHelper,
+        \Metrilo\Analytics\Helper\Client $clientHelper,
         \Metrilo\Analytics\Helper\OrderSerializer $orderSerializer,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Magento\Framework\App\ProductMetadata $metaData,
@@ -42,7 +42,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $this->session = $session;
         $this->logger = $logger;
         $this->jsonHelper = $jsonHelper;
-        $this->asyncHelper = $asyncHelper;
+        $this->clientHelper = $clientHelper;
         $this->orderSerializer = $orderSerializer;
         $this->storeManager = $storeManager;
         $this->metaData = $metaData;
@@ -141,7 +141,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * API call to Metrilo to submit information asynchronously
+     * API call to Metrilo to submit information
      *
      * @param  int $storeId
      * @param  array $orders
@@ -205,7 +205,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             's'   => $signature,
             'hs'  => $basedCall
         ];
-        $this->asyncHelper->post($this->push_domain . '/bt', $requestBody);
+        $this->clientHelper->post($this->push_domain . '/bt', $requestBody);
     }
 
     /**
@@ -227,7 +227,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
         $url = $this->push_domain.'/tracking/' . $key . '/activity';
 
-        $responseCode = $this->asyncHelper->post($url, $data)['code'];
+        $responseCode = $this->clientHelper->post($url, $data)['code'];
 
         return $responseCode == 200;
     }
