@@ -5,8 +5,10 @@ namespace Metrilo\Analytics\Helper;
 class OrderSerializer extends \Magento\Framework\App\Helper\AbstractHelper
 {
     public function __construct(
+        \Magento\Catalog\Model\ProductRepository $productRepository,
         \Magento\Catalog\Helper\ImageFactory $imageHelperFactory
     ) {
+        $this->productRepository = $productRepository;
         $this->imageHelperFactory = $imageHelperFactory;
     }
 
