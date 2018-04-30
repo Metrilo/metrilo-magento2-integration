@@ -86,7 +86,7 @@ class Import extends \Magento\Config\Block\System\Config\Form\Field
      */
     public function buttonEnabled()
     {
-        $storeId = $this->helper->getStoreId();
+        $storeId = $this->import->getStoreId();
          return $this->helper->isEnabled($storeId)
              && $this->helper->getApiToken($storeId)
              && $this->helper->getApiSecret($storeId);

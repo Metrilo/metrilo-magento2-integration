@@ -66,11 +66,12 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      *
      * @return boolean
      */
-    public function isEnabled()
+    public function isEnabled($storeId)
     {
         return $this->config->getValue(
             'metrilo_analytics/general/enable',
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+            $storeId
         );
     }
 
@@ -79,11 +80,12 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      *
      * @return string
      */
-    public function getApiToken()
+    public function getApiToken($storeId)
     {
         return $this->config->getValue(
             'metrilo_analytics/general/api_key',
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+            $storeId
         );
     }
 
@@ -92,11 +94,12 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      *
      * @return string
      */
-    public function getApiSecret()
+    public function getApiSecret($storeId)
     {
         return $this->config->getValue(
             'metrilo_analytics/general/api_secret',
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+            $storeId
         );
     }
 
@@ -208,6 +211,15 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $this->clientHelper->post($this->push_domain . '/bt', $requestBody);
     }
 
+    public function log($value)
+    {
+        $writer = new \Zend\Log\Writer\Stream(BP . '/var/log/metrilo.log');
+        $logger = new \Zend\Log\Logger();
+        $logger->addWriter($writer);
+
+        $logger->err($value);
+    }
+
     /**
      * Creates project activity
      *
@@ -215,10 +227,10 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      *
      * @return boolean Indicates if the creation was successful
      */
-    public function createActivity($type)
+    public function createActivity($storeId, $type)
     {
-        $key = $this->getApiToken();
-        $secret = $this->getApiSecret();
+        $key = $this->getApiToken($storeId);
+        $secret = $this->getApiSecret($storeId);
 
         $data = array(
             'type' => $type,
@@ -241,9 +253,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function logError($exception)
     {
         if ($exception instanceof \Exception) {
-            $this->logger->critical($exception->getMessage());
+            $this->log($exception->getMessage());
         } else {
-            $this->logger->critical($exception);
+            $this->log($exception);
         }
     }
 }

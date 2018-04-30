@@ -16,15 +16,12 @@ class Import
     private $totalChunks = 0;
     private $chunkItems  = 15;
 
-    /**
-     * @param \Metrilo\Analytics\Helper\Data $helper
-     */
     public function __construct(
-        \Metrilo\Analytics\Helper\Data $helper,
-        \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $orderCollection
+        \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $orderCollection,
+        \Metrilo\Analytics\Helper\AdminStoreResolver $resolver
     ) {
-        $this->helper = $helper;
         $this->orderCollection = $orderCollection;
+        $this->resolver = $resolver;
     }
 
     /**
@@ -66,7 +63,7 @@ class Import
      */
     public function getStoreId()
     {
-        return $this->helper->getStoreId();
+        return (int) $this->resolver->getAdminStoreId();
     }
 
     /**
