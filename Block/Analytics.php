@@ -45,7 +45,7 @@ class Analytics extends Template
      */
     public function getApiToken()
     {
-        return $this->helper->getApiToken();
+        return $this->helper->getApiToken($this->helper->getStoreId());
     }
 
     /**
@@ -69,7 +69,7 @@ class Analytics extends Template
      */
     protected function _toHtml()
     {
-        if (!$this->helper->isEnabled()) {
+        if (!$this->helper->isEnabled($this->helper->getStoreId())) {
             return '';
         }
         return parent::_toHtml();

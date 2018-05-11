@@ -48,7 +48,7 @@ class Ajax extends \Magento\Backend\App\Action
             $totalChunks = (int)$this->request->getParam('totalChunks');
 
             if ($chunkId == 0) {
-                $this->helper->createActivity('import_start');
+                $this->helper->createActivity($storeId, 'import_start');
             }
 
             // Get orders from the Database
@@ -58,7 +58,7 @@ class Ajax extends \Magento\Backend\App\Action
             $result['success'] = true;
 
             if ($chunkId == $totalChunks - 1) {
-                $this->helper->createActivity('import_end');
+                $this->helper->createActivity($storeId, 'import_end');
             }
 
             return $jsonFactory->setData($result);
