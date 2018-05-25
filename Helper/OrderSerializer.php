@@ -70,42 +70,52 @@ class OrderSerializer extends \Magento\Framework\App\Helper\AbstractHelper
             $data['coupons'] = array($order->getCouponCode());
         }
         $skusAdded = array();
-        foreach ($order->getAllItems() as $item) {
-            if (in_array($item->getSku(), $skusAdded)) {
-                continue;
-            }
-            $skusAdded[] = $item->getSku();
-            $dataItem = array(
-                'id'        => (int)$item->getProductId(),
-                'price'     => (float)$item->getPrice() ? $item->getPrice() : $item->getProduct()->getFinalPrice(),
-                'name'      => $item->getName(),
-                'url'       => $item->getProduct()->getProductUrl(),
-                'quantity'  => (int)$item->getQtyOrdered()
-            );
-
-            $mainProduct = $item->getProduct();
-
-            if ($item->getProductType() == 'configurable') {
-                $parentId = $item->getProductId();
-                $mainProduct = $this->productRepository->getById($parentId);
-                $options = (array)$item->getProductOptions();
-                $dataItem['option_id'] = $options['simple_sku'];
-                // for legacy reasons - we have been passing the SKU as ID for the child products
-                $dataItem['option_sku'] = $options['simple_sku'];
-                $dataItem['option_name'] = $options['simple_name'];
-                $dataItem['option_price'] = (float)$item->getPrice();
-            }
-
-            if($mainProduct->getImage()) {
-                $imageUrl = $this->imageHelperFactory->create()
-                    ->init($mainProduct, 'product_thumbnail_image')->getUrl();
-                $dataItem['image_url'] = $imageUrl;
-            }
-
-            $dataItem['sku'] = $mainProduct->getSku();
-            $data['items'][] = $dataItem;
+        foreach ($order->getAllVisibleItems() as $item) {
+            $data['items'][] = $this->getProductDetails($item);
         }
         return $data;
+    }
+
+    private function getProductDetails($quoteItem)
+    {
+        $dataItem = array(
+            'id'        => (int)$quoteItem->getProductId(),
+            'price'     => (float)$quoteItem->getPrice(),
+            'name'      => $quoteItem->getName(),
+            'quantity'  => (int)$quoteItem->getQtyOrdered()
+        );
+
+        if ($quoteItem->getProductType() == 'configurable') {
+            $options = (array)$quoteItem->getProductOptions();
+            $dataItem['option_id'] = $options['simple_sku'];
+            // for legacy reasons - we have been passing the SKU as ID for the child products
+            $dataItem['option_sku'] = $options['simple_sku'];
+            $dataItem['option_name'] = $options['simple_name'];
+            $dataItem['option_price'] = (float)$quoteItem->getPrice();
+        }
+
+        try {
+            if ($quoteItem->getProductType() == 'configurable') {
+                $parentId = $quoteItem->getProductId();
+                $product = $this->productRepository->getById($parentId);
+            } else {
+                $product = $quoteItem->getProduct();
+            }
+
+            if ($product) {
+                if($product->getImage()) {
+                    $imageUrl = $this->imageHelperFactory->create()
+                        ->init($product, 'product_thumbnail_image')->getUrl();
+                    $dataItem['image_url'] = $imageUrl;
+                }
+
+                $dataItem['url'] = $product->getProductUrl();
+                $dataItem['sku'] = $product->getSku();
+            }
+
+        } catch (\Magento\Framework\Exception\NoSuchEntityException $e) {}
+
+        return $dataItem;
     }
 
     /**
