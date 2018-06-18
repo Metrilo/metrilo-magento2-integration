@@ -56,9 +56,9 @@ class OrderSerializer extends \Magento\Framework\App\Helper\AbstractHelper
         $data = [
             'order_id'          => $order->getIncrementId(),
             'order_status'      => $order->getStatus(),
-            'amount'            => (float)$order->getGrandTotal(),
-            'shipping_amount'   => (float)$order->getShippingAmount(),
-            'tax_amount'        => $order->getTaxAmount(),
+            'amount'            => (float)$order->getBaseGrandTotal(),
+            'shipping_amount'   => (float)$order->getBaseShippingAmount(),
+            'tax_amount'        => $order->getBaseTaxAmount(),
             'items'             => [],
             'shipping_method'   => $order->getShippingDescription(),
             'payment_method'    => $order->getPayment()->getMethodInstance()->getTitle(),
@@ -80,7 +80,7 @@ class OrderSerializer extends \Magento\Framework\App\Helper\AbstractHelper
     {
         $dataItem = array(
             'id'        => (int)$quoteItem->getProductId(),
-            'price'     => (float)$quoteItem->getPrice(),
+            'price'     => (float)$quoteItem->getBasePrice(),
             'name'      => $quoteItem->getName(),
             'quantity'  => (int)$quoteItem->getQtyOrdered()
         );
@@ -91,7 +91,7 @@ class OrderSerializer extends \Magento\Framework\App\Helper\AbstractHelper
             // for legacy reasons - we have been passing the SKU as ID for the child products
             $dataItem['option_sku'] = $options['simple_sku'];
             $dataItem['option_name'] = $options['simple_name'];
-            $dataItem['option_price'] = (float)$quoteItem->getPrice();
+            $dataItem['option_price'] = (float)$quoteItem->getBasePrice();
         }
 
         try {

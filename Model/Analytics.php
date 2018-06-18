@@ -87,7 +87,7 @@ class Analytics extends DataObject
                 'id'    => $product->getId(),
                 'sku'   => $product->getSku(),
                 'name'  => $product->getName(),
-                'price' => $product->getFinalPrice(),
+                'price' => $product->getPrice(),
                 'url'   => $product->getProductUrl()
             ];
             // Additional information ( image and categories )
