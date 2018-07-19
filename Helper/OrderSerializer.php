@@ -6,10 +6,12 @@ class OrderSerializer extends \Magento\Framework\App\Helper\AbstractHelper
 {
     public function __construct(
         \Magento\Catalog\Model\ProductRepository $productRepository,
-        \Magento\Catalog\Helper\ImageFactory $imageHelperFactory
+        \Magento\Catalog\Helper\ImageFactory $imageHelperFactory,
+        \Metrilo\Analytics\Helper\ImagePathResolver $imagePathResolver
     ) {
         $this->productRepository = $productRepository;
         $this->imageHelperFactory = $imageHelperFactory;
+        $this->imagePathResolver = $imagePathResolver;
     }
 
     /**
@@ -103,10 +105,9 @@ class OrderSerializer extends \Magento\Framework\App\Helper\AbstractHelper
             }
 
             if ($product) {
-                if($product->getImage()) {
-                    $imageUrl = $this->imageHelperFactory->create()
-                        ->init($product, 'product_thumbnail_image')->getUrl();
-                    $dataItem['image_url'] = $imageUrl;
+
+                if(!empty($this->imagePathResolver->getBaseImage($product))) {
+                    $dataItem['image_url'] = $this->imagePathResolver->getBaseImage($product);
                 }
 
                 $dataItem['url'] = $product->getProductUrl();
