@@ -6,11 +6,9 @@ class OrderSerializer extends \Magento\Framework\App\Helper\AbstractHelper
 {
     public function __construct(
         \Magento\Catalog\Model\ProductRepository $productRepository,
-        \Magento\Catalog\Helper\ImageFactory $imageHelperFactory,
         \Metrilo\Analytics\Helper\ImagePathResolver $imagePathResolver
     ) {
         $this->productRepository = $productRepository;
-        $this->imageHelperFactory = $imageHelperFactory;
         $this->imagePathResolver = $imagePathResolver;
     }
 
