@@ -6,7 +6,7 @@ class ImagePathResolver extends \Magento\Framework\App\Helper\AbstractHelper
 {
     /**
      * Takes the best quality image url with timestamp of last modification
-     * @param $product / store product or quoteItem
+     * @param $product / store product
      * @return string
      */
     public function getBaseImage($product) {

@@ -103,11 +103,10 @@ class OrderSerializer extends \Magento\Framework\App\Helper\AbstractHelper
             }
 
             if ($product) {
-
-                if(!empty($this->imagePathResolver->getBaseImage($product))) {
-                    $dataItem['image_url'] = $this->imagePathResolver->getBaseImage($product);
+                $imageBasePath = $this->imagePathResolver->getBaseImage($product);
+                if(!empty($imageBasePath)) {
+                    $dataItem['image_url'] = $imageBasePath;
                 }
-
                 $dataItem['url'] = $product->getProductUrl();
                 $dataItem['sku'] = $product->getSku();
             }

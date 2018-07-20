@@ -93,8 +93,9 @@ class Analytics extends DataObject
             // Additional information ( image and categories )
 
             if($product) {
-                if(!empty($this->imagePathResolver->getBaseImage($product))) {
-                    $data['image_url'] = $this->imagePathResolver->getBaseImage($product);
+                $imageBasePath = $this->imagePathResolver->getBaseImage($product);
+                if(!empty($imageBasePath)) {
+                    $data['image_url'] = $imageBasePath;
                 }
             }
 
