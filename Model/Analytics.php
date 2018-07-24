@@ -32,14 +32,14 @@ class Analytics extends DataObject
         \Magento\Framework\Registry $registry,
         \Magento\Search\Helper\Data $searchHelper,
         \Magento\Framework\View\Page\Title $pageTitle,
-        \Magento\Catalog\Helper\ImageFactory $imageHelperFactory
+        \Metrilo\Analytics\Helper\ImagePathResolver $imagePathResolver
     ) {
         $this->_context = $context;
         $this->_coreRegistry = $registry;
         $this->_searchHelper = $searchHelper;
         $this->_pageTitle = $pageTitle;
         $this->fullActionName = $this->_context->getRequest()->getFullActionName();
-        $this->imageHelperFactory = $imageHelperFactory;
+        $this->imagePathResolver = $imagePathResolver;
 
         $this->addPageEvents();
 
@@ -91,11 +91,12 @@ class Analytics extends DataObject
                 'url'   => $product->getProductUrl()
             ];
             // Additional information ( image and categories )
-            if($product->getImage()) {
 
-                $imageUrl = $this->imageHelperFactory->create()
-                    ->init($product, 'product_thumbnail_image')->getUrl();
-                $data['image_url'] = $imageUrl;
+            if($product) {
+                $imageBasePath = $this->imagePathResolver->getBaseImage($product);
+                if(!empty($imageBasePath)) {
+                    $data['image_url'] = $imageBasePath;
+                }
             }
 
             if(count($product->getCategoryIds())) {
