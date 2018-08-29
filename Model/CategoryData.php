@@ -10,7 +10,7 @@ namespace Metrilo\Analytics\Model;
  *
  * @author Nedelin Slavov <ned@metrilo.com>
  */
-class Category
+class CategoryData
 {
     public function __construct(
         \Magento\Catalog\Model\ResourceModel\Category\CollectionFactory $categoryCollection
@@ -21,14 +21,18 @@ class Category
     /**
      * Get chunk category data for import
      *
-     * @param int
-     *
-     * @return string array
+     * @return json array
      */
     public function getCategories()
     {
         $categoriesArray = [];
-        $categories = $this->getCategoryQuery();
+        $categories = $this->categoryCollection->create()->addAttributeToSelect('name')
+                    ->joinTable(
+                        ['url' => 'url_rewrite'],
+                        'entity_id = entity_id',
+                        ['request_path', 'store_id'],
+                        ['entity_type' => 'category']
+                    );
 
         foreach ($categories as $category) {
             $categoriesArray[] = [
@@ -39,23 +43,5 @@ class Category
         }
 
         return json_encode(array('CATEGORIES'=> $categoriesArray));
-    }
-
-    /**
-     * Get category collection
-     *
-     * @return object
-     */
-    protected function getCategoryQuery()
-    {
-        return $this->categoryCollection
-                    ->create()
-                    ->addAttributeToSelect('name')
-                    ->joinTable(
-                        ['url' => 'url_rewrite'],
-                        'entity_id = entity_id',
-                        ['request_path', 'store_id'],
-                        ['entity_type' => 'category']
-                    );
     }
 }

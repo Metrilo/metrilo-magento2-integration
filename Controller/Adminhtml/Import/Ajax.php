@@ -22,6 +22,7 @@ class Ajax extends \Magento\Backend\App\Action
         \Metrilo\Analytics\Helper\Data $helper,
         \Metrilo\Analytics\Model\Import $import,
         \Metrilo\Analytics\Model\CustomerData $customerData,
+        \Metrilo\Analytics\Model\CategoryData $categoryData,
         \Magento\Framework\App\Request\Http $request,
         \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory
     ) {
@@ -29,6 +30,7 @@ class Ajax extends \Magento\Backend\App\Action
         $this->helper            = $helper;
         $this->import            = $import;
         $this->customerData      = $customerData;
+        $this->categoryData      = $categoryData;
         $this->request           = $request;
         $this->resultJsonFactory = $resultJsonFactory;
     }
@@ -41,7 +43,7 @@ class Ajax extends \Magento\Backend\App\Action
      */
     public function execute()
     {
-        echo json_encode(array('CUSTOMERS'=> $this->category->getCategories((int)$this->request->getParam('storeId'), (int)$this->request->getParam('chunkId')))); // GET CATEGORY DATA
+        echo $this->category->getCategories(); // GET CATEGORY DATA
         exit;
 
         try {
