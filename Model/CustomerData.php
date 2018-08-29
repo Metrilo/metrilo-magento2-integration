@@ -10,7 +10,7 @@ namespace Metrilo\Analytics\Model;
  *
  * @author Nedelin Slavov <ned@metrilo.com>
  */
-class Customer
+class CustomerData
 {
     public function __construct(
         \Magento\Customer\Model\ResourceModel\Customer\CollectionFactory $customerCollection,
