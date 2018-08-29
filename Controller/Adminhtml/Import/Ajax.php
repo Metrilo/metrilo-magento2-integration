@@ -29,9 +29,6 @@ class Ajax extends \Magento\Backend\App\Action
         $this->helper            = $helper;
         $this->import            = $import;
         $this->customer          = $customer;
-        $this->category          = $category;
-        $this->product           = $product;
-        $this->order             = $order;
         $this->request           = $request;
         $this->resultJsonFactory = $resultJsonFactory;
     }
@@ -44,7 +41,7 @@ class Ajax extends \Magento\Backend\App\Action
      */
     public function execute()
     {
-        echo json_encode(array('CUSTOMERS'=> $this->customer->getCustomers((int)$this->request->getParam('storeId'), (int)$this->request->getParam('chunkId')))); // GET CUSTOMER DATA
+        echo $this->customer->getCustomers(); // GET CUSTOMER DATA
         exit;
 
         try {

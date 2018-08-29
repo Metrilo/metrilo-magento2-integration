@@ -12,11 +12,6 @@ namespace Metrilo\Analytics\Model;
  */
 class Customer
 {
-    private $ordersTotal    = 0;
-    private $totalChunks    = 0;
-    private $chunkItems     = 15;
-    private $customersArray = [];
-
     public function __construct(
         \Magento\Customer\Model\ResourceModel\Customer\CollectionFactory $customerCollection,
         \Magento\Newsletter\Model\Subscriber $subscriber
@@ -28,12 +23,12 @@ class Customer
     /**
      * Get chunk customer data for import
      *
-     * @param  int
-     * @return mixed
+     * @return array
      */
-    public function getCustomers($storeId, $chunkId)
+    public function getCustomers()
     {
-        $customers = $this->getCustomerQuery();
+        $customersArray = [];
+        $customers = $this->customerCollection->create();
 
         foreach ($customers as $customer) {
             $customer = $customer->toArray();
@@ -48,19 +43,7 @@ class Customer
                 'subscribed'=> $subscriberStatus->isSubscribed()
             ];
         }
-        return $customersArray;
-    }
-
-    /**
-     * Get customer collection
-     *
-     * @param int $storeId
-     *
-     * @return mixed
-     */
-    protected function getCustomerQuery($storeId = 0)
-    {
-        return $this->customerCollection->create();
+        return json_encode(array('CUSTOMERS' => $customersArray));
     }
 
 }
