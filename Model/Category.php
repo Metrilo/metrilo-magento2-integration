@@ -12,11 +12,6 @@ namespace Metrilo\Analytics\Model;
  */
 class Category
 {
-    private $ordersTotal     = 0;
-    private $totalChunks     = 0;
-    private $chunkItems      = 15;
-    private $categoriesArray = [];
-
     public function __construct(
         \Magento\Catalog\Model\ResourceModel\Category\CollectionFactory $categoryCollection
     ) {
@@ -30,8 +25,9 @@ class Category
      *
      * @return string array
      */
-    public function getCategories($storeId, $chunkId)
+    public function getCategories()
     {
+        $categoriesArray = [];
         $categories = $this->getCategoryQuery();
 
         foreach ($categories as $category) {
@@ -42,13 +38,13 @@ class Category
             ];
         }
 
-        return $categoriesArray;
+        return json_encode(array('CATEGORIES'=> $categoriesArray));
     }
 
     /**
      * Get category collection
      *
-     * @return 
+     * @return object
      */
     protected function getCategoryQuery()
     {
