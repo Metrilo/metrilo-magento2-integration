@@ -50,6 +50,7 @@ class Ajax extends \Magento\Backend\App\Action
             $jsonFactory = $this->resultJsonFactory->create();
             $result = ['success' => false];
 
+            $storeId = (int)$this->request->getParam('storeId');
             $chunkId = (int)$this->request->getParam('chunkId');
             $totalChunks = (int)$this->request->getParam('totalChunks');
 
