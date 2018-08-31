@@ -43,7 +43,7 @@ class CustomerData
                 'subscribed'=> $subscriberStatus->isSubscribed()
             ];
         }
-        return json_encode(array('CUSTOMERS' => $customersArray));
+        return $customersArray;
     }
 
 }

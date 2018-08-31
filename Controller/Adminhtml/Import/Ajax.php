@@ -41,7 +41,7 @@ class Ajax extends \Magento\Backend\App\Action
      */
     public function execute()
     {
-        echo $this->customerData->getCustomers(); // GET CUSTOMER DATA
+        echo json_encode(array('CUSTOMERS' => $this->customerData->getCustomers())); // GET CUSTOMER DATA
         exit;
 
         try {
