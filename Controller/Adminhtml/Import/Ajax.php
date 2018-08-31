@@ -43,7 +43,7 @@ class Ajax extends \Magento\Backend\App\Action
      */
     public function execute()
     {
-        echo $this->category->getCategories(); // GET CATEGORY DATA
+        echo $this->categoryData->getCategories(); // GET CATEGORY DATA
         exit;
 
         try {

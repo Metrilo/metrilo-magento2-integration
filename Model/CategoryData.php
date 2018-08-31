@@ -42,6 +42,6 @@ class CategoryData
             ];
         }
 
-        return json_encode(array('CATEGORIES'=> $categoriesArray));
+        return $categoriesArray;
     }
 }
