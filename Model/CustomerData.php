@@ -1,15 +1,7 @@
 <?php
-/**
- * @author Nedelin Slavov <ned@metrilo.com>
- */
 
 namespace Metrilo\Analytics\Model;
 
-/**
- * Model getting orders by chunks for Metrilo import
- *
- * @author Nedelin Slavov <ned@metrilo.com>
- */
 class CustomerData
 {
     public function __construct(
@@ -20,15 +12,10 @@ class CustomerData
         $this->subscriber         = $subscriber;
     }
 
-    /**
-     * Get chunk customer data for import
-     *
-     * @return array
-     */
-    public function getCustomers()
+    public function getCustomers($storeId)
     {
         $customersArray = [];
-        $customers = $this->customerCollection->create();
+        $customers = $this->customerCollection->create()->addAttributeToFilter('store_id', $storeId);
 
         foreach ($customers as $customer) {
             $customer = $customer->toArray();

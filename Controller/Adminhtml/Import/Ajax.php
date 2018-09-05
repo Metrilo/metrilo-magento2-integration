@@ -41,14 +41,15 @@ class Ajax extends \Magento\Backend\App\Action
      */
     public function execute()
     {
-        echo json_encode(array('CUSTOMERS' => $this->customerData->getCustomers())); // GET CUSTOMER DATA
+        $storeId = (int)$this->request->getParam('storeId');
+
+        echo json_encode(array('CUSTOMERS' => $this->customerData->getCustomers($storeId))); // GET CUSTOMER DATA
         exit;
 
         try {
             $jsonFactory = $this->resultJsonFactory->create();
             $result = ['success' => false];
 
-            $storeId = (int)$this->request->getParam('storeId');
             $chunkId = (int)$this->request->getParam('chunkId');
             $totalChunks = (int)$this->request->getParam('totalChunks');
 
