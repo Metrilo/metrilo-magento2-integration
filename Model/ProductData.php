@@ -1,15 +1,7 @@
 <?php
-/**
- * @author Nedelin Slavov <ned@metrilo.com>
- */
 
 namespace Metrilo\Analytics\Model;
 
-/**
- * Model getting products data for Metrilo import
- *
- * @author Nedelin Slavov <ned@metrilo.com>
- */
 class ProductData
 {
     public function __construct(
@@ -20,15 +12,10 @@ class ProductData
         $this->storeManager      = $storeManager;
     }
 
-    /**
-     * Get products data for import
-     *
-     * @return array
-     */
-    public function getProducts()
+    public function getProducts($storeId)
     {
         $productsArray = [];
-        $products = $this->productCollection->create()->addAttributeToSelect('*');
+        $products = $this->productCollection->create()->addAttributeToSelect('*')->addStoreFilter($storeId);
 
         foreach ($products as $product) {
             $productOptions = [];
@@ -51,13 +38,6 @@ class ProductData
         return $productsArray;
     }
 
-    /**
-     * Get product options if it's configurable/bundle/grouped product
-     *
-     * @param object $product
-     *
-     * @return array
-     */
     protected function getProductOptions($product)
     {
         $productOptions = [];
@@ -76,13 +56,6 @@ class ProductData
         return $productOptions;
     }
 
-    /**
-     * Get child products of configurable/bundle/grouped product
-     *
-     * @param object $childrenProducts
-     *
-     * @return array
-     */
     protected function getChildProducts($childrenProducts) {
         foreach ($childrenProducts as $childProduct) {
             $productOptions[] = [
