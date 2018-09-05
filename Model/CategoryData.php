@@ -1,15 +1,7 @@
 <?php
-/**
- * @author Nedelin Slavov <ned@metrilo.com>
- */
 
 namespace Metrilo\Analytics\Model;
 
-/**
- * Model getting orders by chunks for Metrilo import
- *
- * @author Nedelin Slavov <ned@metrilo.com>
- */
 class CategoryData
 {
     public function __construct(
@@ -18,12 +10,7 @@ class CategoryData
         $this->categoryCollection = $categoryCollection;
     }
 
-    /**
-     * Get chunk category data for import
-     *
-     * @return json array
-     */
-    public function getCategories()
+    public function getCategories($storeId)
     {
         $categoriesArray = [];
         $categories = $this->categoryCollection->create()->addAttributeToSelect('name')
@@ -31,7 +18,7 @@ class CategoryData
                         ['url' => 'url_rewrite'],
                         'entity_id = entity_id',
                         ['request_path', 'store_id'],
-                        ['entity_type' => 'category']
+                        ['entity_type' => 'category', 'store_id' => $storeId]
                     );
 
         foreach ($categories as $category) {

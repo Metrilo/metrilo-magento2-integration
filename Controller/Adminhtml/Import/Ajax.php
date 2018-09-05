@@ -43,6 +43,9 @@ class Ajax extends \Magento\Backend\App\Action
      */
     public function execute()
     {
+        $storeId = (int)$this->request->getParam('storeId');
+
+        echo json_encode(array('CATEGORIES'=> $this->categoryData->getCategories($storeId))); // GET CATEGORY DATA
         echo $this->categoryData->getCategories(); // GET CATEGORY DATA
         exit;
 
@@ -50,7 +53,6 @@ class Ajax extends \Magento\Backend\App\Action
             $jsonFactory = $this->resultJsonFactory->create();
             $result = ['success' => false];
 
-            $storeId = (int)$this->request->getParam('storeId');
             $chunkId = (int)$this->request->getParam('chunkId');
             $totalChunks = (int)$this->request->getParam('totalChunks');
 
