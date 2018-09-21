@@ -21,13 +21,15 @@ class Ajax extends \Magento\Backend\App\Action
         \Magento\Backend\App\Action\Context $context,
         \Metrilo\Analytics\Helper\Data $helper,
         \Metrilo\Analytics\Model\Import $import,
+        \Metrilo\Analytics\Model\CustomerData $customerData,
         \Magento\Framework\App\Request\Http $request,
         \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory
     ) {
         parent::__construct($context);
-        $this->helper = $helper;
-        $this->import = $import;
-        $this->request = $request;
+        $this->helper            = $helper;
+        $this->import            = $import;
+        $this->customerData      = $customerData;
+        $this->request           = $request;
         $this->resultJsonFactory = $resultJsonFactory;
     }
 
@@ -39,11 +41,15 @@ class Ajax extends \Magento\Backend\App\Action
      */
     public function execute()
     {
+        $storeId = (int)$this->request->getParam('storeId');
+
+        echo json_encode(array('CUSTOMERS' => $this->customerData->getCustomers($storeId))); // GET CUSTOMER DATA
+        exit;
+
         try {
             $jsonFactory = $this->resultJsonFactory->create();
             $result = ['success' => false];
 
-            $storeId = (int)$this->request->getParam('storeId');
             $chunkId = (int)$this->request->getParam('chunkId');
             $totalChunks = (int)$this->request->getParam('totalChunks');
 
