@@ -40,7 +40,7 @@ class ProductData
         return $productsArray;
     }
 
-    protected function getProductOptions($product, $storeId)
+    protected function getProductOptions($product)
     {
         $productOptions = [];
         $childrenProducts = '';
