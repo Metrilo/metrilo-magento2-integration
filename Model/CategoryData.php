@@ -5,13 +5,16 @@ namespace Metrilo\Analytics\Model;
 class CategoryData
 {
     public function __construct(
-        \Magento\Catalog\Model\ResourceModel\Category\CollectionFactory $categoryCollection
+        \Magento\Catalog\Model\ResourceModel\Category\CollectionFactory $categoryCollection,
+        \Magento\Store\Model\StoreManagerInterface $storeManager
     ) {
         $this->categoryCollection = $categoryCollection;
+        $this->storeManager = $storeManager;
     }
 
     public function getCategories($storeId)
     {
+        $storeBaseUrl = $this->storeManager->getStore($storeId)->getBaseUrl(); // Used for multiwebsite configuration base url
         $categoriesArray = [];
         $categories = $this->categoryCollection->create()->addAttributeToSelect('name')
                     ->joinTable(
@@ -25,10 +28,9 @@ class CategoryData
             $categoriesArray[] = [
                 'id'   => $category->getId(),
                 'name' => $category->getName(),
-                'url'  => $category->getUrl()
+                'url'  => $storeBaseUrl . $category->getRequestPath()
             ];
         }
-
         return $categoriesArray;
     }
 }

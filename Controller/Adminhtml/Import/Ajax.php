@@ -45,8 +45,7 @@ class Ajax extends \Magento\Backend\App\Action
     {
         $storeId = (int)$this->request->getParam('storeId');
 
-        echo json_encode(array('CATEGORIES'=> $this->categoryData->getCategories($storeId))); // GET CATEGORY DATA
-        echo $this->categoryData->getCategories(); // GET CATEGORY DATA
+        echo json_encode(array('CATEGORIES' => $this->categoryData->getCategories($storeId), 'CUSTOMERS'=> $this->customerData->getCustomers($storeId))); // GET CATEGORY DATA
         exit;
 
         try {
