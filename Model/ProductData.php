@@ -18,10 +18,10 @@ class ProductData
     )
     {
         $this->productCollection = $productCollection;
-        $this->storeManager = $storeManager;
-        $this->bundleType = $bundleType;
-        $this->groupedType = $groupedType;
-        $this->configurableType = $configurableType;
+        $this->storeManager      = $storeManager;
+        $this->bundleType        = $bundleType;
+        $this->groupedType       = $groupedType;
+        $this->configurableType  = $configurableType;
     }
 
     public function getProducts($storeId)
@@ -32,21 +32,27 @@ class ProductData
             $productId = $product->getId();
             $productType = $product->getTypeId();
 
-            if ($productType == "simple" || $productType == "virtual") {
-                if ($this->getParentId($productId, $productType)) {
+            if ($productType == "simple" || $productType == "virtual") { //standard simple and virtual products (if product has no weight the system will consider it as virtual) can have parents (be part of configurable/bundle/grouped product).
+                if ($this->getParentId($productId, $productType)) { //check if the product is part of configurable/bundle/grouped product
                     continue;
                 }
             }
+
+            $imageUrl       = (!empty($product->getImage())) ? $this->getProductImageUrl($product->getImage()) : '';
+            $price          = (!empty($product->getPrice())) ? $product->getPrice() : 0; // Does not return grouped/bundled parent price
+            $url            = $this->storeManager->getStore($storeId)->getBaseUrl() . $product->getRequestPath();
+            $productOptions = (in_array($productType, self::PARENT_TYPES)) ? $this->getProductOptions($product) : '';
+
 
             $productsArray[] = [
                 'categories' => $product->getCategoryIds(),
                 'id'         => $productId,
                 'sku'        => $product->getSku(),
-                'imageUrl'   => (!empty($product->getImage())) ? $this->getProductImageUrl($product->getImage()) : '',
+                'imageUrl'   => $imageUrl,
                 'name'       => $product->getName(),
-                'price'      => (!empty($product->getPrice())) ? $product->getPrice() : 0, // Does not return grouped/bundled parent price
-                'url'        => $this->storeManager->getStore($storeId)->getBaseUrl() . $product->getRequestPath(),
-                'options'    => (in_array($productType, self::PARENT_TYPES)) ? $this->getProductOptions($product) : ''
+                'price'      => $price,
+                'url'        => $url,
+                'options'    => $productOptions
             ];
         }
 
@@ -66,12 +72,14 @@ class ProductData
         }
 
         foreach ($childrenProducts as $childProduct) {
+            $imageUrl = (!empty($childProduct->getImage())) ? $this->getProductImageUrl($childProduct->getImage()) : '';
+
             $productOptions[] = [
-                'productId' => $childProduct->getId(),
-                'sku' => $childProduct->getSku(),
-                'name' => $childProduct->getName(),
-                'price' => $childProduct->getPrice(),
-                'imageUrl' => $this->getProductImageUrl($childProduct->getImage())
+                'productId'   => $childProduct->getId(),
+                'sku'         => $childProduct->getSku(),
+                'name'        => $childProduct->getName(),
+                'price'       => $childProduct->getPrice(),
+                'imageUrl'    => $imageUrl
             ];
         }
 
