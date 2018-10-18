@@ -21,26 +21,25 @@ class OrderData
                 $orderItems = $order->getAllItems(); // getAllVisibleItems() returns only parent products (for configurables) from order BUT ignoring child product quantities for BUNDLE products
 
                 foreach ($orderItems as $orderItem) {
-                    $test = $orderItem;
-                    if ($orderItem->getProductType() != 'configurable' && $orderItem->getProductType() != 'bundle') { // TODO - test for bugs // exclude configurable/bundle product parent returned by getAllItems() method
+                    if ($orderItem->getProductType() != 'configurable' && $orderItem->getProductType() != 'bundle') { // exclude configurable/bundle parent product returned by getAllItems() method
                         $orderProducts[] = [
                             'productId' => $orderItem->getProductId(), // RETURNING PARENT PRODUCT ID IF CONFIGURABLE/BUNDLE PRODUCT
-                            'quantity' => $orderItem->getQtyOrdered()
+                            'quantity'  => $orderItem->getQtyOrdered()
                         ];
                     }
                 }
 
                 $orderBillingData = $order->getBillingAddress();
-                $countryData = $this->countryInterface->getCountryInfo($orderBillingData->getCountryId());
-//              $street = $orderBillingData->getStreet(); //optional address parsing
+                $countryData      = $this->countryInterface->getCountryInfo($orderBillingData->getCountryId());
+                $street           = $orderBillingData->getStreet();
+                $couponCode       = $order->getCouponCode();
 
                 $orderBilling = [
                     "firstName"     => $orderBillingData->getFirstname(),
                     "lastName"      => $orderBillingData->getLastname(),
-                    "address"       => implode(" ", $orderBillingData->getStreet()),
-//                  "address"       => is_array($street) ? implode(PHP_EOL, $street) : $street, //optional address parsing
+                    "address"       => is_array($street) ? implode(PHP_EOL, $street) : $street,
                     "city"          => $orderBillingData->getCity(),
-                    "country"       => $countryData->getFullNameEnglish(), // Available option to get locale translation of the name using getFullNameLocale() method
+                    "country"       => $countryData->getFullNameEnglish(),
                     "phone"         => $orderBillingData->getTelephone(),
                     "postcode"      => $orderBillingData->getPostcode(),
                     "paymentMethod" => $order->getPayment()->getMethodInstance()->getTitle()
@@ -52,7 +51,7 @@ class OrderData
                     'updatedAt' => strtotime($order->getUpdatedAt()),
                     'email'     => $order->getCustomerEmail(),
                     'amount'    => $order->getBaseGrandTotal(),
-                    'coupons'   => (!empty($order->getCouponCode())) ? $order->getCouponCode() : '', // RETURNING NULL if there is no coupon applied // MULTYPLE coupon codes are available via extension ONLY
+                    'coupons'   => (!empty($couponCode)) ? $couponCode : '', // RETURNING NULL if there is no coupon applied // MULTYPLE coupon codes are available via extension ONLY
                     'status'    => $order->getStatus(),
                     'products'  => (isset($orderProducts)) ? $orderProducts : '',
                     'billing'   => $orderBilling
