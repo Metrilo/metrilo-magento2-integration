@@ -167,7 +167,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     {
         $ordersForSubmission = [];
         foreach ($orders as $order) {
-            if ($order->getId() && $order->getCustomerEmail()) {
+            if ($order->getId() && trim($order->getCustomerEmail())) {
                 array_push($ordersForSubmission, $this->orderSerializer->buildOrderForSubmission($order));
             }
         }
