@@ -8,36 +8,37 @@ class OrderData
         \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $orderCollection,
         \Magento\Directory\Api\CountryInformationAcquirerInterface $countryInterface
     ) {
-        $this->orderCollection = $orderCollection;
+        $this->orderCollection  = $orderCollection;
         $this->countryInterface = $countryInterface;
     }
 
     public function getOrders($storeId)
     {
-        $ordersArray = [];
-        $orders = $this->getOrderQuery($storeId);
+        $ordersArray   = [];
+        $orders        = $this->getOrderQuery($storeId);
 
         foreach ($orders as $order) {
             if(!$order->getCustomerEmail()) {
                 continue;
             }
-
-            $orderItems = $order->getAllItems(); // getAllVisibleItems() returns only parent products (for configurables) from order BUT ignoring child product quantities for BUNDLE products
-
+            $orderItems = $order->getAllItems();
+            $orderProducts = [];
+            
             foreach ($orderItems as $orderItem) {
                 $itemType = $orderItem->getProductType();
-                if ($itemType != 'configurable' && $itemType != 'bundle') { // exclude configurable/bundle parent product returned by getAllItems() method
-                    $orderProducts[] = [
-                        'productId' => $orderItem->getProductId(),
-                        'quantity'  => $orderItem->getQtyOrdered()
-                    ];
+                if ($itemType == 'configurable' || $itemType == 'bundle') { // exclude configurable/bundle parent product returned by getAllItems() method
+                    continue;
                 }
+                $orderProducts[] = [
+                    'productId' => $orderItem->getProductId(),
+                    'quantity' => $orderItem->getQtyOrdered()
+                ];
             }
 
             $orderBillingData = $order->getBillingAddress();
             $countryData      = $this->countryInterface->getCountryInfo($orderBillingData->getCountryId());
             $street           = $orderBillingData->getStreet();
-            $couponCode       = $order->getCouponCode();
+            $couponCode[]     = (!empty($order->getCouponCode())) ? $order->getCouponCode() : '';
 
             $orderBilling = [
                 "firstName"     => $orderBillingData->getFirstname(),
@@ -56,13 +57,13 @@ class OrderData
                 'updatedAt' => strtotime($order->getUpdatedAt()),
                 'email'     => $order->getCustomerEmail(),
                 'amount'    => $order->getBaseGrandTotal(),
-                'coupons'   => (!empty($couponCode)) ? $couponCode : array(), // RETURNING NULL if there is no coupon applied // MULTYPLE coupon codes are available via extension ONLY
+                'coupons'   => $couponCode, // RETURNING NULL if there is no coupon applied // MULTYPLE coupon codes are available via extension ONLY
                 'status'    => $order->getStatus(),
                 'products'  => $orderProducts,
                 'billing'   => $orderBilling
             ];
 
-            unset($orderProducts);
+            unset($couponCode);
         }
 
         return $ordersArray;
