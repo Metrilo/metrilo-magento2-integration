@@ -5,11 +5,9 @@ namespace Metrilo\Analytics\Model;
 class OrderData
 {
     public function __construct(
-        \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $orderCollection,
-        \Magento\Directory\Api\CountryInformationAcquirerInterface $countryInterface
+        \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $orderCollection
     ) {
         $this->orderCollection  = $orderCollection;
-        $this->countryInterface = $countryInterface;
     }
 
     public function getOrders($storeId)
@@ -18,7 +16,7 @@ class OrderData
         $orders        = $this->getOrderQuery($storeId);
 
         foreach ($orders as $order) {
-            if(!$order->getCustomerEmail()) {
+            if(!trim($order->getCustomerEmail())) {
                 continue;
             }
             $orderItems = $order->getAllItems();
@@ -31,12 +29,11 @@ class OrderData
                 }
                 $orderProducts[] = [
                     'productId' => $orderItem->getProductId(),
-                    'quantity' => $orderItem->getQtyOrdered()
+                    'quantity'  => $orderItem->getQtyOrdered()
                 ];
             }
 
             $orderBillingData = $order->getBillingAddress();
-            $countryData      = $this->countryInterface->getCountryInfo($orderBillingData->getCountryId());
             $street           = $orderBillingData->getStreet();
             $couponCode[]     = (!empty($order->getCouponCode())) ? $order->getCouponCode() : '';
 
@@ -45,7 +42,7 @@ class OrderData
                 "lastName"      => $orderBillingData->getLastname(),
                 "address"       => is_array($street) ? implode(PHP_EOL, $street) : $street,
                 "city"          => $orderBillingData->getCity(),
-                "country"       => $countryData->getFullNameEnglish(),
+                "country"       => $orderBillingData->getCountryId(),
                 "phone"         => $orderBillingData->getTelephone(),
                 "postcode"      => $orderBillingData->getPostcode(),
                 "paymentMethod" => $order->getPayment()->getMethodInstance()->getTitle()
