@@ -35,7 +35,10 @@ class OrderData
 
             $orderBillingData = $order->getBillingAddress();
             $street           = $orderBillingData->getStreet();
-            $couponCode[]     = (!empty($order->getCouponCode())) ? $order->getCouponCode() : '';
+            $couponCode       = [];
+            if ($order->getCouponCode()) {
+                $couponCode[] = $order->getCouponCode();
+            }
 
             $orderBilling = [
                 "firstName"     => $orderBillingData->getFirstname(),
