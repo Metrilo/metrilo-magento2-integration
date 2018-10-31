@@ -35,10 +35,7 @@ class OrderData
 
             $orderBillingData = $order->getBillingAddress();
             $street           = $orderBillingData->getStreet();
-            $couponCode       = [];
-            if ($order->getCouponCode()) {
-                $couponCode[] = $order->getCouponCode();
-            }
+            $couponCode       = $order->getCouponCode() ? [$order->getCouponCode()] : [];
 
             $orderBilling = [
                 "firstName"     => $orderBillingData->getFirstname(),
@@ -57,13 +54,11 @@ class OrderData
                 'updatedAt' => strtotime($order->getUpdatedAt()),
                 'email'     => $order->getCustomerEmail(),
                 'amount'    => $order->getBaseGrandTotal(),
-                'coupons'   => $couponCode, // RETURNING NULL if there is no coupon applied // MULTYPLE coupon codes are available via extension ONLY
+                'coupons'   => $couponCode,
                 'status'    => $order->getStatus(),
                 'products'  => $orderProducts,
                 'billing'   => $orderBilling
             ];
-
-            unset($couponCode);
         }
 
         return $ordersArray;
