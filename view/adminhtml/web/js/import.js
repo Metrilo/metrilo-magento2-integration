@@ -48,8 +48,7 @@ define([
                         self.options.percentage = (100 / self.options.totalChunks);
                         self.chunkSync(0);
                     } else {
-                        self.updateImportingMessage("<span style='color: green;'>" + $t('Done! Please expect up to 30 minutes for your historical data to appear in Metrilo.') + "</span>");
-                        self.element.removeClass('disabled').addClass('success').text($t('Orders imported'));
+                        self.finishedImportingMessage();
                     }
                 });
             },
@@ -79,8 +78,7 @@ define([
                                 self.chunkSync(newChunkId);
                             }, 100);
                         } else {
-                            self.updateImportingMessage("<span style='color: green;'>" + $t('Done! Please expect up to 30 minutes for your historical data to appear in Metrilo.') + "</span>");
-                            self.element.removeClass('disabled').addClass('success').text($t('Orders imported'));
+                            self.finishedImportingMessage();
                         }
                     } else {
                         self.updateImportingMessage("<span style='color: red;'>" + response.message + "</span>");
@@ -96,6 +94,16 @@ define([
              */
             updateImportingMessage: function(message) {
                 $(this.options.messageSelector).html(message);
+            },
+
+            /**
+             * Finished progress message
+             *
+             * @return {void}
+             */
+            finishedImportingMessage: function() {
+                this.updateImportingMessage("<span style='color: green;'>" + $t('Done! Please expect up to 30 minutes for your historical data to appear in Metrilo.') + "</span>");
+                this.element.removeClass('disabled').addClass('success').text($t('Orders imported'));
             }
 
         });
