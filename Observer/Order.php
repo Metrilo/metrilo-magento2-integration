@@ -38,7 +38,7 @@ class Order implements ObserverInterface
             $this->helper->callBatchApi($storeId, [$order]);
 
             // If order is made from the FrontEnd
-            if ($order->getRemoteIp()) {
+            if ($order->getRemoteIp() && trim($order->getCustomerEmail())) {
                 $identify = array(
                     'id' => $order->getCustomerEmail(),
                     'params' => array(
