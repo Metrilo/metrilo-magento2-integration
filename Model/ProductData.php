@@ -41,7 +41,7 @@ class ProductData
             $imageUrl       = (!empty($product->getImage())) ? $this->getProductImageUrl($product->getImage()) : '';
             $price          = (!empty($product->getPrice())) ? $product->getPrice() : 0; // Does not return grouped/bundled parent price
             $url            = $this->storeManager->getStore($storeId)->getBaseUrl() . $product->getRequestPath();
-            $productOptions = (in_array($productType, self::PARENT_TYPES)) ? $this->getProductOptions($product) : '';
+            $productOptions = (in_array($productType, self::PARENT_TYPES)) ? $this->getProductOptions($product) : [];
 
 
             $productsArray[] = [
