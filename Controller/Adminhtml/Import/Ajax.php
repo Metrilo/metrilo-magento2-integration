@@ -1,7 +1,7 @@
 <?php
 
 namespace Metrilo\Analytics\Controller\Adminhtml\Import;
-
+use \Metrilo\Analytics\Api\Client;
 /**
  * AJAX Controller for sending chunks to Metrilo
  *
@@ -49,6 +49,8 @@ class Ajax extends \Magento\Backend\App\Action
     {
         $storeId = (int)$this->request->getParam('storeId');
 
+        $client = new Client($this->helper->buildBackendParams($storeId));
+
         echo json_encode(array(
             'CUSTOMERS'=> $this->customerData->getCustomers($storeId),
             'CATEGORIES' => $this->categoryData->getCategories($storeId),
@@ -60,7 +62,7 @@ class Ajax extends \Magento\Backend\App\Action
         try {
             $jsonFactory = $this->resultJsonFactory->create();
             $result = ['success' => false];
-
+            
             $chunkId = (int)$this->request->getParam('chunkId');
             $totalChunks = (int)$this->request->getParam('totalChunks');
 
