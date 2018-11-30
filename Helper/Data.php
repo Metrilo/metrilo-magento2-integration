@@ -260,11 +260,11 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
     
     public function buildBackendParams($storeId) {
-        return $backendParams = [
+        return array (
             'time'            => round(microtime(true) * 1000),
             'token'           => $this->getApiToken($storeId),
             'platform'        => 'Magento ' . $this->metaData->getEdition() . ' ' . $this->metaData->getVersion(),
             'pluginVersion'   => $this->moduleList->getOne(self::MODULE_NAME)['setup_version']
-        ];
+        );
     }
 }
