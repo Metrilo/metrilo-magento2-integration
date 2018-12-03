@@ -20,7 +20,7 @@
         }
     
         public function required(){
-            if($this->value == '' || $this->value == null){
+            if($this->value == '' || $this->value == null || $this->value == []){
                 $this->errors[] = 'Field ' . $this->var . ' is required. ';
             }
             
@@ -44,7 +44,7 @@
         }
     
         public function isInt(){
-            if(!filter_var($this->value, FILTER_VALIDATE_INT)) {
+            if(!is_int($this->value)) {
                 $this->errors[] = 'Field ' . $this->var . ' is not Integer type. ';
             }
             
@@ -77,50 +77,54 @@
             $this->check('email')->value($customer['email'])->required()->isString()->isEmail();
             $this->check('createdAt')->value($customer['createdAt'])->required()->isInt();
             
-            if (!$this->isSuccess()) {
+            if ($this->isSuccess()) {
+                return true;
+            } else {
                 $error = 'Customer ' . $customer['firstName'] . ' ' . $customer['lastName'] . ' errors: ';
                 $this->logger($error);
+                return false;
             }
-            return $customer;
         }
         
         public function validateCustomers($customers = []) {
-            $index = 0;
+            $validCustomers = [];
             foreach ($customers as $customer) {
-                $this->validateCustomer($customer);
-                if (!$this->isSuccess()) {
-                    unset($customers[$index]);
+                $validCustomer = $this->validateCustomer($customer);
+                if ($validCustomer) {
+                    $validCustomers[] = $customer;
+                } else {
                     $this->errors = [];
                 }
-                $index++;
             }
             
-            return $customers;
+            return $validCustomers;
         }
         
         public function validateCategory($category) {
             $this->check('id')->value($category['id'])->required()->isString();
             $this->check('name')->value($category['name'])->required()->isString();
             
-            if (!$this->isSuccess()) {
+            if ($this->isSuccess()) {
+                return true;
+            } else {
                 $error = 'Category ' . $category['url'] . ' errors: ';
                 $this->logger($error);
+                return false;
             }
-            return $category;
         }
         
         public function validateCategories($categories = []) {
-            $index = 0;
+            $validCategories = [];
             foreach ($categories as $category) {
-                $this->validateCategory($category);
-                if (!$this->isSuccess()) {
-                    unset($categories[$index]);
+                $validCategory = $this->validateCategory($category);
+                if ($validCategory) {
+                    $validCategories[] = $category;
+                } else {
                     $this->errors = [];
                 }
-                $index++;
             }
     
-            return $categories;
+            return $validCategories;
         }
         
         public function validateProduct($product) {
@@ -130,7 +134,9 @@
             $this->check('id')->value($product['id'])->required()->isString();
             $this->check('name')->value($product['name'])->required()->isString();
             
-            if (!empty($product['options'])) {
+            if (empty($product['options'])) {
+                $this->check('price')->value($product['price'])->required()->isNumeric();
+            } else {
                 foreach ($product['options'] as $option) {
                     $this->check('optionId')->value($option['productId'])->required()->isString();
                     $this->check('optionName')->value($option['name'])->required()->isString();
@@ -138,26 +144,27 @@
                 }
             }
             
-            if (!$this->isSuccess()) {
+            if ($this->isSuccess()) {
+                return true;
+            } else {
                 $error = 'Product with SKU - ' . $product['sku'] . ' errors: ';
                 $this->logger($error);
+                return false;
             }
-            
-            return $product;
         }
         
         public function validateProducts($products = []) {
-            $index = 0;
+            $validProducts = [];
             foreach ($products as $product) {
-                $this->validateProduct($product);
-                if (!$this->isSuccess()) {
-                    unset($products[$index]);
+                $validProduct = $this->validateProduct($product);
+                if ($validProduct) {
+                    $validProducts[] = $product;
+                } else {
                     $this->errors = [];
                 }
-                $index++;
             }
-        
-            return $products;
+            
+            return $validProducts;
         }
         
         public function validateOrder($order) {
@@ -166,33 +173,32 @@
             $this->check('amount')->value($order['amount'])->required()->isNumeric();
             $this->check('status')->value($order['status'])->required()->isString();
             $this->check('products')->value($order['products'])->required();
-        
-            if (!empty($order['products'])) {
-                foreach ($order['products'] as $product) {
-                    $this->check('productId')->value($product['productId'])->required()->isString();
-                    $this->check('quantity')->value($product['quantity'])->required()->isNumeric();
-                }
-            }
-        
-            if (!$this->isSuccess()) {
-                $error = 'Order with email - ' . $order['email'] . ' errors: ';
-                $this->logger($error);
+            
+            foreach ($order['products'] as $product) {
+                $this->check('productId')->value($product['productId'])->required()->isString();
+                $this->check('quantity')->value($product['quantity'])->required()->isNumeric();
             }
             
-            return $order;
+            if ($this->isSuccess()) {
+                return true;
+            } else {
+                $error = 'Order with email - ' . $order['email'] . ' errors: ';
+                $this->logger($error);
+                return false;
+            }
         }
         
         public function validateOrders($orders = []) {
-            $index = 0;
+            $validOrders = [];
             foreach ($orders as $order) {
-                $this->validateOrder($order);
-                if (!$this->isSuccess()) {
-                    unset($orders[$index]);
+                $validOrder = $this->validateOrder($order);
+                if ($validOrder) {
+                    $validOrders[] = $order;
+                } else {
                     $this->errors = [];
                 }
-                $index++;
             }
-        
-            return $orders;
+            
+            return $validOrders;
         }
     }

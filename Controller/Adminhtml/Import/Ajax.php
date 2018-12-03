@@ -48,14 +48,22 @@ class Ajax extends \Magento\Backend\App\Action
     public function execute()
     {
         $storeId = (int)$this->request->getParam('storeId');
+        $time = time();
+        $token = $this->helper->getApiToken($storeId);
+        $platform = 'Magento ' . $this->helper->metaData->getEdition() . ' ' . $this->helper->metaData->getVersion();
+        $pluginVersion = $this->helper->moduleList->getOne($this->helper::MODULE_NAME)['setup_version'];
 
-        $client = new Client($this->helper->buildBackendParams($storeId));
-
+        $client = new Client($time, $token, $platform, $pluginVersion);
+    
         echo json_encode(array(
-            'CUSTOMERS'=> $this->customerData->getCustomers($storeId),
-            'CATEGORIES' => $this->categoryData->getCategories($storeId),
-            'PRODUCTS' => $this->productData->getProducts($storeId),
-            'ORDERS' => $this->orderData->getOrders($storeId)
+            'customer'      => $client->customer($this->customerData->getCustomers($storeId)[0]),
+            'customerBatch' => $client->customerBatch($this->customerData->getCustomers($storeId)),
+            'category'      => $client->category($this->categoryData->getCategories($storeId)[0]),
+            'categoryBatch' => $client->categoryBatch($this->categoryData->getCategories($storeId)),
+            'product'       => $client->product($this->productData->getProducts($storeId)[0]),
+            'productBatch'  => $client->productBatch($this->productData->getProducts($storeId)),
+            'order'         => $client->order($this->orderData->getOrders($storeId)[0]),
+            'orderBatch'    => $client->orderBatch($this->orderData->getOrders($storeId))
         ));
         exit;
 
