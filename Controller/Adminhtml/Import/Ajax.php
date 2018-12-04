@@ -48,7 +48,6 @@ class Ajax extends \Magento\Backend\App\Action
     public function execute()
     {
         $storeId = (int)$this->request->getParam('storeId');
-        $time = time();
         $token = $this->helper->getApiToken($storeId);
         $platform = 'Magento ' . $this->helper->metaData->getEdition() . ' ' . $this->helper->metaData->getVersion();
         $pluginVersion = $this->helper->moduleList->getOne($this->helper::MODULE_NAME)['setup_version'];

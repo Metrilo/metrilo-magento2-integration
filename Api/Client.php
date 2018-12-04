@@ -11,20 +11,19 @@
         private $url  = 'https://postman-echo.com/post';
     
         public function __construct(
-            $time,
             $token,
             $platform,
             $pluginVersion
         ) {
-            $this->backendParams['time']          = $time;
             $this->backendParams['token']         = $token;
             $this->backendParams['platform']      = $platform;
             $this->backendParams['pluginVersion'] = $pluginVersion;
         }
     
         public function backendCall($path, $body) {
-            $connection = new Connection();
-            $body       = array_merge($body, $this->backendParams);
+            $connection                  = new Connection();
+            $this->backendParams['time'] = time();
+            $body                        = array_merge($body, $this->backendParams);
             
             return $connection->post($this->url, $body);
         }
