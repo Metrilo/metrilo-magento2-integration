@@ -52,7 +52,7 @@ class Ajax extends \Magento\Backend\App\Action
         $platform = 'Magento ' . $this->helper->metaData->getEdition() . ' ' . $this->helper->metaData->getVersion();
         $pluginVersion = $this->helper->moduleList->getOne($this->helper::MODULE_NAME)['setup_version'];
 
-        $client = new Client($time, $token, $platform, $pluginVersion);
+        $client = new Client($token, $platform, $pluginVersion);
     
         echo json_encode(array(
             'customer'      => $client->customer($this->customerData->getCustomers($storeId)[0]),
