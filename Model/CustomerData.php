@@ -23,7 +23,6 @@ class CustomerData
             $customersArray[] = [
                 'email'     => $customer->getEmail(),
                 'createdAt' => strtotime($customer->getCreatedAt()),
-                'updatedAt' => strtotime($customer->getUpdatedAt()),
                 'firstName' => $customer->getFirstname(),
                 'lastName'  => $customer->getLastname(),
                 'subscribed'=> $subscriberStatus

@@ -82,6 +82,7 @@
             } else {
                 $error = 'Customer ' . $customer['firstName'] . ' ' . $customer['lastName'] . ' errors: ';
                 $this->logger($error);
+                $this->errors = [];
                 return false;
             }
         }
@@ -92,8 +93,6 @@
                 $validCustomer = $this->validateCustomer($customer);
                 if ($validCustomer) {
                     $validCustomers[] = $customer;
-                } else {
-                    $this->errors = [];
                 }
             }
             
@@ -109,6 +108,7 @@
             } else {
                 $error = 'Category ' . $category['url'] . ' errors: ';
                 $this->logger($error);
+                $this->errors = [];
                 return false;
             }
         }
@@ -119,8 +119,6 @@
                 $validCategory = $this->validateCategory($category);
                 if ($validCategory) {
                     $validCategories[] = $category;
-                } else {
-                    $this->errors = [];
                 }
             }
     
@@ -149,6 +147,7 @@
             } else {
                 $error = 'Product with SKU - ' . $product['sku'] . ' errors: ';
                 $this->logger($error);
+                $this->errors = [];
                 return false;
             }
         }
@@ -159,8 +158,6 @@
                 $validProduct = $this->validateProduct($product);
                 if ($validProduct) {
                     $validProducts[] = $product;
-                } else {
-                    $this->errors = [];
                 }
             }
             
@@ -184,6 +181,7 @@
             } else {
                 $error = 'Order with email - ' . $order['email'] . ' errors: ';
                 $this->logger($error);
+                $this->errors = [];
                 return false;
             }
         }
@@ -194,8 +192,6 @@
                 $validOrder = $this->validateOrder($order);
                 if ($validOrder) {
                     $validOrders[] = $order;
-                } else {
-                    $this->errors = [];
                 }
             }
             

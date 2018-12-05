@@ -12,8 +12,8 @@ class OrderData
 
     public function getOrders($storeId)
     {
-        $ordersArray   = [];
-        $orders        = $this->getOrderQuery($storeId);
+        $ordersArray = [];
+        $orders      = $this->getOrderQuery($storeId);
 
         foreach ($orders as $order) {
             if(!trim($order->getCustomerEmail())) {
@@ -51,7 +51,6 @@ class OrderData
             $ordersArray[] = [
                 'id'        => $order->getIncrementId(),
                 'createdAt' => strtotime($order->getCreatedAt()),
-                'updatedAt' => strtotime($order->getUpdatedAt()),
                 'email'     => $order->getCustomerEmail(),
                 'amount'    => $order->getBaseGrandTotal(),
                 'coupons'   => $couponCode,
