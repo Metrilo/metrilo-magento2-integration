@@ -61,6 +61,7 @@ class ProductData
 
     protected function getProductOptions($product)
     {
+        $productOptions = [];
         $productType = $product->getTypeId();
 
         if ($productType == 'configurable') {
