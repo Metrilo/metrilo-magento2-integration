@@ -10,10 +10,12 @@ class OrderData
         $this->orderCollection  = $orderCollection;
     }
 
-    public function getOrders($storeId)
+    public function getOrders($storeId, $chunkId, $chunkItems)
     {
         $ordersArray = [];
-        $orders      = $this->getOrderQuery($storeId);
+        $orders      = $this->getOrderQuery($storeId)
+                            ->setPageSize($chunkItems)
+                            ->setCurPage($chunkId + 1);
 
         foreach ($orders as $order) {
             if(!trim($order->getCustomerEmail())) {
@@ -28,8 +30,8 @@ class OrderData
                     continue;
                 }
                 $orderProducts[] = [
-                    'productId' => $orderItem->getProductId(),
-                    'quantity'  => $orderItem->getQtyOrdered()
+                    'productId'  => $orderItem->getProductId(),
+                    'quantity'   => $orderItem->getQtyOrdered()
                 ];
             }
 
@@ -63,7 +65,7 @@ class OrderData
         return $ordersArray;
     }
 
-    protected function getOrderQuery($storeId = 0)
+    public function getOrderQuery($storeId = 0)
     {
         return $this->orderCollection->create()->addAttributeToFilter('store_id', $storeId)->addAttributeToSelect('*')->setOrder('entity_id', 'asc');
     }

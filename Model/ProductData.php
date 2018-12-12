@@ -24,10 +24,18 @@ class ProductData
         $this->configurableType  = $configurableType;
     }
 
-    public function getProducts($storeId)
+    public function getProductQuery($storeId = 0)
     {
-        $products = $this->productCollection->create()->addAttributeToSelect('*')->addUrlRewrite()->addStoreFilter($storeId);
+        return $this->productCollection->create()->addAttributeToSelect('*')->addUrlRewrite()->addStoreFilter($storeId);
+    }
 
+    public function getProducts($storeId, $chunkId, $chunkItems)
+    {
+        $productsArray = [];
+        $products = $this->getProductQuery($storeId)
+                         ->setPageSize($chunkItems)
+                         ->setCurPage($chunkId + 1);
+        
         foreach ($products as $product) {
             $productId = $product->getId();
             $productType = $product->getTypeId();
