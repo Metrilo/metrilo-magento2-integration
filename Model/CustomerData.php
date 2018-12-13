@@ -12,15 +12,7 @@ class CustomerData
         $this->subscriber         = $subscriber;
     }
 
-//    private $chunkItems = 1;
-//
-//    public function getCustomerChunks($storeId = 0)
-//    {
-//        $totalCustomers = $this->getCustomerQuery($storeId)->getSize();
-//        return (int) ceil($totalCustomers / $this->chunkItems);
-//    }
-
-    public function getCustomerQuery($storeId = 0)
+    public function getCustomerQuery($storeId)
     {
         return $this->customerCollection->create()->addAttributeToFilter('store_id', $storeId);
     }

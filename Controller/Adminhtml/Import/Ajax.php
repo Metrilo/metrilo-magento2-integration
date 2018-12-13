@@ -57,22 +57,20 @@ class Ajax extends \Magento\Backend\App\Action
 //                $this->helper->createActivity($storeId, 'import_start');
 //            }
 
-            // file_put_contents(__DIR__ . 'Request.log', $client->customerBatch($this->import->customerData->getCustomers($storeId, $chunkId, $this->import->chunkItems)), FILE_APPEND); // Used for debug purposes;
-
             switch ($importStatus) {
-                case 1:
+                case 'customer':
                     $client->customerBatch($this->import->customerData->getCustomers($storeId, $chunkId, $this->import->chunkItems));
                     $result['success'] = 'customerBatch';
                     break;
-                case 2:
+                case 'category':
                     $client->categoryBatch($this->import->categoryData->getCategories($storeId, $chunkId, $this->import->chunkItems));
                     $result['success'] = 'categoryBatch';
                     break;
-                case 3:
+                case 'product':
                     $client->productBatch($this->import->productData->getProducts($storeId, $chunkId, $this->import->chunkItems));
                     $result['success'] = 'productBatch';
                     break;
-                case 4:
+                case 'order':
                     $client->orderBatch($this->import->orderData->getOrders($storeId, $chunkId, $this->import->chunkItems));
                     $result['success'] = 'orderBatch';
                     break;

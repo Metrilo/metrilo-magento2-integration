@@ -24,7 +24,7 @@ class ProductData
         $this->configurableType  = $configurableType;
     }
 
-    public function getProductQuery($storeId = 0)
+    public function getProductQuery($storeId)
     {
         return $this->productCollection->create()->addAttributeToSelect('*')->addUrlRewrite()->addStoreFilter($storeId);
     }

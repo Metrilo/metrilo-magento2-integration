@@ -65,7 +65,7 @@ class OrderData
         return $ordersArray;
     }
 
-    public function getOrderQuery($storeId = 0)
+    public function getOrderQuery($storeId)
     {
         return $this->orderCollection->create()->addAttributeToFilter('store_id', $storeId)->addAttributeToSelect('*')->setOrder('entity_id', 'asc');
     }

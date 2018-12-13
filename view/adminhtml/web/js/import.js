@@ -20,7 +20,7 @@ define([
                 categoryChunks: 0,
                 productChunks: 0,
                 orderChunks: 0,
-                importStatus: 1,
+                importStatus: 'customer',
                 percentage: 100,
                 submitUrl: '',
                 loaderImage: '', // TODO: Probably add loader image while importing
@@ -78,16 +78,16 @@ define([
                 self.ajaxPostWithRetry(self.options.submitUrl, data, 3, function(response) {
                     var newChunkId = chunkId + 1;
                     switch (importStatus) {
-                        case 1:
-                            self.chunkType(newChunkId, 'customer', 'category', 2);
+                        case 'customer':
+                            self.chunkType(newChunkId, 'customer', 'category');
                             break;
-                        case 2:
-                            self.chunkType(newChunkId, 'category', 'product', 3);
+                        case 'category':
+                            self.chunkType(newChunkId, 'category', 'product');
                             break;
-                        case 3:
-                            self.chunkType(newChunkId, 'product', 'order', 4);
+                        case 'product':
+                            self.chunkType(newChunkId, 'product', 'order');
                             break;
-                        case 4:
+                        case 'order':
                             if(newChunkId < self.options.orderChunks) {
                                 setTimeout(function() {
                                     self.chunkSync(newChunkId, self.options.importStatus);
@@ -103,7 +103,7 @@ define([
                 });
             },
 
-            chunkType: function(newChunkId, current, next, status) {
+            chunkType: function(newChunkId, current, next) {
                 var self = this;
                 if (self.options[`${current}Chunks`] > 0) {
                     self.options.percentage = (100 / self.options[`${current}Chunks`]);
@@ -115,7 +115,7 @@ define([
                 } else {
                     self.element.text($t(`Importing ${next}`));
                     self.updateImportingMessage("<span style='color: orange;'>" + $t(`${current} import is done! Commencing ${next} import.`) + "</span>");
-                    self.options.importStatus = status;
+                    self.options.importStatus = next;
                     setTimeout(function() {
                         self.chunkSync(0, self.options.importStatus);
                     }, 2000);
@@ -125,10 +125,8 @@ define([
             ajaxPostWithRetry: function(url, data, retryCount, callback) {
                 if(retryCount) {
                     $.post(url, data, function(response) {
-                        console.log('Successfull import of chunkData');
                         callback(response);
                     }).fail(function () {
-                        console.log('Unsuccessfull import of chunkData. Retrying...');
                         setTimeout(function() {
                             ajaxPostWithRetry(url, data, retryCount - 1 , callback)
                         }, 5000);

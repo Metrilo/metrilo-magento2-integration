@@ -12,7 +12,7 @@ class CategoryData
         $this->storeManager = $storeManager;
     }
 
-    public function getCategoryQuery($storeId = 0)
+    public function getCategoryQuery($storeId)
     {
         return $this->categoryCollection->create()->addAttributeToSelect('name')
                     ->joinTable(

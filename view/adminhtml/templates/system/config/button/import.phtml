@@ -23,7 +23,7 @@
             categoryChunks: <?php echo $import->getCategoryChunks($storeId); ?>,
             productChunks: <?php echo $import->getProductChunks($storeId); ?>,
             orderChunks: <?php echo $import->getOrderChunks($storeId); ?>,
-            importStatus: 1,
+            importStatus: 'customer',
             submitUrl: '<?php echo $block->getAjaxUrl(); ?>',
             messageSelector: '#metrilo_import_status'
         });

@@ -32,25 +32,25 @@ class Import
         $this->resolver        = $resolver;
     }
 
-    public function getCustomerChunks($storeId = 0)
+    public function getCustomerChunks($storeId)
     {
         $totalCustomers = $this->customerData->getCustomerQuery($storeId)->getSize();
         return (int) ceil($totalCustomers /     $this->chunkItems);
     }
 
-    public function getCategoryChunks($storeId = 0)
+    public function getCategoryChunks($storeId)
     {
         $totalCategories = $this->categoryData->getCategoryQuery($storeId)->getSize();
         return (int) ceil($totalCategories / $this->chunkItems);
     }
     
-    public function getProductChunks($storeId = 0)
+    public function getProductChunks($storeId)
     {
         $totalProducts = $this->productData->getProductQuery($storeId)->getSize();
         return (int) ceil($totalProducts / $this->chunkItems);
     }
 
-    public function getOrderChunks($storeId = 0)
+    public function getOrderChunks($storeId)
     {
         $totalOrders = $this->orderData->getOrderQuery($storeId)->getSize();
         return (int) ceil($totalOrders / $this->chunkItems);
