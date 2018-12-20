@@ -40,18 +40,18 @@ class Ajax extends \Magento\Backend\App\Action
     public function execute()
     {
         try {
-            $jsonFactory   = $this->resultJsonFactory->create();
-            $result        = ['success' => false];
-            $storeId       = (int)$this->request->getParam('storeId');
-            $chunkId       = (int)$this->request->getParam('chunkId');
-            $totalChunks   = (int)$this->request->getParam('totalChunks');
-            $importStatus  = (string)$this->request->getParam('importStatus');
+            $result['success'] = false;
+            $jsonFactory       = $this->resultJsonFactory->create();
+            $storeId           = (int)$this->request->getParam('storeId');
+            $chunkId           = (int)$this->request->getParam('chunkId');
+            $totalChunks       = (int)$this->request->getParam('totalChunks');
+            $importStatus      = (string)$this->request->getParam('importStatus');
             
-            $token         = $this->helper->getApiToken($storeId);
-            $platform      = 'Magento ' . $this->helper->metaData->getEdition() . ' ' . $this->helper->metaData->getVersion();
-            $pluginVersion = $this->helper->moduleList->getOne($this->helper::MODULE_NAME)['setup_version'];
+            $token             = $this->helper->getApiToken($storeId);
+            $platform          = 'Magento ' . $this->helper->metaData->getEdition() . ' ' . $this->helper->metaData->getVersion();
+            $pluginVersion     = $this->helper->moduleList->getOne($this->helper::MODULE_NAME)['setup_version'];
             
-            $client        = new Client($token, $platform, $pluginVersion);
+            $client            = new Client($token, $platform, $pluginVersion);
 
 //            if ($chunkId == 0) {
 //                $this->helper->createActivity($storeId, 'import_start');
@@ -60,18 +60,30 @@ class Ajax extends \Magento\Backend\App\Action
             switch ($importStatus) {
                 case 'customer':
                     $client->customerBatch($this->import->customerData->getCustomers($storeId, $chunkId, $this->import->chunkItems));
+                    $this->helper->requestLogger(__DIR__ . 'Request.log', json_encode(array('Customers' => $this->import->customerData->getCustomers($storeId, $chunkId, $this->import->chunkItems))));
+                    $this->helper->requestLogger(__DIR__ . 'Request.log', $client->customerBatch($this->import->customerData->getCustomers($storeId, $chunkId, $this->import->chunkItems)));
+                    $this->helper->requestLogger(__DIR__ . 'Request.log', '--------------------------------------');
                     $result['success'] = 'customerBatch';
                     break;
                 case 'category':
                     $client->categoryBatch($this->import->categoryData->getCategories($storeId, $chunkId, $this->import->chunkItems));
+                    $this->helper->requestLogger(__DIR__ . 'Request.log', json_encode(array('Categories' => $this->import->categoryData->getCategories($storeId, $chunkId, $this->import->chunkItems))));
+                    $this->helper->requestLogger(__DIR__ . 'Request.log', $client->categoryBatch($this->import->categoryData->getCategories($storeId, $chunkId, $this->import->chunkItems)));
+                    $this->helper->requestLogger(__DIR__ . 'Request.log', '--------------------------------------');
                     $result['success'] = 'categoryBatch';
                     break;
                 case 'product':
                     $client->productBatch($this->import->productData->getProducts($storeId, $chunkId, $this->import->chunkItems));
+                    $this->helper->requestLogger(__DIR__ . 'Request.log', json_encode(array('Products' => $this->import->productData->getProducts($storeId, $chunkId, $this->import->chunkItems))));
+                    $this->helper->requestLogger(__DIR__ . 'Request.log', $client->productBatch($this->import->productData->getProducts($storeId, $chunkId, $this->import->chunkItems)));
+                    $this->helper->requestLogger(__DIR__ . 'Request.log', '--------------------------------------');
                     $result['success'] = 'productBatch';
                     break;
                 case 'order':
                     $client->orderBatch($this->import->orderData->getOrders($storeId, $chunkId, $this->import->chunkItems));
+                    $this->helper->requestLogger(__DIR__ . 'Request.log', json_encode(array('Orders' => $this->import->orderData->getOrders($storeId, $chunkId, $this->import->chunkItems))));
+                    $this->helper->requestLogger(__DIR__ . 'Request.log', $client->orderBatch($this->import->orderData->getOrders($storeId, $chunkId, $this->import->chunkItems)));
+                    $this->helper->requestLogger(__DIR__ . 'Request.log', '--------------------------------------');
                     $result['success'] = 'orderBatch';
                     break;
                 default:
@@ -82,9 +94,6 @@ class Ajax extends \Magento\Backend\App\Action
 //            if ($chunkId == $totalChunks - 1) {
 //                $this->helper->createActivity($storeId, 'import_end');
 //            }
-            
-            $result['chunkId']      = $chunkId;
-            $result['importStatus'] = $importStatus;
 
             return $jsonFactory->setData($result);
         } catch (\Exception $e) {
@@ -95,3 +104,4 @@ class Ajax extends \Magento\Backend\App\Action
         }
     }
 }
+
