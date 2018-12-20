@@ -7,8 +7,7 @@
 
     class Client {
     
-//        private $url  = 'https://postb.in/kzTiQWNl';
-        private $url  = 'https://postman-echo.com/post';
+        private $url  = 'https://tracking-plg-64.customerboard.co';
     
         public function __construct(
             $token,
@@ -23,10 +22,10 @@
     
         public function backendCall($path, $body) {
             $connection                  = new Connection();
-            $this->backendParams['time'] = time();
+            $this->backendParams['time'] = round(microtime(true) * 1000);
             $body                        = array_merge($body, $this->backendParams);
             
-            return $connection->post($this->url, $body);
+            return $connection->post($this->url.$path, $body);
         }
     
         public function customer($customer) {
@@ -57,10 +56,10 @@
             $validCategories = $this->validator->validateCategories($categories);
             
             if (!empty($validCategories)) {
-                return $this->backendCall('/customer/batch', ['batch' => $validCategories]);
+                return $this->backendCall('/category/batch', ['batch' => $validCategories]);
             }
         }
-
+    
         public function product($product) {
             $validProduct = $this->validator->validateProduct($product);
             

@@ -29,7 +29,7 @@ class CustomerData
             $this->subscriber->unsetData();
             $customersArray[] = [
                 'email'       => $customer->getEmail(),
-                'createdAt'   => strtotime($customer->getCreatedAt()),
+                'createdAt'   => strtotime($customer->getCreatedAt()) * 1000,
                 'firstName'   => $customer->getFirstname(),
                 'lastName'    => $customer->getLastname(),
                 'subscribed'  => $subscriberStatus

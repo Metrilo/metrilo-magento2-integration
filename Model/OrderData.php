@@ -44,7 +44,7 @@ class OrderData
                 "lastName"      => $orderBillingData->getLastname(),
                 "address"       => is_array($street) ? implode(PHP_EOL, $street) : $street,
                 "city"          => $orderBillingData->getCity(),
-                "country"       => $orderBillingData->getCountryId(),
+                "countryCode"   => $orderBillingData->getCountryId(),
                 "phone"         => $orderBillingData->getTelephone(),
                 "postcode"      => $orderBillingData->getPostcode(),
                 "paymentMethod" => $order->getPayment()->getMethodInstance()->getTitle()
@@ -52,7 +52,7 @@ class OrderData
 
             $ordersArray[] = [
                 'id'        => $order->getIncrementId(),
-                'createdAt' => strtotime($order->getCreatedAt()),
+                'createdAt' => strtotime($order->getCreatedAt()) * 1000,
                 'email'     => $order->getCustomerEmail(),
                 'amount'    => $order->getBaseGrandTotal(),
                 'coupons'   => $couponCode,
