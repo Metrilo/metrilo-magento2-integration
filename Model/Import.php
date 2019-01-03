@@ -12,9 +12,10 @@ namespace Metrilo\Analytics\Model;
  */
 class Import
 {
+    const chunkItems = 50;
+
     private $ordersTotal = 0;
     private $totalChunks = 0;
-    public  $chunkItems  = 50;
 
     public function __construct(
         \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $orderCollection,
@@ -35,25 +36,25 @@ class Import
     public function getCustomerChunks($storeId)
     {
         $totalCustomers = $this->customerData->getCustomerQuery($storeId)->getSize();
-        return (int) ceil($totalCustomers /     $this->chunkItems);
+        return (int) ceil($totalCustomers / self::chunkItems);
     }
 
     public function getCategoryChunks($storeId)
     {
         $totalCategories = $this->categoryData->getCategoryQuery($storeId)->getSize();
-        return (int) ceil($totalCategories / $this->chunkItems);
+        return (int) ceil($totalCategories / self::chunkItems);
     }
     
     public function getProductChunks($storeId)
     {
         $totalProducts = $this->productData->getProductQuery($storeId)->getSize();
-        return (int) ceil($totalProducts / $this->chunkItems);
+        return (int) ceil($totalProducts / self::chunkItems);
     }
 
     public function getOrderChunks($storeId)
     {
         $totalOrders = $this->orderData->getOrderQuery($storeId)->getSize();
-        return (int) ceil($totalOrders / $this->chunkItems);
+        return (int) ceil($totalOrders / self::chunkItems);
     }
 
     /**

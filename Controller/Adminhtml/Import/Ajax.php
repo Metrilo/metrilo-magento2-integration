@@ -44,8 +44,7 @@ class Ajax extends \Magento\Backend\App\Action
             $jsonFactory       = $this->resultJsonFactory->create();
             $storeId           = (int)$this->request->getParam('storeId');
             $chunkId           = (int)$this->request->getParam('chunkId');
-            $totalChunks       = (int)$this->request->getParam('totalChunks');
-            $importStatus      = (string)$this->request->getParam('importStatus');
+            $importType        = (string)$this->request->getParam('importType');
             
             $token             = $this->helper->getApiToken($storeId);
             $platform          = 'Magento ' . $this->helper->metaData->getEdition() . ' ' . $this->helper->metaData->getVersion();
@@ -57,32 +56,32 @@ class Ajax extends \Magento\Backend\App\Action
 //                $this->helper->createActivity($storeId, 'import_start');
 //            }
 
-            switch ($importStatus) {
-                case 'customer':
-                    $client->customerBatch($this->import->customerData->getCustomers($storeId, $chunkId, $this->import->chunkItems));
-                    $this->helper->requestLogger(__DIR__ . 'Request.log', json_encode(array('Customers' => $this->import->customerData->getCustomers($storeId, $chunkId, $this->import->chunkItems))));
-                    $this->helper->requestLogger(__DIR__ . 'Request.log', $client->customerBatch($this->import->customerData->getCustomers($storeId, $chunkId, $this->import->chunkItems)));
+            switch ($importType) {
+                case 'customers':
+                    $client->customerBatch($this->import->customerData->getCustomers($storeId, $chunkId, $this->import::chunkItems));
+                    $this->helper->requestLogger(__DIR__ . 'Request.log', json_encode(array('Customers' => $this->import->customerData->getCustomers($storeId, $chunkId, $this->import::chunkItems))));
+                    $this->helper->requestLogger(__DIR__ . 'Request.log', $client->customerBatch($this->import->customerData->getCustomers($storeId, $chunkId, $this->import::chunkItems)));
                     $this->helper->requestLogger(__DIR__ . 'Request.log', '--------------------------------------');
                     $result['success'] = 'customerBatch';
                     break;
-                case 'category':
-                    $client->categoryBatch($this->import->categoryData->getCategories($storeId, $chunkId, $this->import->chunkItems));
-                    $this->helper->requestLogger(__DIR__ . 'Request.log', json_encode(array('Categories' => $this->import->categoryData->getCategories($storeId, $chunkId, $this->import->chunkItems))));
-                    $this->helper->requestLogger(__DIR__ . 'Request.log', $client->categoryBatch($this->import->categoryData->getCategories($storeId, $chunkId, $this->import->chunkItems)));
+                case 'categories':
+                    $client->categoryBatch($this->import->categoryData->getCategories($storeId, $chunkId, $this->import::chunkItems));
+                    $this->helper->requestLogger(__DIR__ . 'Request.log', json_encode(array('Categories' => $this->import->categoryData->getCategories($storeId, $chunkId, $this->import::chunkItems))));
+                    $this->helper->requestLogger(__DIR__ . 'Request.log', $client->categoryBatch($this->import->categoryData->getCategories($storeId, $chunkId, $this->import::chunkItems)));
                     $this->helper->requestLogger(__DIR__ . 'Request.log', '--------------------------------------');
                     $result['success'] = 'categoryBatch';
                     break;
-                case 'product':
-                    $client->productBatch($this->import->productData->getProducts($storeId, $chunkId, $this->import->chunkItems));
-                    $this->helper->requestLogger(__DIR__ . 'Request.log', json_encode(array('Products' => $this->import->productData->getProducts($storeId, $chunkId, $this->import->chunkItems))));
-                    $this->helper->requestLogger(__DIR__ . 'Request.log', $client->productBatch($this->import->productData->getProducts($storeId, $chunkId, $this->import->chunkItems)));
+                case 'products':
+                    $client->productBatch($this->import->productData->getProducts($storeId, $chunkId, $this->import::chunkItems));
+                    $this->helper->requestLogger(__DIR__ . 'Request.log', json_encode(array('Products' => $this->import->productData->getProducts($storeId, $chunkId, $this->import::chunkItems))));
+                    $this->helper->requestLogger(__DIR__ . 'Request.log', $client->productBatch($this->import->productData->getProducts($storeId, $chunkId, $this->import::chunkItems)));
                     $this->helper->requestLogger(__DIR__ . 'Request.log', '--------------------------------------');
                     $result['success'] = 'productBatch';
                     break;
-                case 'order':
-                    $client->orderBatch($this->import->orderData->getOrders($storeId, $chunkId, $this->import->chunkItems));
-                    $this->helper->requestLogger(__DIR__ . 'Request.log', json_encode(array('Orders' => $this->import->orderData->getOrders($storeId, $chunkId, $this->import->chunkItems))));
-                    $this->helper->requestLogger(__DIR__ . 'Request.log', $client->orderBatch($this->import->orderData->getOrders($storeId, $chunkId, $this->import->chunkItems)));
+                case 'orders':
+                    $client->orderBatch($this->import->orderData->getOrders($storeId, $chunkId, $this->import::chunkItems));
+                    $this->helper->requestLogger(__DIR__ . 'Request.log', json_encode(array('Orders' => $this->import->orderData->getOrders($storeId, $chunkId, $this->import::chunkItems))));
+                    $this->helper->requestLogger(__DIR__ . 'Request.log', $client->orderBatch($this->import->orderData->getOrders($storeId, $chunkId, $this->import::chunkItems)));
                     $this->helper->requestLogger(__DIR__ . 'Request.log', '--------------------------------------');
                     $result['success'] = 'orderBatch';
                     break;

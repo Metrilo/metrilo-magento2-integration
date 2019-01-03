@@ -19,11 +19,11 @@
     ], function($, metrilo) {
         $("#<?php echo $block->getHtmlId() ?>").import({
             storeId: <?php echo $storeId; ?>,
-            customerChunks: <?php echo $import->getCustomerChunks($storeId); ?>,
-            categoryChunks: <?php echo $import->getCategoryChunks($storeId); ?>,
-            productChunks: <?php echo $import->getProductChunks($storeId); ?>,
-            orderChunks: <?php echo $import->getOrderChunks($storeId); ?>,
-            importStatus: 'customer',
+            customersChunks: <?php echo $import->getCustomerChunks($storeId); ?>,
+            categoriesChunks: <?php echo $import->getCategoryChunks($storeId); ?>,
+            productsChunks: <?php echo $import->getProductChunks($storeId); ?>,
+            ordersChunks: <?php echo $import->getOrderChunks($storeId); ?>,
+            importType: 'customers',
             submitUrl: '<?php echo $block->getAjaxUrl(); ?>',
             messageSelector: '#metrilo_import_status'
         });
