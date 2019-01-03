@@ -10,11 +10,11 @@ class OrderData
         $this->orderCollection  = $orderCollection;
     }
 
-    public function getOrders($storeId, $chunkId, $chunkItems)
+    public function getOrders($storeId, $chunkId)
     {
         $ordersArray = [];
         $orders      = $this->getOrderQuery($storeId)
-                            ->setPageSize($chunkItems)
+                            ->setPageSize(\Metrilo\Analytics\Model\Import::chunkItems)
                             ->setCurPage($chunkId + 1);
 
         foreach ($orders as $order) {

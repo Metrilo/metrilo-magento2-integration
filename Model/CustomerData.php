@@ -17,11 +17,11 @@ class CustomerData
         return $this->customerCollection->create()->addAttributeToFilter('store_id', $storeId);
     }
 
-    public function getCustomers($storeId, $chunkId, $chunkItems)
+    public function getCustomers($storeId, $chunkId)
     {
         $customersArray = [];
         $customers = $this->getCustomerQuery($storeId)
-                          ->setPageSize($chunkItems)
+                          ->setPageSize(\Metrilo\Analytics\Model\Import::chunkItems)
                           ->setCurPage($chunkId + 1);
 
         foreach ($customers as $customer) {

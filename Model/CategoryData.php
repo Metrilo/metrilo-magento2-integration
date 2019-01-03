@@ -23,12 +23,12 @@ class CategoryData
                     );
     }
 
-    public function getCategories($storeId, $chunkId, $chunkItems)
+    public function getCategories($storeId, $chunkId)
     {
         $storeBaseUrl = $this->storeManager->getStore($storeId)->getBaseUrl(); // Used for multiwebsite configuration base url
         $categoriesArray = [];
         $categories = $this->getCategoryQuery($storeId)
-                           ->setPageSize($chunkItems)
+                           ->setPageSize(\Metrilo\Analytics\Model\Import::chunkItems)
                            ->setCurPage($chunkId + 1);
 
         foreach ($categories as $category) {

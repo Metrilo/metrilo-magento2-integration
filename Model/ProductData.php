@@ -29,11 +29,11 @@ class ProductData
         return $this->productCollection->create()->addAttributeToSelect('*')->addUrlRewrite()->addStoreFilter($storeId);
     }
 
-    public function getProducts($storeId, $chunkId, $chunkItems)
+    public function getProducts($storeId, $chunkId)
     {
         $productsArray = [];
         $products = $this->getProductQuery($storeId)
-                         ->setPageSize($chunkItems)
+                         ->setPageSize(\Metrilo\Analytics\Model\Import::chunkItems)
                          ->setCurPage($chunkId + 1);
         
         foreach ($products as $product) {
