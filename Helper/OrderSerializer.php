@@ -71,7 +71,9 @@ class OrderSerializer extends \Magento\Framework\App\Helper\AbstractHelper
         }
         $skusAdded = array();
         foreach ($order->getAllVisibleItems() as $item) {
-            $data['items'][] = $this->getProductDetails($item);
+            if ($item->getParentItem() == null) {
+                $data['items'][] = $this->getProductDetails($item);
+            }
         }
         return $data;
     }
