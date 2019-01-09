@@ -136,7 +136,7 @@
                 $this->check('price')->value($product['price'])->required()->isNumeric();
             } else {
                 foreach ($product['options'] as $option) {
-                    $this->check('optionId')->value($option['productId'])->required()->isString();
+                    $this->check('optionId')->value($option['id'])->required()->isString();
                     $this->check('optionName')->value($option['name'])->required()->isString();
                     $this->check('optionPrice')->value($option['price'])->required()->isNumeric();
                 }

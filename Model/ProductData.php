@@ -84,11 +84,11 @@ class ProductData
             $imageUrl = (!empty($childProduct->getImage())) ? $this->getProductImageUrl($childProduct->getImage()) : '';
 
             $productOptions[] = [
-                'productId'   => $childProduct->getId(),
-                'sku'         => $childProduct->getSku(),
-                'name'        => $childProduct->getName(),
-                'price'       => $childProduct->getPrice(),
-                'imageUrl'    => $imageUrl
+                'id'       => $childProduct->getId(),
+                'sku'      => $childProduct->getSku(),
+                'name'     => $childProduct->getName(),
+                'price'    => $childProduct->getPrice(),
+                'imageUrl' => $imageUrl
             ];
         }
 
