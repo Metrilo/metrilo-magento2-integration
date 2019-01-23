@@ -10,10 +10,12 @@ class OrderData
         $this->orderCollection  = $orderCollection;
     }
 
-    public function getOrders($storeId)
+    public function getOrders($storeId, $chunkId)
     {
         $ordersArray = [];
-        $orders      = $this->getOrderQuery($storeId);
+        $orders      = $this->getOrderQuery($storeId)
+                            ->setPageSize(\Metrilo\Analytics\Model\Import::chunkItems)
+                            ->setCurPage($chunkId + 1);
 
         foreach ($orders as $order) {
             if(!trim($order->getCustomerEmail())) {
@@ -28,8 +30,8 @@ class OrderData
                     continue;
                 }
                 $orderProducts[] = [
-                    'productId' => $orderItem->getProductId(),
-                    'quantity'  => $orderItem->getQtyOrdered()
+                    'productId'  => $orderItem->getProductId(),
+                    'quantity'   => $orderItem->getQtyOrdered()
                 ];
             }
 
@@ -42,7 +44,7 @@ class OrderData
                 "lastName"      => $orderBillingData->getLastname(),
                 "address"       => is_array($street) ? implode(PHP_EOL, $street) : $street,
                 "city"          => $orderBillingData->getCity(),
-                "country"       => $orderBillingData->getCountryId(),
+                "countryCode"   => $orderBillingData->getCountryId(),
                 "phone"         => $orderBillingData->getTelephone(),
                 "postcode"      => $orderBillingData->getPostcode(),
                 "paymentMethod" => $order->getPayment()->getMethodInstance()->getTitle()
@@ -50,7 +52,7 @@ class OrderData
 
             $ordersArray[] = [
                 'id'        => $order->getIncrementId(),
-                'createdAt' => strtotime($order->getCreatedAt()),
+                'createdAt' => strtotime($order->getCreatedAt()) * 1000,
                 'email'     => $order->getCustomerEmail(),
                 'amount'    => $order->getBaseGrandTotal(),
                 'coupons'   => $couponCode,
@@ -63,7 +65,7 @@ class OrderData
         return $ordersArray;
     }
 
-    protected function getOrderQuery($storeId = 0)
+    public function getOrderQuery($storeId)
     {
         return $this->orderCollection->create()->addAttributeToFilter('store_id', $storeId)->addAttributeToSelect('*')->setOrder('entity_id', 'asc');
     }

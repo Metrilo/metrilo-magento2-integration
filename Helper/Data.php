@@ -258,4 +258,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             $this->log($exception);
         }
     }
+    
+    public function requestLogger($loggerPath, $loggerData) {
+        file_put_contents($loggerPath, $loggerData, FILE_APPEND);
+        file_put_contents($loggerPath, PHP_EOL, FILE_APPEND);
+    }
 }

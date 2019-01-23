@@ -12,20 +12,27 @@ class CustomerData
         $this->subscriber         = $subscriber;
     }
 
-    public function getCustomers($storeId)
+    public function getCustomerQuery($storeId)
+    {
+        return $this->customerCollection->create()->addAttributeToFilter('store_id', $storeId);
+    }
+
+    public function getCustomers($storeId, $chunkId)
     {
         $customersArray = [];
-        $customers = $this->customerCollection->create()->addAttributeToFilter('store_id', $storeId);
+        $customers = $this->getCustomerQuery($storeId)
+                          ->setPageSize(\Metrilo\Analytics\Model\Import::chunkItems)
+                          ->setCurPage($chunkId + 1);
 
         foreach ($customers as $customer) {
             $subscriberStatus = $this->subscriber->loadByEmail($customer['email'])->isSubscribed();
             $this->subscriber->unsetData();
             $customersArray[] = [
-                'email'     => $customer->getEmail(),
-                'createdAt' => strtotime($customer->getCreatedAt()),
-                'firstName' => $customer->getFirstname(),
-                'lastName'  => $customer->getLastname(),
-                'subscribed'=> $subscriberStatus
+                'email'       => $customer->getEmail(),
+                'createdAt'   => strtotime($customer->getCreatedAt()) * 1000,
+                'firstName'   => $customer->getFirstname(),
+                'lastName'    => $customer->getLastname(),
+                'subscribed'  => $subscriberStatus
             ];
         }
         return $customersArray;

@@ -24,10 +24,18 @@ class ProductData
         $this->configurableType  = $configurableType;
     }
 
-    public function getProducts($storeId)
+    public function getProductQuery($storeId)
     {
-        $products = $this->productCollection->create()->addAttributeToSelect('*')->addUrlRewrite()->addStoreFilter($storeId);
+        return $this->productCollection->create()->addAttributeToSelect('*')->addUrlRewrite()->addStoreFilter($storeId);
+    }
 
+    public function getProducts($storeId, $chunkId)
+    {
+        $productsArray = [];
+        $products = $this->getProductQuery($storeId)
+                         ->setPageSize(\Metrilo\Analytics\Model\Import::chunkItems)
+                         ->setCurPage($chunkId + 1);
+        
         foreach ($products as $product) {
             $productId = $product->getId();
             $productType = $product->getTypeId();
@@ -76,11 +84,11 @@ class ProductData
             $imageUrl = (!empty($childProduct->getImage())) ? $this->getProductImageUrl($childProduct->getImage()) : '';
 
             $productOptions[] = [
-                'productId'   => $childProduct->getId(),
-                'sku'         => $childProduct->getSku(),
-                'name'        => $childProduct->getName(),
-                'price'       => $childProduct->getPrice(),
-                'imageUrl'    => $imageUrl
+                'id'       => $childProduct->getId(),
+                'sku'      => $childProduct->getSku(),
+                'name'     => $childProduct->getName(),
+                'price'    => $childProduct->getPrice(),
+                'imageUrl' => $imageUrl
             ];
         }
 

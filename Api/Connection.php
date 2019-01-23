@@ -15,7 +15,7 @@
             $encodedBody = $bodyArray ? json_encode($bodyArray) : '';
             $parsedUrl = parse_url($url);
             $headers = [
-                'Content-Type: application/json',
+                'Content-Type: text/plain',
                 'Accept: */*',
                 'User-Agent: HttpClient/1.0.0',
                 'Connection: Close',

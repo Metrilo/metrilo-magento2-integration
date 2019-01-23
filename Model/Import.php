@@ -12,48 +12,49 @@ namespace Metrilo\Analytics\Model;
  */
 class Import
 {
+    const chunkItems = 50;
+
     private $ordersTotal = 0;
     private $totalChunks = 0;
-    private $chunkItems  = 15;
 
     public function __construct(
         \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $orderCollection,
+        \Metrilo\Analytics\Model\CustomerData $customerData,
+        \Metrilo\Analytics\Model\CategoryData $categoryData,
+        \Metrilo\Analytics\Model\ProductData $productData,
+        \Metrilo\Analytics\Model\OrderData $orderData,
         \Metrilo\Analytics\Helper\AdminStoreResolver $resolver
     ) {
         $this->orderCollection = $orderCollection;
-        $this->resolver = $resolver;
+        $this->customerData    = $customerData;
+        $this->categoryData    = $categoryData;
+        $this->productData     = $productData;
+        $this->orderData       = $orderData;
+        $this->resolver        = $resolver;
     }
 
-    /**
-     * @return int
-     */
-    public function getTotalChunks()
+    public function getCustomerChunks($storeId)
     {
-        return $this->totalChunks;
+        $totalCustomers = $this->customerData->getCustomerQuery($storeId)->getSize();
+        return (int) ceil($totalCustomers / self::chunkItems);
     }
 
-    /**
-     * Get chunk orders
-     *
-     * @param  int
-     * @return
-     */
-    public function getOrders($storeId, $chunkId)
+    public function getCategoryChunks($storeId)
     {
-        return $this->getOrderQuery($storeId)
-            ->setPageSize($this->chunkItems)
-            ->setCurPage($chunkId + 1);
+        $totalCategories = $this->categoryData->getCategoryQuery($storeId)->getSize();
+        return (int) ceil($totalCategories / self::chunkItems);
+    }
+    
+    public function getProductChunks($storeId)
+    {
+        $totalProducts = $this->productData->getProductQuery($storeId)->getSize();
+        return (int) ceil($totalProducts / self::chunkItems);
     }
 
-    /**
-     * Chunks array
-     *
-     * @return int
-     */
-    public function getChunks($storeId = 0)
+    public function getOrderChunks($storeId)
     {
-        $storeTotal = $this->getOrderQuery($storeId)->getSize();
-        return (int) ceil($storeTotal / $this->chunkItems);
+        $totalOrders = $this->orderData->getOrderQuery($storeId)->getSize();
+        return (int) ceil($totalOrders / self::chunkItems);
     }
 
     /**
@@ -64,15 +65,5 @@ class Import
     public function getStoreId()
     {
         return (int) $this->resolver->getAdminStoreId();
-    }
-
-    /**
-     * @param int $storeId
-     *
-     * @return mixed
-     */
-    protected function getOrderQuery($storeId = 0)
-    {
-        return $this->orderCollection->create()->addAttributeToFilter('store_id', $storeId)->setOrder('entity_id', 'asc');
     }
 }
