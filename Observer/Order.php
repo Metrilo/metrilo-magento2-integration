@@ -4,6 +4,7 @@ namespace Metrilo\Analytics\Observer;
 
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
+use \Metrilo\Analytics\Api\Client;
 
 class Order implements ObserverInterface
 {
@@ -30,26 +31,28 @@ class Order implements ObserverInterface
         try {
             $order = $observer->getEvent()->getOrder();
             $storeId = $order->getStoreId();
-
+    
             if (!$this->helper->isEnabled($storeId)) {
                 return;
             }
-
-            $this->helper->callBatchApi($storeId, [$order]);
-
-            // If order is made from the FrontEnd
-            if ($order->getRemoteIp()) {
-                $identify = array(
-                    'id' => $order->getCustomerEmail(),
-                    'params' => array(
-                        'email'      => $order->getCustomerEmail(),
-                        'first_name' => $order->getBillingAddress()->getFirstname(),
-                        'last_name'  => $order->getBillingAddress()->getLastname(),
-                        'name'       => $order->getBillingAddress()->getName()
-                    )
-                );
-                $this->helper->addSessionEvent('identify', 'identify', $identify);
+    
+            $token         = $this->helper->getApiToken($storeId);
+            $platform      = 'Magento ' . $this->helper->metaData->getEdition() . ' ' . $this->helper->metaData->getVersion();
+            $pluginVersion = $this->helper->moduleList->getOne($this->helper::MODULE_NAME)['setup_version'];
+    
+            $client        = new Client($token, $platform, $pluginVersion);
+    
+            if (!trim($order->getCustomerEmail())) {
+                return;
             }
+            
+            $serializedOrder = $this->helper->orderSerializer->serializeOrder($order);
+    
+            $client->order($serializedOrder);
+            $this->helper->requestLogger(__DIR__ . 'OrderRequest.log', json_encode(array('ObserverOrder' => $serializedOrder)));
+            $this->helper->requestLogger(__DIR__ . 'OrderRequest.log', $client->order($serializedOrder));
+            $this->helper->requestLogger(__DIR__ . 'OrderRequest.log', '--------------------------------------');
+    
         } catch (\Exception $e) {
             $this->helper->logError($e);
         }

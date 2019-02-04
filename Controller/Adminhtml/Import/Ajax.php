@@ -12,7 +12,7 @@ class Ajax extends \Magento\Backend\App\Action
     /**
      * @param \Magento\Backend\App\Action\Context              $context
      * @param \Metrilo\Analytics\Helper\Data                   $helper
-     * @param \Metrilo\Analytics\Model\Import                  $import
+     * @param \Metrilo\Analytics\Helper\DataSerializer                  $dataSerializer
      * @param \Magento\Framework\App\Request\Http              $request
      * @param \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory
      */
@@ -21,12 +21,14 @@ class Ajax extends \Magento\Backend\App\Action
         \Magento\Backend\App\Action\Context $context,
         \Metrilo\Analytics\Helper\Data $helper,
         \Metrilo\Analytics\Model\Import $import,
+        \Metrilo\Analytics\Helper\OrderSerializer $orderSerializer,
         \Magento\Framework\App\Request\Http $request,
         \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory
     ) {
         parent::__construct($context);
         $this->helper            = $helper;
         $this->import            = $import;
+        $this->orderSerializer   = $orderSerializer;
         $this->request           = $request;
         $this->resultJsonFactory = $resultJsonFactory;
     }
@@ -58,30 +60,30 @@ class Ajax extends \Magento\Backend\App\Action
 
             switch ($importType) {
                 case 'customers':
-                    $client->customerBatch($this->import->customerData->getCustomers($storeId, $chunkId, $this->import::chunkItems));
-                    $this->helper->requestLogger(__DIR__ . 'Request.log', json_encode(array('Customers' => $this->import->customerData->getCustomers($storeId, $chunkId, $this->import::chunkItems))));
-                    $this->helper->requestLogger(__DIR__ . 'Request.log', $client->customerBatch($this->import->customerData->getCustomers($storeId, $chunkId, $this->import::chunkItems)));
+                    $client->customerBatch($this->import->customerData->getCustomers($storeId, $chunkId));
+                    $this->helper->requestLogger(__DIR__ . 'Request.log', json_encode(array('Customers' => $this->import->customerData->getCustomers($storeId, $chunkId))));
+                    $this->helper->requestLogger(__DIR__ . 'Request.log', $client->customerBatch($this->import->customerData->getCustomers($storeId, $chunkId)));
                     $this->helper->requestLogger(__DIR__ . 'Request.log', '--------------------------------------');
                     $result['success'] = 'customerBatch';
                     break;
                 case 'categories':
-                    $client->categoryBatch($this->import->categoryData->getCategories($storeId, $chunkId, $this->import::chunkItems));
-                    $this->helper->requestLogger(__DIR__ . 'Request.log', json_encode(array('Categories' => $this->import->categoryData->getCategories($storeId, $chunkId, $this->import::chunkItems))));
-                    $this->helper->requestLogger(__DIR__ . 'Request.log', $client->categoryBatch($this->import->categoryData->getCategories($storeId, $chunkId, $this->import::chunkItems)));
+                    $client->categoryBatch($this->import->categoryData->getCategories($storeId, $chunkId));
+                    $this->helper->requestLogger(__DIR__ . 'Request.log', json_encode(array('Categories' => $this->import->categoryData->getCategories($storeId, $chunkId))));
+                    $this->helper->requestLogger(__DIR__ . 'Request.log', $client->categoryBatch($this->import->categoryData->getCategories($storeId, $chunkId)));
                     $this->helper->requestLogger(__DIR__ . 'Request.log', '--------------------------------------');
                     $result['success'] = 'categoryBatch';
                     break;
                 case 'products':
-                    $client->productBatch($this->import->productData->getProducts($storeId, $chunkId, $this->import::chunkItems));
-                    $this->helper->requestLogger(__DIR__ . 'Request.log', json_encode(array('Products' => $this->import->productData->getProducts($storeId, $chunkId, $this->import::chunkItems))));
-                    $this->helper->requestLogger(__DIR__ . 'Request.log', $client->productBatch($this->import->productData->getProducts($storeId, $chunkId, $this->import::chunkItems)));
+                    $client->productBatch($this->import->productData->getProducts($storeId, $chunkId));
+                    $this->helper->requestLogger(__DIR__ . 'Request.log', json_encode(array('Products' => $this->import->productData->getProducts($storeId, $chunkId))));
+                    $this->helper->requestLogger(__DIR__ . 'Request.log', $client->productBatch($this->import->productData->getProducts($storeId, $chunkId)));
                     $this->helper->requestLogger(__DIR__ . 'Request.log', '--------------------------------------');
                     $result['success'] = 'productBatch';
                     break;
                 case 'orders':
-                    $client->orderBatch($this->import->orderData->getOrders($storeId, $chunkId, $this->import::chunkItems));
-                    $this->helper->requestLogger(__DIR__ . 'Request.log', json_encode(array('Orders' => $this->import->orderData->getOrders($storeId, $chunkId, $this->import::chunkItems))));
-                    $this->helper->requestLogger(__DIR__ . 'Request.log', $client->orderBatch($this->import->orderData->getOrders($storeId, $chunkId, $this->import::chunkItems)));
+                    $client->orderBatch($this->orderSerializer->serializeOrders($storeId, $chunkId));
+                    $this->helper->requestLogger(__DIR__ . 'Request.log', json_encode(array('Orders' => $this->orderSerializer->serializeOrders($storeId, $chunkId))));
+                    $this->helper->requestLogger(__DIR__ . 'Request.log', $client->orderBatch($this->orderSerializer->serializeOrders($storeId, $chunkId)));
                     $this->helper->requestLogger(__DIR__ . 'Request.log', '--------------------------------------');
                     $result['success'] = 'orderBatch';
                     break;

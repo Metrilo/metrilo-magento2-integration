@@ -28,10 +28,12 @@ class Import extends \Magento\Config\Block\System\Config\Form\Field
         \Magento\Backend\Block\Template\Context $context,
         \Metrilo\Analytics\Helper\Data $helper,
         \Metrilo\Analytics\Model\Import $import,
+        \Metrilo\Analytics\Helper\OrderSerializer $orderSerializer,
         array $data = []
     ) {
-        $this->helper = $helper;
-        $this->import = $import;
+        $this->helper          = $helper;
+        $this->import          = $import;
+        $this->orderSerializer = $orderSerializer;
         parent::__construct($context, $data);
     }
 
@@ -86,7 +88,7 @@ class Import extends \Magento\Config\Block\System\Config\Form\Field
      */
     public function buttonEnabled()
     {
-        $storeId = $this->import->getStoreId();
+        $storeId = $this->getStoreId();
          return $this->helper->isEnabled($storeId)
              && $this->helper->getApiToken($storeId)
              && $this->helper->getApiSecret($storeId);
@@ -110,5 +112,25 @@ class Import extends \Magento\Config\Block\System\Config\Form\Field
     public function getImport()
     {
         return $this->import;
+    }
+
+    /**
+     * Order Import model
+     *
+     * @return \Metrilo\Analytics\Helper\OrderSerializer
+     */
+    public function getOrderImport()
+    {
+        return $this->orderSerializer;
+    }
+
+    /**
+     * Get contextual store id
+     *
+     * @return int
+     */
+    public function getStoreId()
+    {
+        return (int) $this->helper->resolver->getAdminStoreId();
     }
 }
