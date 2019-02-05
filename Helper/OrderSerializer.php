@@ -4,13 +4,6 @@ namespace Metrilo\Analytics\Helper;
 
 class OrderSerializer extends \Magento\Framework\App\Helper\AbstractHelper
 {
-
-    public function __construct(
-        \Metrilo\Analytics\Model\OrderData $orderData
-    ) {
-        $this->orderData = $orderData;
-    }
-
     public function serializeOrder($order) {
     
         $orderItems    = $order->getAllItems();
@@ -54,20 +47,5 @@ class OrderSerializer extends \Magento\Framework\App\Helper\AbstractHelper
         ];
     
         return $serializedOrder;
-    }
-    
-    public function serializeOrders($storeId, $chunkId)
-    {
-        $serializeOrders = [];
-        $orders      = $this->orderData->getOrders($storeId, $chunkId);
-    
-        foreach ($orders as $order) {
-            if(!trim($order->getCustomerEmail())) {
-                continue;
-            }
-            $serializeOrders[] = $this->serializeOrder($order);
-        }
-    
-        return $serializeOrders;
     }
 }

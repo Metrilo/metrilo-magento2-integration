@@ -28,12 +28,12 @@ class Import extends \Magento\Config\Block\System\Config\Form\Field
         \Magento\Backend\Block\Template\Context $context,
         \Metrilo\Analytics\Helper\Data $helper,
         \Metrilo\Analytics\Model\Import $import,
-        \Metrilo\Analytics\Helper\OrderSerializer $orderSerializer,
+        \Metrilo\Analytics\Model\OrderData $orderData,
         array $data = []
     ) {
-        $this->helper          = $helper;
-        $this->import          = $import;
-        $this->orderSerializer = $orderSerializer;
+        $this->helper    = $helper;
+        $this->import    = $import;
+        $this->orderData = $orderData;
         parent::__construct($context, $data);
     }
 
@@ -119,9 +119,9 @@ class Import extends \Magento\Config\Block\System\Config\Form\Field
      *
      * @return \Metrilo\Analytics\Helper\OrderSerializer
      */
-    public function getOrderImport()
+    public function getOrderData()
     {
-        return $this->orderSerializer;
+        return $this->orderData;
     }
 
     /**

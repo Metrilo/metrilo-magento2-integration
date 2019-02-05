@@ -4,22 +4,23 @@ namespace Metrilo\Analytics\Observer;
 
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
-use \Metrilo\Analytics\Api\Client;
 
 class Order implements ObserverInterface
 {
-
+    
     private $helper;
-
+    
     /**
      * @param \Metrilo\Analytics\Helper\Data $helper
      */
     public function __construct(
-        \Metrilo\Analytics\Helper\Data $helper
+        \Metrilo\Analytics\Helper\Data      $helper,
+        \Metrilo\Analytics\Helper\ApiClient $apiClient
     ) {
-        $this->helper = $helper;
+        $this->helper    = $helper;
+        $this->apiClient = $apiClient;
     }
-
+    
     /**
      * Trigger on save Order
      *
@@ -31,30 +32,23 @@ class Order implements ObserverInterface
         try {
             $order = $observer->getEvent()->getOrder();
             $storeId = $order->getStoreId();
-    
+            
             if (!$this->helper->isEnabled($storeId)) {
                 return;
             }
-    
-            $token         = $this->helper->getApiToken($storeId);
-            $platform      = 'Magento ' . $this->helper->metaData->getEdition() . ' ' . $this->helper->metaData->getVersion();
-            $pluginVersion = $this->helper->moduleList->getOne($this->helper::MODULE_NAME)['setup_version'];
-    
-            $client        = new Client($token, $platform, $pluginVersion);
-    
-            if (!trim($order->getCustomerEmail())) {
-                return;
-            }
             
+            $client          = $this->apiClient->getClient($storeId);
             $serializedOrder = $this->helper->orderSerializer->serializeOrder($order);
+    
     
             $client->order($serializedOrder);
             $this->helper->requestLogger(__DIR__ . 'OrderRequest.log', json_encode(array('ObserverOrder' => $serializedOrder)));
             $this->helper->requestLogger(__DIR__ . 'OrderRequest.log', $client->order($serializedOrder));
             $this->helper->requestLogger(__DIR__ . 'OrderRequest.log', '--------------------------------------');
-    
+            
         } catch (\Exception $e) {
             $this->helper->logError($e);
         }
     }
 }
+

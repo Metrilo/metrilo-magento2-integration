@@ -19,7 +19,12 @@ class OrderData
 
     public function getOrderQuery($storeId)
     {
-        return $this->orderCollection->create()->addAttributeToFilter('store_id', $storeId)->addAttributeToSelect('*')->setOrder('entity_id', 'asc');
+        
+        return $this->orderCollection->create()
+            ->addAttributeToFilter('store_id', $storeId)
+            ->addAttributeToFilter('customer_email', array('neq' => '')) //only return orders with email
+            ->addAttributeToSelect('*')
+            ->setOrder('entity_id', 'asc');
     }
 
     public function getOrderChunks($storeId)
@@ -27,5 +32,4 @@ class OrderData
         $totalOrders = $this->getOrderQuery($storeId)->getSize();
         return (int) ceil($totalOrders / $this->chunkItems);
     }
-
 }
