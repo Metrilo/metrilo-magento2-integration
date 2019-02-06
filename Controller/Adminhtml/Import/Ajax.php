@@ -81,10 +81,10 @@ class Ajax extends \Magento\Backend\App\Action
                     }
                     if(!empty($serializedOrders)) {
                         $client->orderBatch($serializedOrders);
+                        $result['success'] = 'orderBatch';
                     } else {
                         $result['success'] = 'empty orderBatch';
                     }
-                    $result['success'] = 'orderBatch';
                     break;
                 default:
                     $result['success'] = false;

@@ -37,15 +37,14 @@ class Order implements ObserverInterface
                 return;
             }
             
+            if (!trim($order->getCustomerEmail())) {
+                return;
+            }
+            
             $client          = $this->apiClient->getClient($storeId);
             $serializedOrder = $this->helper->orderSerializer->serializeOrder($order);
-    
-    
-            $client->order($serializedOrder);
-            $this->helper->requestLogger(__DIR__ . 'OrderRequest.log', json_encode(array('ObserverOrder' => $serializedOrder)));
-            $this->helper->requestLogger(__DIR__ . 'OrderRequest.log', $client->order($serializedOrder));
-            $this->helper->requestLogger(__DIR__ . 'OrderRequest.log', '--------------------------------------');
             
+            $client->order($serializedOrder);
         } catch (\Exception $e) {
             $this->helper->logError($e);
         }
