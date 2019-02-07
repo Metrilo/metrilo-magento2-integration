@@ -112,12 +112,10 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      *
      * @return string
      */
-    public function getApiEndpoint($storeId)
+    public function getApiEndpoint()
     {
         return $this->config->getValue(
-            'metrilo_analytics/general/api_endpoint',
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
-            $storeId
+            'metrilo_analytics/general/api_endpoint'
         );
     }
 

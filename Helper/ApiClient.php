@@ -29,7 +29,7 @@
             $token         = $this->helper->getApiToken($storeId);
             $platform      = 'Magento ' . $this->metaData->getEdition() . ' ' . $this->metaData->getVersion();
             $pluginVersion = $this->moduleList->getOne($this->helper::MODULE_NAME)['setup_version'];
-            $apiEndpoint   = ($this->helper->getApiEndpoint($storeId)) ? $this->helper->getApiEndpoint($storeId) : 'http://p.metrilo.com';
+            $apiEndpoint   = ($this->helper->getApiEndpoint()) ? $this->helper->getApiEndpoint() : 'http://p.metrilo.com';
             return new Client($token, $platform, $pluginVersion, $apiEndpoint);
         }
     }
