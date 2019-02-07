@@ -9,6 +9,8 @@ namespace Metrilo\Analytics\Helper;
  */
 class Data extends \Magento\Framework\App\Helper\AbstractHelper
 {
+    const chunkItems = 50;
+
     const DATA_TAG = 'metrilo_events';
 
     const MODULE_NAME = 'Metrilo_Analytics';
@@ -34,19 +36,21 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         \Magento\Framework\Json\Helper\Data $jsonHelper,
         \Metrilo\Analytics\Helper\Client $clientHelper,
         \Metrilo\Analytics\Helper\OrderSerializer $orderSerializer,
+        \Metrilo\Analytics\Helper\AdminStoreResolver $resolver,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Magento\Framework\App\ProductMetadata $metaData,
         \Magento\Framework\Module\ModuleListInterface $moduleList
     ) {
-        $this->config = $config;
-        $this->session = $session;
-        $this->logger = $logger;
-        $this->jsonHelper = $jsonHelper;
-        $this->clientHelper = $clientHelper;
+        $this->config          = $config;
+        $this->session         = $session;
+        $this->logger          = $logger;
+        $this->jsonHelper      = $jsonHelper;
+        $this->clientHelper    = $clientHelper;
         $this->orderSerializer = $orderSerializer;
-        $this->storeManager = $storeManager;
-        $this->metaData = $metaData;
-        $this->moduleList = $moduleList;
+        $this->resolver        = $resolver;
+        $this->storeManager    = $storeManager;
+        $this->metaData        = $metaData;
+        $this->moduleList      = $moduleList;
     }
 
     /**
