@@ -54,6 +54,7 @@ class Ajax extends \Magento\Backend\App\Action
             $storeId           = (int)$this->request->getParam('storeId');
             $chunkId           = (int)$this->request->getParam('chunkId');
             $importType        = (string)$this->request->getParam('importType');
+            $endpoint          = $this->helper->getApiEndpoint($storeId);
             $client            = $this->apiClient->getClient($storeId);
 
 //            if ($chunkId == 0) {
