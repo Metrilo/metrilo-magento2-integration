@@ -108,6 +108,18 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
+     * Get API Secret from system configuration
+     *
+     * @return string
+     */
+    public function getApiEndpoint()
+    {
+        return $this->config->getValue(
+            'metrilo_analytics/general/api_endpoint'
+        );
+    }
+
+    /**
      * Get session data with "metrilo_events" key
      *
      * @return array

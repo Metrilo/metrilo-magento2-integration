@@ -18,10 +18,10 @@
             \Magento\Framework\Module\ModuleListInterface $moduleList
         )
         {
-            $this->helper        = $helper;
-            $this->storeManager  = $storeManager;
-            $this->metaData      = $metaData;
-            $this->moduleList    = $moduleList;
+            $this->helper       = $helper;
+            $this->storeManager = $storeManager;
+            $this->metaData     = $metaData;
+            $this->moduleList   = $moduleList;
         }
     
         public function getClient($storeId)
@@ -29,6 +29,7 @@
             $token         = $this->helper->getApiToken($storeId);
             $platform      = 'Magento ' . $this->metaData->getEdition() . ' ' . $this->metaData->getVersion();
             $pluginVersion = $this->moduleList->getOne($this->helper::MODULE_NAME)['setup_version'];
-            return new Client($token, $platform, $pluginVersion);
+            $apiEndpoint   = ($this->helper->getApiEndpoint()) ? $this->helper->getApiEndpoint() : 'http://p.metrilo.com';
+            return new Client($token, $platform, $pluginVersion, $apiEndpoint);
         }
     }
