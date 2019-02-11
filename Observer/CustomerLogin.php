@@ -12,9 +12,11 @@ class CustomerLogin implements ObserverInterface
      * @param \Metrilo\Analytics\Helper\Data $helper
      */
     public function __construct(
-        \Metrilo\Analytics\Helper\Data $helper
+        \Metrilo\Analytics\Helper\Data $helper,
+        \Metrilo\Analytics\Helper\ApiClient $apiClient
     ) {
-        $this->helper = $helper;
+        $this->helper    = $helper;
+        $this->apiClient = $apiClient;
     }
 
     /**
@@ -27,20 +29,16 @@ class CustomerLogin implements ObserverInterface
     {
         try {
             $customer = $observer->getEvent()->getCustomer();
+            $storeId  = $this->helper->getStoreId();
+            
             if (empty($customer) || !$customer) {
                 return;
             }
-
-            $data = [
-                'id' => $customer->getEmail(),
-                'params' => [
-                    'email'         => $customer->getEmail(),
-                    'name'          => $customer->getName(),
-                    'first_name'    => $customer->getFirstname(),
-                    'last_name'     => $customer->getLastname(),
-                ]
-            ];
-            $this->helper->addSessionEvent('identify', 'identify', $data);
+            
+            $client             = $this->apiClient->getClient($storeId);
+            $serializedCustomer = $this->helper->customerSerializer->serializeCustomer($customer);
+            
+            $client->customer($serializedCustomer);
         } catch (\Exception $e) {
             $this->helper->logError($e);
         }

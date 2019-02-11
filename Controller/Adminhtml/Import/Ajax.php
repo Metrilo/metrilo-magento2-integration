@@ -24,20 +24,24 @@ class Ajax extends \Magento\Backend\App\Action
         \Magento\Backend\App\Action\Context              $context,
         \Metrilo\Analytics\Helper\Data                   $helper,
         \Metrilo\Analytics\Model\Import                  $import,
+        \Metrilo\Analytics\Model\CustomerData            $customerData,
         \Metrilo\Analytics\Model\OrderData               $orderData,
+        \Metrilo\Analytics\Helper\CustomerSerializer     $customerSerializer,
         \Metrilo\Analytics\Helper\OrderSerializer        $orderSerializer,
         \Metrilo\Analytics\Helper\ApiClient              $apiClient,
         \Magento\Framework\App\Request\Http              $request,
         \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory
     ) {
         parent::__construct($context);
-        $this->helper            = $helper;
-        $this->import            = $import;
-        $this->orderData         = $orderData;
-        $this->orderSerializer   = $orderSerializer;
-        $this->apiClient         = $apiClient;
-        $this->request           = $request;
-        $this->resultJsonFactory = $resultJsonFactory;
+        $this->helper             = $helper;
+        $this->import             = $import;
+        $this->customerData       = $customerData;
+        $this->orderData          = $orderData;
+        $this->customerSerializer = $customerSerializer;
+        $this->orderSerializer    = $orderSerializer;
+        $this->apiClient          = $apiClient;
+        $this->request            = $request;
+        $this->resultJsonFactory  = $resultJsonFactory;
     }
 
     /**
@@ -62,8 +66,17 @@ class Ajax extends \Magento\Backend\App\Action
 
             switch ($importType) {
                 case 'customers':
-                    $client->customerBatch($this->import->customerData->getCustomers($storeId, $chunkId));
-                    $result['success'] = 'customerBatch';
+                    $serializedCustomers = [];
+                    $customers = $this->customerData->getCustomers($storeId, $chunkId);
+                    foreach($customers as $customer) {
+                        $serializedCustomers[] = $this->customerSerializer->serializeCustomer($customer);
+                    }
+                    if(!empty($serializedCustomers)) {
+                        $client->customerBatch($serializedCustomers);
+                        $result['success'] = 'customerBatch';
+                    } else {
+                        $result['success'] = 'empty customerBatch';
+                    }
                     break;
                 case 'categories':
                     $client->categoryBatch($this->import->categoryData->getCategories($storeId, $chunkId));

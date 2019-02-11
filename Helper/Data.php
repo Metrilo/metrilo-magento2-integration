@@ -31,26 +31,28 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function __construct(
         \Magento\Framework\App\Config\ScopeConfigInterface $config,
-        \Magento\Customer\Model\Session $session,
-        \Psr\Log\LoggerInterface $logger,
-        \Magento\Framework\Json\Helper\Data $jsonHelper,
-        \Metrilo\Analytics\Helper\Client $clientHelper,
-        \Metrilo\Analytics\Helper\OrderSerializer $orderSerializer,
-        \Metrilo\Analytics\Helper\AdminStoreResolver $resolver,
-        \Magento\Store\Model\StoreManagerInterface $storeManager,
-        \Magento\Framework\App\ProductMetadata $metaData,
-        \Magento\Framework\Module\ModuleListInterface $moduleList
+        \Magento\Customer\Model\Session                    $session,
+        \Psr\Log\LoggerInterface                           $logger,
+        \Magento\Framework\Json\Helper\Data                $jsonHelper,
+        \Metrilo\Analytics\Helper\Client                   $clientHelper,
+        \Metrilo\Analytics\Helper\CustomerSerializer       $customerSerializer,
+        \Metrilo\Analytics\Helper\OrderSerializer          $orderSerializer,
+        \Metrilo\Analytics\Helper\AdminStoreResolver       $resolver,
+        \Magento\Store\Model\StoreManagerInterface         $storeManager,
+        \Magento\Framework\App\ProductMetadata             $metaData,
+        \Magento\Framework\Module\ModuleListInterface      $moduleList
     ) {
-        $this->config          = $config;
-        $this->session         = $session;
-        $this->logger          = $logger;
-        $this->jsonHelper      = $jsonHelper;
-        $this->clientHelper    = $clientHelper;
-        $this->orderSerializer = $orderSerializer;
-        $this->resolver        = $resolver;
-        $this->storeManager    = $storeManager;
-        $this->metaData        = $metaData;
-        $this->moduleList      = $moduleList;
+        $this->config             = $config;
+        $this->session            = $session;
+        $this->logger             = $logger;
+        $this->jsonHelper         = $jsonHelper;
+        $this->clientHelper       = $clientHelper;
+        $this->customerSerializer = $customerSerializer;
+        $this->orderSerializer    = $orderSerializer;
+        $this->resolver           = $resolver;
+        $this->storeManager       = $storeManager;
+        $this->metaData           = $metaData;
+        $this->moduleList         = $moduleList;
     }
 
     /**

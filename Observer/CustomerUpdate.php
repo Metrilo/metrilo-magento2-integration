@@ -16,7 +16,7 @@ class CustomerUpdate implements ObserverInterface
         \Metrilo\Analytics\Helper\Data $helper,
         \Magento\Customer\Api\CustomerRepositoryInterface $customerRepository
     ) {
-        $this->helper = $helper;
+        $this->helper             = $helper;
         $this->customerRepository = $customerRepository;
     }
 
@@ -30,24 +30,18 @@ class CustomerUpdate implements ObserverInterface
     public function execute(Observer $observer)
     {
         try {
-            $email = $observer->getEvent()->getEmail();
+            $email   = $observer->getEvent()->getEmail();
+            $storeId = $this->helper->getStoreId();
+            
             if (empty($email) || !$email) {
                 return;
             }
-
-            $customer = $this->customerRepository->get($email);
-            if ($customer) {
-                $data = [
-                    'id' => $customer->getEmail(),
-                    'params' => [
-                        'email'         => $customer->getEmail(),
-                        'name'          => $customer->getFirstname() .' '.$customer->getLastname(),
-                        'first_name'    => $customer->getFirstname(),
-                        'last_name'     => $customer->getLastname(),
-                    ]
-                ];
-                $this->helper->addSessionEvent('identify', 'identify', $data);
-            }
+            
+            $customer           = $this->customerRepository->get($email);
+            $client             = $this->apiClient->getClient($storeId);
+            $serializedCustomer = $this->helper->customerSerializer->serializeCustomer($customer);
+            
+            $client->customer($serializedCustomer);
         } catch (\Exception $e) {
             $this->helper->logError($e);
         }
