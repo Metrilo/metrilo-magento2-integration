@@ -10,4 +10,7 @@
     <event name="admin_system_config_changed_section_metrilo_analytics">
         <observer name="metrilo_config_change" instance="Metrilo\Analytics\Observer\Config"/>
     </event>
+    <event name="customer_save_after">
+        <observer name="metrilo_event_customer_mass_update" instance="Metrilo\Analytics\Observer\CustomerAdminUpdate" />
+    </event>
 </config>
