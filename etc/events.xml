@@ -11,6 +11,6 @@
         <observer name="metrilo_event_order" instance="Metrilo\Analytics\Observer\Order"/>
     </event>
     <event name="newsletter_subscriber_save_after">
-        <observer name="metrilo_event_subscriber_update" instance="Metrilo\Analytics\Observer\SubscriberUpdate" />
+        <observer name="metrilo_event_subscriber_update" instance="Metrilo\Analytics\Observer\Customer" />
     </event>
 </config>

@@ -43,9 +43,57 @@ class Ajax extends \Magento\Backend\App\Action
         $this->request            = $request;
         $this->resultJsonFactory  = $resultJsonFactory;
     }
+    
+    private function serializeDataBatch($importType, $dataBatch) {
+        $serializedData = [];
+        foreach($dataBatch as $data) {
+            switch ($importType) {
+                case 'customers':
+                    $serializedData[] = $this->customerSerializer->serializeCustomer($data);
+                    break;
+                case 'categories':
+                    break;
+                case 'products':
+                    break;
+                case 'orders':
+                    $serializedData[] = $this->orderSerializer->serializeOrder($data);
+                    break;
+                default:
+                    break;
+            }
+        }
+        
+        return $serializedData;
+    }
+    
+    private function sendSerializedData($importType, $serializedData, $storeId) {
+        $client = $this->apiClient->getClient($storeId);
+        
+        if(!empty($serializedData)) {
+            switch ($importType) {
+                case 'customers':
+                    $client->customerBatch($serializedData);
+                    break;
+                case 'categories':
+                    break;
+                case 'products':
+                    break;
+                case 'orders':
+                    $client->orderBatch($serializedData);
+                    break;
+                default:
+                    break;
+            }
+            $result = $importType . 'Batch';
+        } else {
+            $result = 'empty ' . $importType . 'Batch';
+        }
+        
+        return $result;
+    }
 
     /**
-     * Import orders history by chunks
+     * Import history by chunks
      *
      * @throws \Exception
      * @return string
@@ -58,7 +106,6 @@ class Ajax extends \Magento\Backend\App\Action
             $storeId           = (int)$this->request->getParam('storeId');
             $chunkId           = (int)$this->request->getParam('chunkId');
             $importType        = (string)$this->request->getParam('importType');
-            $client            = $this->apiClient->getClient($storeId);
 
 //            if ($chunkId == 0) {
 //                $this->helper->createActivity($storeId, 'import_start');
@@ -66,38 +113,20 @@ class Ajax extends \Magento\Backend\App\Action
 
             switch ($importType) {
                 case 'customers':
-                    $serializedCustomers = [];
-                    $customers = $this->customerData->getCustomers($storeId, $chunkId);
-                    foreach($customers as $customer) {
-                        $serializedCustomers[] = $this->customerSerializer->serializeCustomer($customer);
-                    }
-                    if(!empty($serializedCustomers)) {
-                        $client->customerBatch($serializedCustomers);
-                        $result['success'] = 'customerBatch';
-                    } else {
-                        $result['success'] = 'empty customerBatch';
-                    }
+                    $serializedCustomers = $this->serializeDataBatch($importType, $this->customerData->getCustomers($storeId, $chunkId));
+                    $result['success']   = $this->sendSerializedData($importType, $serializedCustomers, $storeId);
                     break;
                 case 'categories':
-                    $client->categoryBatch($this->import->categoryData->getCategories($storeId, $chunkId));
+//                    $client->categoryBatch($this->import->categoryData->getCategories($storeId, $chunkId));
                     $result['success'] = 'categoryBatch';
                     break;
                 case 'products':
-                    $client->productBatch($this->import->productData->getProducts($storeId, $chunkId));
+//                    $client->productBatch($this->import->productData->getProducts($storeId, $chunkId));
                     $result['success'] = 'productBatch';
                     break;
                 case 'orders':
-                    $serializedOrders = [];
-                    $orders = $this->orderData->getOrders($storeId, $chunkId);
-                    foreach($orders as $order) {
-                        $serializedOrders[] = $this->orderSerializer->serializeOrder($order);
-                    }
-                    if(!empty($serializedOrders)) {
-                        $client->orderBatch($serializedOrders);
-                        $result['success'] = 'orderBatch';
-                    } else {
-                        $result['success'] = 'empty orderBatch';
-                    }
+                    $serializedOrders  = $this->serializeDataBatch($importType, $this->orderData->getOrders($storeId, $chunkId));
+                    $result['success'] = $this->sendSerializedData($importType, $serializedOrders, $storeId);
                     break;
                 default:
                     $result['success'] = false;

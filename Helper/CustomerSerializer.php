@@ -5,11 +5,9 @@ namespace Metrilo\Analytics\Helper;
 class CustomerSerializer extends \Magento\Framework\App\Helper\AbstractHelper
 {
     public function __construct(
-        \Magento\Newsletter\Model\Subscriber $subscriberModel,
-        \Magento\Framework\App\RequestInterface $request
+        \Magento\Newsletter\Model\Subscriber $subscriberModel
     ) {
         $this->subscriberModel = $subscriberModel;
-        $this->request         = $request;
     }
     
     public function serializeCustomer($customer) {

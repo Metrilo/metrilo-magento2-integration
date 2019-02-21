@@ -35,8 +35,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         \Psr\Log\LoggerInterface                           $logger,
         \Magento\Framework\Json\Helper\Data                $jsonHelper,
         \Metrilo\Analytics\Helper\Client                   $clientHelper,
-        \Metrilo\Analytics\Helper\CustomerSerializer       $customerSerializer,
-        \Metrilo\Analytics\Helper\OrderSerializer          $orderSerializer,
         \Metrilo\Analytics\Helper\AdminStoreResolver       $resolver,
         \Magento\Store\Model\StoreManagerInterface         $storeManager,
         \Magento\Framework\App\ProductMetadata             $metaData,
@@ -47,8 +45,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $this->logger             = $logger;
         $this->jsonHelper         = $jsonHelper;
         $this->clientHelper       = $clientHelper;
-        $this->customerSerializer = $customerSerializer;
-        $this->orderSerializer    = $orderSerializer;
         $this->resolver           = $resolver;
         $this->storeManager       = $storeManager;
         $this->metaData           = $metaData;
@@ -159,74 +155,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         }
         array_push($events, $eventToAdd);
         $this->session->setData(self::DATA_TAG, $events);
-    }
-
-    /**
-     * API call to Metrilo to submit information
-     *
-     * @param  int $storeId
-     * @param  array $orders
-     * @return void
-     */
-    public function callBatchApi($storeId, $orders)
-    {
-        $ordersForSubmission = $this->_buildOrdersForSubmission($orders);
-        $call = $this->_buildCall($storeId, $ordersForSubmission);
-        $this->_callMetriloApi($storeId, $call);
-    }
-
-    /**
-     * Create submition ready arrays from Array of \Magento\Sales\Model\Order
-     *
-     * @param \Magento\Sales\Model\Order[] $orders
-     * @return array
-     */
-    protected function _buildOrdersForSubmission($orders)
-    {
-        $ordersForSubmission = [];
-        foreach ($orders as $order) {
-            if ($order->getId()) {
-                array_push($ordersForSubmission, $this->orderSerializer->buildOrderForSubmission($order));
-            }
-        }
-        return $ordersForSubmission;
-    }
-
-    /**
-     * Create call array
-     *
-     * @param  int $storeId
-     * @param  array $ordersForSubmission
-     * @return array
-     */
-    protected function _buildCall($storeId, $ordersForSubmission)
-    {
-        return array(
-            'token'    => $this->getApiToken($storeId),
-            'events'   => $ordersForSubmission,
-            // for debugging/support purposes
-            'platform' => 'Magento ' . $this->metaData->getEdition() . ' ' . $this->metaData->getVersion(),
-            'version'  => $this->moduleList->getOne(self::MODULE_NAME)['setup_version']
-        );
-    }
-
-    /**
-     * Submit orders to Metrilo API via post request
-     *
-     * @param  int $storeId
-     * @param  array $call
-     * @return void
-     */
-    protected function _callMetriloApi($storeId, $call)
-    {
-        ksort($call);
-        $basedCall = base64_encode($this->jsonHelper->jsonEncode($call));
-        $signature = md5($basedCall . $this->getApiSecret($storeId));
-        $requestBody = [
-            's'   => $signature,
-            'hs'  => $basedCall
-        ];
-        $this->clientHelper->post($this->push_domain . '/bt', $requestBody);
     }
 
     public function log($value)
