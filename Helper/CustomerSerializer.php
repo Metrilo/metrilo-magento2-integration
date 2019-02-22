@@ -10,7 +10,7 @@ class CustomerSerializer extends \Magento\Framework\App\Helper\AbstractHelper
         $this->subscriberModel = $subscriberModel;
     }
     
-    public function serializeCustomer($customer) {
+    public function serialize($customer) {
         $this->subscriberModel->unsetData();
         $subscriberStatus   = $this->subscriberModel->loadByEmail($customer->getEmail())->isSubscribed();
         $serializedCustomer = [

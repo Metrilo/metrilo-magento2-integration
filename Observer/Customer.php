@@ -29,20 +29,18 @@ class Customer implements ObserverInterface
     {
         try {
             $storeId    = $this->helper->getStoreId();
-            $client     = $this->apiClient->getClient($storeId);
             $eventName  = $observer->getEvent()->getName();
             $hasChanges = true;
             
             switch ($eventName) {
                 case 'customer_save_after':
-                    $customer     = $observer->getEvent()->getCustomer();
-                    $origCustomer = $this->customerRepository->getById($customer->getId());
-                    $email        = $customer->getEmail();
+                    $customer         = $observer->getEvent()->getCustomer();
+                    $originalCustomer = $this->customerRepository->getById($customer->getId());
                     
                     // Create api call only if there is difference between original and saved after customer data.
-                    if ($customer->getEmail() == $origCustomer->getEmail() &&
-                        $customer->getFirstname() == $origCustomer->getFirstname() &&
-                        $customer->getLastname() == $origCustomer->getLastname()) {
+                    if ($customer->getEmail() == $originalCustomer->getEmail() &&
+                        $customer->getFirstname() == $originalCustomer->getFirstname() &&
+                        $customer->getLastname() == $originalCustomer->getLastname()) {
                         $hasChanges = false;
                     } else {
                         $hasChanges = true;
@@ -51,28 +49,26 @@ class Customer implements ObserverInterface
                 case 'newsletter_subscriber_save_after':
                     $subscriber = $observer->getEvent()->getSubscriber();
                     $customer   = $this->customerRepository->getById($subscriber->getCustomerId());
-                    $email      = $subscriber->getEmail();
                     $hasChanges = $subscriber->isStatusChanged();
                     break;
                 case 'customer_account_edited':
-                    $email    = $observer->getEvent()->getEmail();
-                    $customer = $this->customerRepository->get($email);
+                    $customer = $this->customerRepository->get($observer->getEvent()->getEmail());
                     break;
                 case 'customer_register_success':
                     $customer = $observer->getEvent()->getCustomer();
-                    $email    = $customer->getEmail();
                     break;
                 default:
                     break;
             }
             
-            if (!trim($email)) {
-                $this->helper->logError('Customer with id = '. $customer->getId(). '  have no email address!');
+            if (!trim($customer->getEmail())) {
+                $this->helper->logError('Customer with id = '. $customer->getId(). '  has no email address!');
                 return;
             }
             
             if ($hasChanges) {
-                $serializedCustomer = $this->customerSerializer->serializeCustomer($customer);
+                $client             = $this->apiClient->getClient($storeId);
+                $serializedCustomer = $this->customerSerializer->serialize($customer);
                 $client->customer($serializedCustomer);
             }
         } catch (\Exception $e) {
