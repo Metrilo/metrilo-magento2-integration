@@ -80,16 +80,16 @@ class Ajax extends \Magento\Backend\App\Action
                     $result['success']   = $client->customerBatch($serializedCustomers);
                     break;
                 case 'categories':
-//                    $client->categoryBatch($this->import->categoryData->getCategories($storeId, $chunkId));
+                    $client->categoryBatch($this->import->categoryData->getCategories($storeId, $chunkId));
                     $result['success'] = 'categoryBatch';
                     break;
                 case 'products':
-//                    $client->productBatch($this->import->productData->getProducts($storeId, $chunkId));
+                    $client->productBatch($this->import->productData->getProducts($storeId, $chunkId));
                     $result['success'] = 'productBatch';
                     break;
                 case 'orders':
                     $serializedOrders  = $this->serializeRecords($this->orderData->getOrders($storeId, $chunkId), $this->orderSerializer);
-                    $result['success'] = $client->customerBatch($serializedOrders);
+                    $result['success'] = $client->orderBatch($serializedOrders);
                     break;
                 default:
                     $result['success'] = false;

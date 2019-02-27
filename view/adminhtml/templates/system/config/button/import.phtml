@@ -5,10 +5,8 @@
 ?>
 <?php if ($block->buttonEnabled()): ?>
     <?php /** @var \Metrilo\Analytics\Helper\DataSerializer $import */
-        $import       = $block->getImport();
-        $customerData = $block->getCustomerData();
-        $orderData    = $block->getOrderData();
-        $storeId      = $block->getStoreId();
+        $import  = $block->getImport();
+        $storeId = $block->getStoreId();
     ?>
     <div class="pp-buttons-container">
         <button id="<?php echo $block->getHtmlId() ?>" onclick="return false;">
@@ -22,10 +20,10 @@
     ], function($, metrilo) {
         $("#<?php echo $block->getHtmlId() ?>").import({
             storeId: <?php echo $storeId; ?>,
-            customersChunks: <?php echo $customerData->getCustomerChunks($storeId); ?>,
+            customersChunks: <?php echo $block->getCustomerChunks(); ?>,
             categoriesChunks: <?php echo $import->getCategoryChunks($storeId); ?>,
             productsChunks: <?php echo $import->getProductChunks($storeId); ?>,
-            ordersChunks: <?php echo $orderData->getOrderChunks($storeId); ?>,
+            ordersChunks: <?php echo $block->getOrderChunks(); ?>,
             submitUrl: '<?php echo $block->getAjaxUrl(); ?>',
             messageSelector: '#metrilo_import_status'
         });

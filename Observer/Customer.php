@@ -25,49 +25,58 @@ class Customer implements ObserverInterface
         $this->customerRepository = $customerRepository;
     }
     
+    private function getCustomerFromEvent($observer) {
+        switch ($observer->getEvent()->getName()) {
+            case 'customer_save_after':
+                $customer = $observer->getEvent()->getCustomer();
+                if ($this->hasCustomerChanged($customer)) {
+                    return $customer;
+                }
+                
+                break;
+            case 'newsletter_subscriber_save_after':
+                $subscriber = $observer->getEvent()->getSubscriber();
+                if ($subscriber->isStatusChanged()) {
+                    return $this->customerRepository->getById($subscriber->getCustomerId());
+                }
+                
+                break;
+            case 'customer_account_edited':
+                return $this->customerRepository->get($observer->getEvent()->getEmail());
+                
+                break;
+            case 'customer_register_success':
+                return $observer->getEvent()->getCustomer();
+                
+                break;
+            default:
+                break;
+        }
+        
+        return false;
+    }
+    
+    private function hasCustomerChanged($customer) {
+        $originalCustomer = $this->customerRepository->getById($customer->getId());
+        
+        return $customer->getEmail() != $originalCustomer->getEmail() ||
+                $customer->getFirstname() != $originalCustomer->getFirstname() ||
+                $customer->getLastname() != $originalCustomer->getLastname();
+    }
+    
+    
     public function execute(Observer $observer)
     {
         try {
-            $storeId    = $this->helper->getStoreId();
-            $eventName  = $observer->getEvent()->getName();
-            $hasChanges = true;
+            $customer = $this->getCustomerFromEvent($observer);
             
-            switch ($eventName) {
-                case 'customer_save_after':
-                    $customer         = $observer->getEvent()->getCustomer();
-                    $originalCustomer = $this->customerRepository->getById($customer->getId());
-                    
-                    // Create api call only if there is difference between original and saved after customer data.
-                    if ($customer->getEmail() == $originalCustomer->getEmail() &&
-                        $customer->getFirstname() == $originalCustomer->getFirstname() &&
-                        $customer->getLastname() == $originalCustomer->getLastname()) {
-                        $hasChanges = false;
-                    } else {
-                        $hasChanges = true;
-                    }
-                    break;
-                case 'newsletter_subscriber_save_after':
-                    $subscriber = $observer->getEvent()->getSubscriber();
-                    $customer   = $this->customerRepository->getById($subscriber->getCustomerId());
-                    $hasChanges = $subscriber->isStatusChanged();
-                    break;
-                case 'customer_account_edited':
-                    $customer = $this->customerRepository->get($observer->getEvent()->getEmail());
-                    break;
-                case 'customer_register_success':
-                    $customer = $observer->getEvent()->getCustomer();
-                    break;
-                default:
-                    break;
-            }
-            
-            if (!trim($customer->getEmail())) {
-                $this->helper->logError('Customer with id = '. $customer->getId(). '  has no email address!');
-                return;
-            }
-            
-            if ($hasChanges) {
-                $client             = $this->apiClient->getClient($storeId);
+            if ($customer) {
+                if (!trim($customer->getEmail())) {
+                    $this->helper->logError('Customer with id = '. $customer->getId(). '  has no email address!');
+                    return;
+                }
+                
+                $client             = $this->apiClient->getClient($this->helper->getStoreId());
                 $serializedCustomer = $this->customerSerializer->serialize($customer);
                 $client->customer($serializedCustomer);
             }

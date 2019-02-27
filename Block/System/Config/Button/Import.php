@@ -116,24 +116,14 @@ class Import extends \Magento\Config\Block\System\Config\Form\Field
         return $this->import;
     }
 
-    /**
- * Order Import model
- *
- * @return \Metrilo\Analytics\Helper\OrderSerializer
- */
-    public function getOrderData()
+    public function getOrderChunks()
     {
-        return $this->orderData;
+        return $this->orderData->getOrderChunks($this->getStoreId());
     }
-
-    /**
-     * Order Import model
-     *
-     * @return \Metrilo\Analytics\Helper\OrderSerializer
-     */
-    public function getCustomerData()
+    
+    public function getCustomerChunks()
     {
-        return $this->customerData;
+        return $this->customerData->getCustomerChunks($this->getStoreId());
     }
 
     /**
