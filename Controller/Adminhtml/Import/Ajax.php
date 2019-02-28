@@ -24,24 +24,38 @@ class Ajax extends \Magento\Backend\App\Action
         \Magento\Backend\App\Action\Context              $context,
         \Metrilo\Analytics\Helper\Data                   $helper,
         \Metrilo\Analytics\Model\Import                  $import,
+        \Metrilo\Analytics\Model\CustomerData            $customerData,
         \Metrilo\Analytics\Model\OrderData               $orderData,
+        \Metrilo\Analytics\Helper\CustomerSerializer     $customerSerializer,
         \Metrilo\Analytics\Helper\OrderSerializer        $orderSerializer,
         \Metrilo\Analytics\Helper\ApiClient              $apiClient,
         \Magento\Framework\App\Request\Http              $request,
         \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory
     ) {
         parent::__construct($context);
-        $this->helper            = $helper;
-        $this->import            = $import;
-        $this->orderData         = $orderData;
-        $this->orderSerializer   = $orderSerializer;
-        $this->apiClient         = $apiClient;
-        $this->request           = $request;
-        $this->resultJsonFactory = $resultJsonFactory;
+        $this->helper             = $helper;
+        $this->import             = $import;
+        $this->customerData       = $customerData;
+        $this->orderData          = $orderData;
+        $this->customerSerializer = $customerSerializer;
+        $this->orderSerializer    = $orderSerializer;
+        $this->apiClient          = $apiClient;
+        $this->request            = $request;
+        $this->resultJsonFactory  = $resultJsonFactory;
+    }
+    
+    private function serializeRecords($records, $serializer) {
+        $serializedData = [];
+        
+        foreach($records as $record) {
+            $serializedData[] = $serializer->serialize($record);
+        }
+        
+        return $serializedData;
     }
 
     /**
-     * Import orders history by chunks
+     * Import history by chunks
      *
      * @throws \Exception
      * @return string
@@ -62,8 +76,8 @@ class Ajax extends \Magento\Backend\App\Action
 
             switch ($importType) {
                 case 'customers':
-                    $client->customerBatch($this->import->customerData->getCustomers($storeId, $chunkId));
-                    $result['success'] = 'customerBatch';
+                    $serializedCustomers = $this->serializeRecords($this->customerData->getCustomers($storeId, $chunkId), $this->customerSerializer);
+                    $result['success']   = $client->customerBatch($serializedCustomers);
                     break;
                 case 'categories':
                     $client->categoryBatch($this->import->categoryData->getCategories($storeId, $chunkId));
@@ -74,17 +88,8 @@ class Ajax extends \Magento\Backend\App\Action
                     $result['success'] = 'productBatch';
                     break;
                 case 'orders':
-                    $serializedOrders = [];
-                    $orders = $this->orderData->getOrders($storeId, $chunkId);
-                    foreach($orders as $order) {
-                        $serializedOrders[] = $this->orderSerializer->serializeOrder($order);
-                    }
-                    if(!empty($serializedOrders)) {
-                        $client->orderBatch($serializedOrders);
-                        $result['success'] = 'orderBatch';
-                    } else {
-                        $result['success'] = 'empty orderBatch';
-                    }
+                    $serializedOrders  = $this->serializeRecords($this->orderData->getOrders($storeId, $chunkId), $this->orderSerializer);
+                    $result['success'] = $client->orderBatch($serializedOrders);
                     break;
                 default:
                     $result['success'] = false;

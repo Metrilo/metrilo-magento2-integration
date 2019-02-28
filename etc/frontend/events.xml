@@ -7,11 +7,11 @@
  */
 -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
-    <event name="customer_login">
-        <observer name="metrilo_event_login" instance="Metrilo\Analytics\Observer\CustomerLogin" />
-    </event>
     <event name="customer_account_edited">
-    	<observer name="metrilo_event_account_update" instance="Metrilo\Analytics\Observer\CustomerUpdate" />
+        <observer name="metrilo_event_customer_update" instance="Metrilo\Analytics\Observer\Customer" />
+    </event>
+    <event name="customer_register_success">
+        <observer name="metrilo_event_customer_create" instance="Metrilo\Analytics\Observer\Customer" />
     </event>
     <event name="checkout_cart_product_add_after">
         <observer name="metrilo_event_addtocart" instance="Metrilo\Analytics\Observer\AddToCart" />

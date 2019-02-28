@@ -4,12 +4,12 @@ namespace Metrilo\Analytics\Model;
 
 class CustomerData
 {
+    public $chunkItems = \Metrilo\Analytics\Helper\Data::chunkItems;
+
     public function __construct(
-        \Magento\Customer\Model\ResourceModel\Customer\CollectionFactory $customerCollection,
-        \Magento\Newsletter\Model\Subscriber $subscriber
+        \Magento\Customer\Model\ResourceModel\Customer\CollectionFactory $customerCollection
     ) {
         $this->customerCollection = $customerCollection;
-        $this->subscriber         = $subscriber;
     }
 
     public function getCustomerQuery($storeId)
@@ -19,22 +19,12 @@ class CustomerData
 
     public function getCustomers($storeId, $chunkId)
     {
-        $customersArray = [];
-        $customers = $this->getCustomerQuery($storeId)
-                          ->setPageSize(\Metrilo\Analytics\Model\Import::chunkItems)
-                          ->setCurPage($chunkId + 1);
+        return $this->getCustomerQuery($storeId)->setPageSize($this->chunkItems)->setCurPage($chunkId + 1);
+    }
 
-        foreach ($customers as $customer) {
-            $subscriberStatus = $this->subscriber->loadByEmail($customer['email'])->isSubscribed();
-            $this->subscriber->unsetData();
-            $customersArray[] = [
-                'email'       => $customer->getEmail(),
-                'createdAt'   => strtotime($customer->getCreatedAt()) * 1000,
-                'firstName'   => $customer->getFirstname(),
-                'lastName'    => $customer->getLastname(),
-                'subscribed'  => $subscriberStatus
-            ];
-        }
-        return $customersArray;
+    public function getCustomerChunks($storeId)
+    {
+        $totalCustomers = $this->getCustomerQuery($storeId)->getSize();
+        return (int) ceil($totalCustomers / $this->chunkItems);
     }
 }

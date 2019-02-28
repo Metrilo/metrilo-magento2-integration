@@ -14,11 +14,13 @@ class Order implements ObserverInterface
      * @param \Metrilo\Analytics\Helper\Data $helper
      */
     public function __construct(
-        \Metrilo\Analytics\Helper\Data      $helper,
-        \Metrilo\Analytics\Helper\ApiClient $apiClient
+        \Metrilo\Analytics\Helper\Data            $helper,
+        \Metrilo\Analytics\Helper\ApiClient       $apiClient,
+        \Metrilo\Analytics\Helper\OrderSerializer $orderSerializer
     ) {
-        $this->helper    = $helper;
-        $this->apiClient = $apiClient;
+        $this->helper          = $helper;
+        $this->apiClient       = $apiClient;
+        $this->orderSerializer = $orderSerializer;
     }
     
     /**
@@ -42,7 +44,7 @@ class Order implements ObserverInterface
             }
             
             $client          = $this->apiClient->getClient($storeId);
-            $serializedOrder = $this->helper->orderSerializer->serializeOrder($order);
+            $serializedOrder = $this->orderSerializer->serialize($order);
             
             $client->order($serializedOrder);
         } catch (\Exception $e) {

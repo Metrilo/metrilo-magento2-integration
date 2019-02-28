@@ -15,19 +15,11 @@ class Import
     const chunkItems = 50;
 
     public function __construct(
-        \Metrilo\Analytics\Model\CustomerData $customerData,
         \Metrilo\Analytics\Model\CategoryData $categoryData,
         \Metrilo\Analytics\Model\ProductData $productData
     ) {
-        $this->customerData    = $customerData;
         $this->categoryData    = $categoryData;
         $this->productData     = $productData;
-    }
-
-    public function getCustomerChunks($storeId)
-    {
-        $totalCustomers = $this->customerData->getCustomerQuery($storeId)->getSize();
-        return (int) ceil($totalCustomers / self::chunkItems);
     }
 
     public function getCategoryChunks($storeId)
