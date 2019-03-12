@@ -21,7 +21,7 @@
         $("#<?php echo $block->getHtmlId() ?>").import({
             storeId: <?php echo $storeId; ?>,
             customersChunks: <?php echo $block->getCustomerChunks(); ?>,
-            categoriesChunks: <?php echo $import->getCategoryChunks($storeId); ?>,
+            categoriesChunks: <?php echo $block->getCategoryChunks(); ?>,
             productsChunks: <?php echo $import->getProductChunks($storeId); ?>,
             ordersChunks: <?php echo $block->getOrderChunks(); ?>,
             submitUrl: '<?php echo $block->getAjaxUrl(); ?>',

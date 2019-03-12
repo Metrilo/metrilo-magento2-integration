@@ -25,8 +25,10 @@ class Ajax extends \Magento\Backend\App\Action
         \Metrilo\Analytics\Helper\Data                   $helper,
         \Metrilo\Analytics\Model\Import                  $import,
         \Metrilo\Analytics\Model\CustomerData            $customerData,
+        \Metrilo\Analytics\Model\CategoryData            $categoryData,
         \Metrilo\Analytics\Model\OrderData               $orderData,
         \Metrilo\Analytics\Helper\CustomerSerializer     $customerSerializer,
+        \Metrilo\Analytics\Helper\CategorySerializer     $categorySerializer,
         \Metrilo\Analytics\Helper\OrderSerializer        $orderSerializer,
         \Metrilo\Analytics\Helper\ApiClient              $apiClient,
         \Magento\Framework\App\Request\Http              $request,
@@ -36,8 +38,10 @@ class Ajax extends \Magento\Backend\App\Action
         $this->helper             = $helper;
         $this->import             = $import;
         $this->customerData       = $customerData;
+        $this->categoryData       = $categoryData;
         $this->orderData          = $orderData;
         $this->customerSerializer = $customerSerializer;
+        $this->categorySerializer = $categorySerializer;
         $this->orderSerializer    = $orderSerializer;
         $this->apiClient          = $apiClient;
         $this->request            = $request;
@@ -80,8 +84,8 @@ class Ajax extends \Magento\Backend\App\Action
                     $result['success']   = $client->customerBatch($serializedCustomers);
                     break;
                 case 'categories':
-                    $client->categoryBatch($this->import->categoryData->getCategories($storeId, $chunkId));
-                    $result['success'] = 'categoryBatch';
+                    $serializedCategories = $this->serializeRecords($this->categoryData->getCategories($storeId, $chunkId), $this->categorySerializer);
+                    $result['success']    = $client->categoryBatch($serializedCategories);
                     break;
                 case 'products':
                     $client->productBatch($this->import->productData->getProducts($storeId, $chunkId));

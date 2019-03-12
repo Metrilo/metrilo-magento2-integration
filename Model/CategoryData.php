@@ -4,12 +4,12 @@ namespace Metrilo\Analytics\Model;
 
 class CategoryData
 {
+    public $chunkItems = \Metrilo\Analytics\Helper\Data::chunkItems;
+    
     public function __construct(
-        \Magento\Catalog\Model\ResourceModel\Category\CollectionFactory $categoryCollection,
-        \Magento\Store\Model\StoreManagerInterface $storeManager
+        \Magento\Catalog\Model\ResourceModel\Category\CollectionFactory $categoryCollection
     ) {
         $this->categoryCollection = $categoryCollection;
-        $this->storeManager = $storeManager;
     }
 
     public function getCategoryQuery($storeId)
@@ -25,19 +25,18 @@ class CategoryData
 
     public function getCategories($storeId, $chunkId)
     {
-        $storeBaseUrl = $this->storeManager->getStore($storeId)->getBaseUrl(); // Used for multiwebsite configuration base url
-        $categoriesArray = [];
-        $categories = $this->getCategoryQuery($storeId)
-                           ->setPageSize(\Metrilo\Analytics\Model\Import::chunkItems)
-                           ->setCurPage($chunkId + 1);
-
-        foreach ($categories as $category) {
-            $categoriesArray[] = [
-                'id'   => $category->getId(),
-                'name' => $category->getName(),
-                'url'  => $storeBaseUrl . $category->getRequestPath()
-            ];
-        }
-        return $categoriesArray;
+        return $this->getCategoryQuery($storeId)->setPageSize($this->chunkItems)->setCurPage($chunkId + 1);
+    }
+    
+    public function getCategoryChunks($storeId)
+    {
+        $totalCategories = $this->getCategoryQuery($storeId)->getSize();
+        return (int) ceil($totalCategories / $this->chunkItems);
+    }
+    
+    public function getCategoryRequestPath($categoryId) {
+        $collection = $this->categoryCollection->create()->joinUrlRewrite()->addAttributeToFilter('entity_id', $categoryId)->getData();
+        
+        return $collection[0]['request_path'];
     }
 }
