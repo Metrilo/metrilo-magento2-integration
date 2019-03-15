@@ -34,8 +34,13 @@ class CategoryData
         return (int) ceil($totalCategories / $this->chunkItems);
     }
     
-    public function getCategoryRequestPath($categoryId) {
-        $collection = $this->categoryCollection->create()->joinUrlRewrite()->addAttributeToFilter('entity_id', $categoryId)->getData();
+    public function getCategoryRequestPath($categoryId, $storeId) {
+        $collection = $this->categoryCollection
+                           ->create()
+                           ->setStore($storeId)
+                           ->addAttributeToFilter('entity_id', $categoryId)
+                           ->addUrlRewriteToResult()
+                           ->getData();
         
         return $collection[0]['request_path'];
     }
