@@ -14,14 +14,16 @@ class Category implements ObserverInterface
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
      */
     public function __construct(
-        \Metrilo\Analytics\Helper\Data                     $helper,
-        \Metrilo\Analytics\Helper\ApiClient                $apiClient,
-        \Metrilo\Analytics\Helper\CategorySerializer       $categorySerializer,
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+        \Metrilo\Analytics\Helper\Data                                  $helper,
+        \Metrilo\Analytics\Helper\ApiClient                             $apiClient,
+        \Metrilo\Analytics\Helper\CategorySerializer                    $categorySerializer,
+        \Magento\Catalog\Model\ResourceModel\Category\CollectionFactory $categoryCollection,
+        \Magento\Framework\App\Config\ScopeConfigInterface              $scopeConfig
     ) {
         $this->helper             = $helper;
         $this->apiClient          = $apiClient;
         $this->categorySerializer = $categorySerializer;
+        $this->categoryCollection = $categoryCollection;
         $this->scopeConfig        = $scopeConfig;
     }
     
@@ -38,13 +40,9 @@ class Category implements ObserverInterface
                                                   $storeId
                                                );
         }
+        array_unique($storeIdConfigMap);
         
-        return array_unique($storeIdConfigMap);
-    }
-    
-    private function sendSerializedData($category) {
-        $client = $this->apiClient->getClient($category->getStoreId());
-        $client->category($this->categorySerializer->serialize($category));
+        return array_keys($storeIdConfigMap);
     }
     
     public function execute(Observer $observer)
@@ -52,12 +50,15 @@ class Category implements ObserverInterface
         try {
             $category = $observer->getEvent()->getCategory();
             if ($category->getStoreId() == 0) {
-                foreach ($this->mapConfigToStore($category->getStoreIds()) as $storeId => $configVal) {
-                    $category->setStoreId($storeId);
-                    $this->sendSerializedData($category);
-                }
+                $categoryStoreIds = $this->mapConfigToStore($category->getStoreIds());
             } else {
-                $this->sendSerializedData($category);
+                $categoryStoreIds[] = $category->getStoreId();
+            }
+            foreach ($categoryStoreIds as $storeId) {
+                $categoryObjectWithRequestPath = $this->categoryCollection->create()->setStore($storeId)->addAttributeToSelect('name')->addAttributeToFilter('entity_id', $category->getId())->addUrlRewriteToResult()->getFirstItem();
+                $categoryObjectWithRequestPath->setStoreId($storeId);
+                $client = $this->apiClient->getClient($storeId);
+                $client->category($this->categorySerializer->serialize($categoryObjectWithRequestPath));
             }
         } catch (\Exception $e) {
             $this->helper->logError($e);
