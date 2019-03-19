@@ -27,7 +27,7 @@ class Category implements ObserverInterface
         $this->scopeConfig        = $scopeConfig;
     }
     
-    private function mapConfigToStore($storeIds) {
+    private function getStoreIdPerProject($storeIds) {
         $storeIdConfigMap = [];
         foreach ($storeIds as $storeId) {
             if ($storeId == 0) { // store 0 is always admin
@@ -45,20 +45,30 @@ class Category implements ObserverInterface
         return array_keys($storeIdConfigMap);
     }
     
+    private function getCategoryObjectWithRequestPath($categoryId, $storeId) {
+        return $this->categoryCollection
+                    ->create()
+                    ->setStore($storeId)
+                    ->addAttributeToSelect('name')
+                    ->addAttributeToFilter('entity_id', $categoryId)
+                    ->addUrlRewriteToResult()
+                    ->getFirstItem();
+    }
+    
     public function execute(Observer $observer)
     {
         try {
             $category = $observer->getEvent()->getCategory();
             if ($category->getStoreId() == 0) {
-                $categoryStoreIds = $this->mapConfigToStore($category->getStoreIds());
+                $categoryStoreIds = $this->getStoreIdPerProject($category->getStoreIds());
             } else {
                 $categoryStoreIds[] = $category->getStoreId();
             }
             foreach ($categoryStoreIds as $storeId) {
-                $categoryObjectWithRequestPath = $this->categoryCollection->create()->setStore($storeId)->addAttributeToSelect('name')->addAttributeToFilter('entity_id', $category->getId())->addUrlRewriteToResult()->getFirstItem();
-                $categoryObjectWithRequestPath->setStoreId($storeId);
+                $categoryObject = $this->getCategoryObjectWithRequestPath($category->getId(), $storeId);
+                $categoryObject->setStoreId($storeId);
                 $client = $this->apiClient->getClient($storeId);
-                $client->category($this->categorySerializer->serialize($categoryObjectWithRequestPath));
+                $client->category($this->categorySerializer->serialize($categoryObject));
             }
         } catch (\Exception $e) {
             $this->helper->logError($e);
