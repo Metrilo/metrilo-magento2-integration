@@ -40,12 +40,19 @@ class Category implements ObserverInterface
                                                   $storeId
                                                );
         }
-        array_unique($storeIdConfigMap);
+        $storeIdConfigMap = array_unique($storeIdConfigMap);
         
         return array_keys($storeIdConfigMap);
     }
     
     private function getCategoryObjectWithRequestPath($categoryId, $storeId) {
+        $this->helper->log(json_encode(array('Categories db query: ' => $this->categoryCollection
+            ->create()
+            ->setStore($storeId)
+            ->addAttributeToSelect('name')
+            ->addAttributeToFilter('entity_id', $categoryId)
+            ->addUrlRewriteToResult()->getSelect()->assemble())));
+        
         return $this->categoryCollection
                     ->create()
                     ->setStore($storeId)
@@ -69,9 +76,12 @@ class Category implements ObserverInterface
                 $categoryObject->setStoreId($storeId);
                 $client = $this->apiClient->getClient($storeId);
                 $client->category($this->categorySerializer->serialize($categoryObject));
+                $this->helper->log(json_encode(array('Categories with storeId = ' . $storeId . ': ' => $this->categorySerializer->serialize($categoryObject))));
+                $this->helper->log('<-------------------------------------->');
             }
         } catch (\Exception $e) {
             $this->helper->logError($e);
         }
     }
 }
+
