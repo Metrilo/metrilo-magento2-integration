@@ -18,13 +18,15 @@ class Category implements ObserverInterface
         \Metrilo\Analytics\Helper\ApiClient                             $apiClient,
         \Metrilo\Analytics\Helper\CategorySerializer                    $categorySerializer,
         \Magento\Catalog\Model\ResourceModel\Category\CollectionFactory $categoryCollection,
-        \Magento\Framework\App\Config\ScopeConfigInterface              $scopeConfig
+        \Magento\Framework\App\Config\ScopeConfigInterface              $scopeConfig,
+        \Magento\Store\Model\StoreManagerInterface                      $storeManager
     ) {
         $this->helper             = $helper;
         $this->apiClient          = $apiClient;
         $this->categorySerializer = $categorySerializer;
         $this->categoryCollection = $categoryCollection;
         $this->scopeConfig        = $scopeConfig;
+        $this->storeManager       = $storeManager;
     }
     
     private function getStoreIdPerProject($storeIds) {
@@ -46,16 +48,10 @@ class Category implements ObserverInterface
     }
     
     private function getCategoryObjectWithRequestPath($categoryId, $storeId) {
-        $this->helper->log(json_encode(array('Categories db query: ' => $this->categoryCollection
-            ->create()
-            ->setStore($storeId)
-            ->addAttributeToSelect('name')
-            ->addAttributeToFilter('entity_id', $categoryId)
-            ->addUrlRewriteToResult()->getSelect()->assemble())));
+        $this->storeManager->setCurrentStore($storeId);
         
         return $this->categoryCollection
                     ->create()
-                    ->setStore($storeId)
                     ->addAttributeToSelect('name')
                     ->addAttributeToFilter('entity_id', $categoryId)
                     ->addUrlRewriteToResult()
@@ -76,12 +72,9 @@ class Category implements ObserverInterface
                 $categoryObject->setStoreId($storeId);
                 $client = $this->apiClient->getClient($storeId);
                 $client->category($this->categorySerializer->serialize($categoryObject));
-                $this->helper->log(json_encode(array('Categories with storeId = ' . $storeId . ': ' => $this->categorySerializer->serialize($categoryObject))));
-                $this->helper->log('<-------------------------------------->');
             }
         } catch (\Exception $e) {
             $this->helper->logError($e);
         }
     }
 }
-
