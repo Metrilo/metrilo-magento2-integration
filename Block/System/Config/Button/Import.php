@@ -29,12 +29,14 @@ class Import extends \Magento\Config\Block\System\Config\Form\Field
         \Metrilo\Analytics\Helper\Data $helper,
         \Metrilo\Analytics\Model\Import $import,
         \Metrilo\Analytics\Model\CustomerData $customerData,
+        \Metrilo\Analytics\Model\CategoryData $categoryData,
         \Metrilo\Analytics\Model\OrderData $orderData,
         array $data = []
     ) {
         $this->helper       = $helper;
         $this->import       = $import;
         $this->customerData = $customerData;
+        $this->categoryData = $categoryData;
         $this->orderData    = $orderData;
         parent::__construct($context, $data);
     }
@@ -124,6 +126,11 @@ class Import extends \Magento\Config\Block\System\Config\Form\Field
     public function getCustomerChunks()
     {
         return $this->customerData->getCustomerChunks($this->getStoreId());
+    }
+    
+    public function getCategoryChunks()
+    {
+        return $this->categoryData->getCategoryChunks($this->getStoreId());
     }
 
     /**
