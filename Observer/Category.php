@@ -29,7 +29,7 @@ class Category implements ObserverInterface
         $this->storeManager       = $storeManager;
     }
     
-    private function getStoreIdPerProject($storeIds) {
+    private function getStoreIdsPerProject($storeIds) {
         $storeIdConfigMap = [];
         foreach ($storeIds as $storeId) {
             if ($storeId == 0) { // store 0 is always admin
@@ -47,15 +47,19 @@ class Category implements ObserverInterface
         return array_keys($storeIdConfigMap);
     }
     
-    private function getCategoryObjectWithRequestPath($categoryId, $storeId) {
+    private function getCategoryWithRequestPath($categoryId, $storeId) {
         $this->storeManager->setCurrentStore($storeId);
         
-        return $this->categoryCollection
-                    ->create()
-                    ->addAttributeToSelect('name')
-                    ->addAttributeToFilter('entity_id', $categoryId)
-                    ->addUrlRewriteToResult()
-                    ->getFirstItem();
+        $categoryObject = $this->categoryCollection
+            ->create()
+            ->addAttributeToSelect('name')
+            ->addAttributeToFilter('entity_id', $categoryId)
+            ->addUrlRewriteToResult()
+            ->getFirstItem();
+        
+        $categoryObject->setStoreId($storeId);
+        
+        return $categoryObject;
     }
     
     public function execute(Observer $observer)
@@ -63,13 +67,12 @@ class Category implements ObserverInterface
         try {
             $category = $observer->getEvent()->getCategory();
             if ($category->getStoreId() == 0) {
-                $categoryStoreIds = $this->getStoreIdPerProject($category->getStoreIds());
+                $categoryStoreIds = $this->getStoreIdsPerProject($category->getStoreIds());
             } else {
                 $categoryStoreIds[] = $category->getStoreId();
             }
             foreach ($categoryStoreIds as $storeId) {
-                $categoryObject = $this->getCategoryObjectWithRequestPath($category->getId(), $storeId);
-                $categoryObject->setStoreId($storeId);
+                $categoryObject = $this->getCategoryWithRequestPath($category->getId(), $storeId);
                 $client = $this->apiClient->getClient($storeId);
                 $client->category($this->categorySerializer->serialize($categoryObject));
             }
