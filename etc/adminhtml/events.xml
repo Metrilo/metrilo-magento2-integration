@@ -16,4 +16,7 @@
     <event name="catalog_category_save_after">
         <observer name="metrilo_event_category_update" instance="Metrilo\Analytics\Observer\Category" />
     </event>
+    <event name="catalog_product_save_after">
+        <observer name="metrilo_event_product_update" instance="Metrilo\Analytics\Observer\Product" />
+    </event>
 </config>
