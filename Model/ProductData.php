@@ -33,4 +33,25 @@ class ProductData
         $totalProducts = $this->getProductQuery($storeId)->getSize();
         return (int) ceil($totalProducts / $this->chunkItems);
     }
+    
+    public function getProductWithRequestPath($productId, $storeId) {
+        $productObject = $this->productCollection
+            ->create()
+            ->addStoreFilter($storeId)
+            ->addAttributeToSelect(['name','price'])
+            ->joinTable(
+                ['url' => 'url_rewrite'],
+                'entity_id = entity_id',
+                ['request_path', 'store_id', 'metadata'],
+                ['entity_id' => $productId,
+                    'entity_type' => 'product',
+                    'store_id' => $storeId,
+                    'metadata' => array('null' => true)]
+            )
+            ->getFirstItem();
+        
+        $productObject->setStoreId($storeId);
+        
+        return $productObject;
+    }
 }

@@ -13,18 +13,21 @@ class ProductSerializer extends \Magento\Framework\App\Helper\AbstractHelper
         \Magento\Store\Model\StoreManagerInterface                   $storeManager,
         \Magento\Bundle\Model\Product\Type                           $bundleType,
         \Magento\GroupedProduct\Model\Product\Type\Grouped           $groupedType,
-        \Magento\ConfigurableProduct\Model\Product\Type\Configurable $configurableType
+        \Magento\ConfigurableProduct\Model\Product\Type\Configurable $configurableType,
+        \Metrilo\Analytics\Model\ProductData                         $productData
     ) {
         $this->storeManager     = $storeManager;
         $this->bundleType       = $bundleType;
         $this->groupedType      = $groupedType;
         $this->configurableType = $configurableType;
+        $this->productData      = $productData;
     }
     
     public function serialize($product)
     {
         $productId   = $product->getId();
         $productType = $product->getTypeId();
+        $storeId     = $product->getStoreId();
         
         if ($productType == "simple" || $productType == "virtual") { //standard simple and virtual products (if product has no weight the system will consider it as virtual) can have parents (be part of configurable/bundle/grouped product).
             if ($this->getParentId($productId)) { //check if the product is part of configurable/bundle/grouped product
@@ -34,7 +37,11 @@ class ProductSerializer extends \Magento\Framework\App\Helper\AbstractHelper
         
         $imageUrl       = (!empty($product->getImage())) ? $this->getProductImageUrl($product->getImage()) : '';
         $price          = (!empty($product->getPrice())) ? $product->getPrice() : 0; // Does not return grouped/bundled parent price
-        $url            = $this->storeManager->getStore($product->getStoreId())->getBaseUrl() . $product->getRequestPath();
+        if (empty($product->getRequestPath())) {
+            $productId  = $this->checkForParentId($productId);
+            $product    = $this->productData->getProductWithRequestPath($productId, $storeId);
+        }
+        $url            = $this->storeManager->getStore($storeId)->getBaseUrl() . $product->getRequestPath();
         $productOptions = (in_array($productType, self::PARENT_TYPES)) ? $this->getProductOptions($product) : [];
         
         return [
@@ -85,6 +92,27 @@ class ProductSerializer extends \Magento\Framework\App\Helper\AbstractHelper
     protected function getParentId($productId)
     {
         return $this->configurableType->getParentIdsByChild($productId) || $this->bundleType->getParentIdsByChild($productId) || $this->groupedType->getParentIdsByChild($productId);
+    }
+    
+    protected function checkForParentId($productId)
+    {
+        if ($this->configurableType->getParentIdsByChild($productId)) {
+            $productId = $this->configurableType->getParentIdsByChild($productId);
+        }
+        
+        if ($this->bundleType->getParentIdsByChild($productId)) {
+            $productId = $this->bundleType->getParentIdsByChild($productId);
+        }
+        
+        if ($this->groupedType->getParentIdsByChild($productId)) {
+            $productId = $this->groupedType->getParentIdsByChild($productId);
+        }
+        
+        if (is_array($productId)) {
+            return $productId[0];
+        } else {
+            return $productId;
+        }
     }
 }
 
