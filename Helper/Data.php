@@ -28,6 +28,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @param \Magento\Store\Model\StoreManagerInterface         $storeManager
      * @param \Magento\Framework\App\ProductMetadata             $metaData
      * @param \Magento\Framework\Module\ModuleListInterface      $moduleList
+     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
      */
     public function __construct(
         \Magento\Framework\App\Config\ScopeConfigInterface $config,
@@ -38,17 +39,19 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         \Metrilo\Analytics\Helper\AdminStoreResolver       $resolver,
         \Magento\Store\Model\StoreManagerInterface         $storeManager,
         \Magento\Framework\App\ProductMetadata             $metaData,
-        \Magento\Framework\Module\ModuleListInterface      $moduleList
+        \Magento\Framework\Module\ModuleListInterface      $moduleList,
+        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
     ) {
-        $this->config             = $config;
-        $this->session            = $session;
-        $this->logger             = $logger;
-        $this->jsonHelper         = $jsonHelper;
-        $this->clientHelper       = $clientHelper;
-        $this->resolver           = $resolver;
-        $this->storeManager       = $storeManager;
-        $this->metaData           = $metaData;
-        $this->moduleList         = $moduleList;
+        $this->config       = $config;
+        $this->session      = $session;
+        $this->logger       = $logger;
+        $this->jsonHelper   = $jsonHelper;
+        $this->clientHelper = $clientHelper;
+        $this->resolver     = $resolver;
+        $this->storeManager = $storeManager;
+        $this->metaData     = $metaData;
+        $this->moduleList   = $moduleList;
+        $this->scopeConfig  = $scopeConfig;
     }
 
     /**
@@ -208,5 +211,23 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function requestLogger($loggerPath, $loggerData) {
         file_put_contents($loggerPath, $loggerData, FILE_APPEND);
         file_put_contents($loggerPath, PHP_EOL, FILE_APPEND);
+    }
+    
+    public function getStoreIdsPerProject($storeIds) {
+        $storeIdConfigMap = [];
+        foreach ($storeIds as $storeId) {
+            if ($storeId == 0) { // store 0 is always admin
+                continue;
+            }
+            $storeIdConfigMap[$storeId] = $this->scopeConfig
+                ->getValue(
+                    'metrilo_analytics/general/api_key',
+                    \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+                    $storeId
+                );
+        }
+        $storeIdConfigMap = array_unique($storeIdConfigMap);
+        
+        return array_keys($storeIdConfigMap);
     }
 }

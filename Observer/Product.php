@@ -25,30 +25,12 @@ class Product implements ObserverInterface
         $this->scopeConfig       = $scopeConfig;
     }
     
-    private function getStoreIdsPerProject($storeIds) {
-        $storeIdConfigMap = [];
-        foreach ($storeIds as $storeId) {
-            if ($storeId == 0) { // store 0 is always admin
-                continue;
-            }
-            $storeIdConfigMap[$storeId] = $this->scopeConfig
-                ->getValue(
-                    'metrilo_analytics/general/api_key',
-                    \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
-                    $storeId
-                );
-        }
-        $storeIdConfigMap = array_unique($storeIdConfigMap);
-        
-        return array_keys($storeIdConfigMap);
-    }
-    
     public function execute(Observer $observer)
     {
         try {
             $product = $observer->getEvent()->getProduct();
             if ($product->getStoreId() == 0) {
-                $productStoreIds = $this->getStoreIdsPerProject($product->getStoreIds());
+                $productStoreIds = $this->helper->getStoreIdsPerProject($product->getStoreIds());
             } else {
                 $productStoreIds[] = $product->getStoreId();
             }
