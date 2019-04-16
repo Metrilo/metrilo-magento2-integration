@@ -12,7 +12,7 @@ class CategorySerializer extends \Magento\Framework\App\Helper\AbstractHelper
     
     public function serialize($category) {
         $categoryId   = $category->getId();
-        $storeId      = $category->getStoreId();
+        $storeId      = $category->getData('store_id');
         $storeBaseUrl = $this->storeManager->getStore($storeId)->getBaseUrl(); // Used for multiwebsite configuration base url
         
         return array(

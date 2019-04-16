@@ -15,32 +15,15 @@ class Category implements ObserverInterface
      * @param \Magento\Store\Model\StoreManagerInterface                      $storeManager
      */
     public function __construct(
-        \Metrilo\Analytics\Helper\Data                                  $helper,
-        \Metrilo\Analytics\Helper\ApiClient                             $apiClient,
-        \Metrilo\Analytics\Helper\CategorySerializer                    $categorySerializer,
-        \Magento\Catalog\Model\ResourceModel\Category\CollectionFactory $categoryCollection,
-        \Magento\Store\Model\StoreManagerInterface                      $storeManager
+        \Metrilo\Analytics\Helper\Data               $helper,
+        \Metrilo\Analytics\Helper\ApiClient          $apiClient,
+        \Metrilo\Analytics\Helper\CategorySerializer $categorySerializer,
+        \Metrilo\Analytics\Model\CategoryData        $categoryData
     ) {
         $this->helper             = $helper;
         $this->apiClient          = $apiClient;
         $this->categorySerializer = $categorySerializer;
-        $this->categoryCollection = $categoryCollection;
-        $this->storeManager       = $storeManager;
-    }
-    
-    private function getCategoryWithRequestPath($categoryId, $storeId) {
-        $this->storeManager->setCurrentStore($storeId);
-        
-        $categoryObject = $this->categoryCollection
-            ->create()
-            ->addAttributeToSelect('name')
-            ->addAttributeToFilter('entity_id', $categoryId)
-            ->addUrlRewriteToResult()
-            ->getFirstItem();
-        
-        $categoryObject->setStoreId($storeId);
-        
-        return $categoryObject;
+        $this->categoryData       = $categoryData;
     }
     
     public function execute(Observer $observer)
@@ -53,7 +36,8 @@ class Category implements ObserverInterface
                 $categoryStoreIds[] = $category->getStoreId();
             }
             foreach ($categoryStoreIds as $storeId) {
-                $categoryObject = $this->getCategoryWithRequestPath($category->getId(), $storeId);
+                $categoryObject = $this->categoryData->getCategoryWithRequestPath($category->getId(), $storeId);
+                $categoryObject->setStoreId($storeId);
                 $client = $this->apiClient->getClient($storeId);
                 $client->category($this->categorySerializer->serialize($categoryObject));
             }
