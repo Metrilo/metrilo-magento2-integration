@@ -53,10 +53,9 @@ class Ajax extends \Magento\Backend\App\Action
         $serializedData = [];
         
         foreach($records as $record) {
-            if($serializer->serialize($record)) {
-                $serializedData[] = $serializer->serialize($record);
-            } else {
-                continue;
+            $serializedRecord = $serializer->serialize($record);
+            if ($serializedRecord) {
+                $serializedData[] = $serializedRecord;
             }
         }
         

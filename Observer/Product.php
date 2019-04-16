@@ -37,6 +37,7 @@ class Product implements ObserverInterface
     
             foreach ($productStoreIds as $storeId) {
                 $product->setStoreId($storeId);
+                $product->setData('observer_update', true);
                 $client = $this->apiClient->getClient($storeId);
                 $client->product($this->productSerializer->serialize($product));
             }

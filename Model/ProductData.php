@@ -18,7 +18,8 @@ class ProductData
                     ->create()
                     ->addAttributeToSelect('*')
                     ->addUrlRewrite()
-                    ->addStoreFilter($storeId);
+                    ->addStoreFilter($storeId)
+                    ->setDataToAll('store_id', $storeId);
     }
 
     public function getProducts($storeId, $chunkId)
