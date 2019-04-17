@@ -37,8 +37,7 @@ class Category implements ObserverInterface
             }
             foreach ($categoryStoreIds as $storeId) {
                 $categoryObject = $this->categoryData->getCategoryWithRequestPath($category->getId(), $storeId);
-                $categoryObject->setStoreId($storeId);
-                $client = $this->apiClient->getClient($storeId);
+                $client         = $this->apiClient->getClient($storeId);
                 $client->category($this->categorySerializer->serialize($categoryObject));
             }
         } catch (\Exception $e) {

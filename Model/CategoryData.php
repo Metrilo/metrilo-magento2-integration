@@ -42,6 +42,7 @@ class CategoryData
                     ->addAttributeToFilter('entity_id', $categoryId)
                     ->setStore($storeId)
                     ->addUrlRewriteToResult()
-                    ->getFirstItem();
+                    ->getFirstItem()
+                    ->setStoreId($storeId);
     }
 }
