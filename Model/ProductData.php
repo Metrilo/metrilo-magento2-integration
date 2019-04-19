@@ -39,7 +39,7 @@ class ProductData
         $productObject = $this->productCollection
             ->create()
             ->addStoreFilter($storeId)
-            ->addAttributeToSelect(['name','price'])
+            ->addAttributeToSelect(['name','price','image'])
             ->joinTable(
                 ['url' => 'url_rewrite'],
                 'entity_id = entity_id',

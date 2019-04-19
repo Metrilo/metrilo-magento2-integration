@@ -8,21 +8,21 @@ use Magento\Framework\Event\ObserverInterface;
 class Product implements ObserverInterface
 {
     /**
-     * @param \Metrilo\Analytics\Helper\Data                     $helper
-     * @param \Metrilo\Analytics\Helper\ApiClient                $apiClient
-     * @param \Metrilo\Analytics\Helper\ProductSerializer        $productSerializer,
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+     * @param \Metrilo\Analytics\Helper\Data              $helper
+     * @param \Metrilo\Analytics\Helper\ApiClient         $apiClient
+     * @param \Metrilo\Analytics\Helper\ProductSerializer $productSerializer,
+     * @param \Metrilo\Analytics\Model\ProductData        $productData
      */
     public function __construct(
-        \Metrilo\Analytics\Helper\Data                     $helper,
-        \Metrilo\Analytics\Helper\ApiClient                $apiClient,
-        \Metrilo\Analytics\Helper\ProductSerializer        $productSerializer,
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+        \Metrilo\Analytics\Helper\Data              $helper,
+        \Metrilo\Analytics\Helper\ApiClient         $apiClient,
+        \Metrilo\Analytics\Helper\ProductSerializer $productSerializer,
+        \Metrilo\Analytics\Model\ProductData        $productData
     ) {
         $this->helper            = $helper;
         $this->apiClient         = $apiClient;
         $this->productSerializer = $productSerializer;
-        $this->scopeConfig       = $scopeConfig;
+        $this->productData       = $productData;
     }
     
     public function execute(Observer $observer)
@@ -36,9 +36,9 @@ class Product implements ObserverInterface
             }
     
             foreach ($productStoreIds as $storeId) {
-                $product->setStoreId($storeId);
-                $product->setData('observer_update', true);
-                $client = $this->apiClient->getClient($storeId);
+                $productId = $this->productSerializer->productOptions->checkForParentId($product->getId());
+                $product   = $this->productData->getProductWithRequestPath($productId, $storeId);
+                $client    = $this->apiClient->getClient($storeId);
                 $client->product($this->productSerializer->serialize($product));
             }
         } catch (\Exception $e) {
