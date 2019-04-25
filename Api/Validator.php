@@ -20,7 +20,7 @@
         }
     
         public function required(){
-            if($this->value == '' || $this->value == null || $this->value == []){
+            if($this->value === '' || $this->value === null || $this->value === []){
                 $this->errors[] = 'Field ' . $this->var . ' is required. ';
             }
             
