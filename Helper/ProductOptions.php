@@ -58,34 +58,43 @@ class ProductOptions extends \Magento\Framework\App\Helper\AbstractHelper
         return $productOptions;
     }
     
-    public function getParentId($productId)
+    public function checkForParentId($productId)
     {
         return $this->configurableType->getParentIdsByChild($productId) || $this->bundleType->getParentIdsByChild($productId) || $this->groupedType->getParentIdsByChild($productId);
     }
     
-    public function checkForParentId($productId)
+    public function getParentId($productId, $productVisibility)
     {
+        
         $configurableParentId = $this->configurableType->getParentIdsByChild($productId);
         $bundleParentId       = $this->bundleType->getParentIdsByChild($productId);
         $groupedParentId      = $this->groupedType->getParentIdsByChild($productId);
         
-        if ($configurableParentId) {
-            $productId = $configurableParentId;
-        }
+        $catalogVisibility    = !($productVisibility->getText() === 'Not Visible Individually');
         
-        if ($bundleParentId) {
-            $productId = $bundleParentId;
-        }
         
-        if ($groupedParentId) {
-            $productId = $groupedParentId;
-        }
+            if ($configurableParentId) {
+                $productId = $this->addCatalogVisibleChildsToSync($productId, $catalogVisibility, $configurableParentId);
+            }
+    
+            if ($bundleParentId) {
+                $productId = $this->addCatalogVisibleChildsToSync($productId, $catalogVisibility, $bundleParentId);
+            }
+    
+            if ($groupedParentId) {
+                $productId = $this->addCatalogVisibleChildsToSync($productId, $catalogVisibility, $groupedParentId);
+            }
         
-        if (is_array($productId)) {
-            return $productId[0];
-        } else {
-            return $productId;
-        }
+        
+        return $productId;
     }
+    
+    protected function addCatalogVisibleChildsToSync($productId, $catalogVisibility, $parentIdArray) {
+        if ($catalogVisibility) {
+            array_push($parentIdArray, $productId);
+        }
+        return $parentIdArray;
+    }
+    
 }
 
