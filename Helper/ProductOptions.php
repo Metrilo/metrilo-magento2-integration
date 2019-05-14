@@ -4,44 +4,24 @@ namespace Metrilo\Analytics\Helper;
 
 class ProductOptions extends \Magento\Framework\App\Helper\AbstractHelper
 {
-    /**
-     * Product parent types
-     */
-    const PARENT_TYPES = [\Magento\ConfigurableProduct\Model\Product\Type\Configurable::TYPE_CODE, \Magento\Bundle\Model\Product\Type::TYPE_CODE, \Magento\GroupedProduct\Model\Product\Type\Grouped::TYPE_CODE];
-    
     public function __construct(
         \Magento\Bundle\Model\Product\Type                           $bundleType,
         \Magento\GroupedProduct\Model\Product\Type\Grouped           $groupedType,
         \Magento\ConfigurableProduct\Model\Product\Type\Configurable $configurableType,
         \Metrilo\Analytics\Helper\ProductImageUrl                    $productImageUrl
     ) {
-        $this->bundleType       = $bundleType;
-        $this->groupedType      = $groupedType;
+        $this->bundleType       = $bundleType; // needed only for parent check on row 43
+        $this->groupedType      = $groupedType; // needed only for parent check on row 43
         $this->configurableType = $configurableType;
         $this->productImageUrl  = $productImageUrl;
     }
     
-    public function getProductOptions($product)
-    {
-        $storeId     = $product->getStoreId();
-        $productId   = $product->getId();
-        $productType = $product->getTypeId();
-        
-        return (in_array($productType, self::PARENT_TYPES)) ? $this->getOptions($product) : [];
-    }
-    
-    public function getOptions($product)
+    public function getConfigurableOptions($product)
     {
         $productOptions = [];
-        $productType = $product->getTypeId();
+        $productType    = $product->getTypeId();
         
-        if ($productType == 'configurable') {
-            $childrenProducts = $product->getTypeInstance()->getUsedProducts($product);
-        } elseif ($productType == 'bundle') {
-            $childrenProducts = $product->getTypeInstance()->getSelectionsCollection($product->getTypeInstance()->getOptionsIds($product), $product);
-        } elseif ($productType == 'grouped') {
-            $childrenProducts = $product->getTypeInstance()->getAssociatedProductCollection($product)->addAttributeToSelect(['name', 'price', 'image']);
-        }
+        $childrenProducts = $product->getTypeInstance()->getUsedProducts($product);
         
         foreach ($childrenProducts as $childProduct) {
             $imageUrl = (!empty($childProduct->getImage())) ? $this->productImageUrl->getProductImageUrl($childProduct->getImage()) : '';
@@ -63,38 +43,17 @@ class ProductOptions extends \Magento\Framework\App\Helper\AbstractHelper
         return $this->configurableType->getParentIdsByChild($productId) || $this->bundleType->getParentIdsByChild($productId) || $this->groupedType->getParentIdsByChild($productId);
     }
     
-    public function getParentId($productId, $productVisibility)
+    public function getParentIds($productId)
     {
+        $configurableParentIds = $this->configurableType->getParentIdsByChild($productId);
         
-        $configurableParentId = $this->configurableType->getParentIdsByChild($productId);
-        $bundleParentId       = $this->bundleType->getParentIdsByChild($productId);
-        $groupedParentId      = $this->groupedType->getParentIdsByChild($productId);
-        
-        $catalogVisibility    = !($productVisibility->getText() === 'Not Visible Individually');
-        
-        
-            if ($configurableParentId) {
-                $productId = $this->addCatalogVisibleChildsToSync($productId, $catalogVisibility, $configurableParentId);
-            }
-    
-            if ($bundleParentId) {
-                $productId = $this->addCatalogVisibleChildsToSync($productId, $catalogVisibility, $bundleParentId);
-            }
-    
-            if ($groupedParentId) {
-                $productId = $this->addCatalogVisibleChildsToSync($productId, $catalogVisibility, $groupedParentId);
+            if ($configurableParentIds) {
+                $parentIds = $configurableParentIds;
+            } else {
+                $parentIds[] = $productId; // Magento products can have multiple parents, if there is a single parent return it as array
             }
         
-        
-        return $productId;
+        return $parentIds;
     }
-    
-    protected function addCatalogVisibleChildsToSync($productId, $catalogVisibility, $parentIdArray) {
-        if ($catalogVisibility) {
-            array_push($parentIdArray, $productId);
-        }
-        return $parentIdArray;
-    }
-    
 }
 

@@ -32,24 +32,17 @@ class Product implements ObserverInterface
             $productStoreId = $product->getStoreId();
             
             if ($productStoreId == 0) {
-                $productStoreIds = $this->helper->getStoreIdsPerProject($product->getStoreIds());
+                $productStoreIds   = $this->helper->getStoreIdsPerProject($product->getStoreIds());
             } else {
                 $productStoreIds[] = $productStoreId;
             }
     
             foreach ($productStoreIds as $storeId) {
-                $client    = $this->apiClient->getClient($storeId);
-                $productId = $this->productSerializer->productOptions->getParentId($product->getId(), $product->getAttributeText('visibility'));
-                $productParent = [];
+                $client        = $this->apiClient->getClient($storeId);
+                $productParent = $this->productSerializer->productOptions->getParentIds($product->getId());
                 
-                if(is_array($productId)) { // Magento products can have more than 1 parent
-                    $productParent = $productId;
-                } else {
-                    $productParent[] = $productId;
-                }
-                
-                foreach ($productParent as $productParentId) {
-                    $productWithRequestPath = $this->productData->getProductWithRequestPath($productParentId, $storeId);
+                foreach ($productParent as $productId) {
+                    $productWithRequestPath = $this->productData->getProductWithRequestPath($productId, $storeId);
                     $client->product($this->productSerializer->serialize($productWithRequestPath));
                 }
             }

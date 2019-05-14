@@ -18,15 +18,19 @@ class ProductSerializer extends \Magento\Framework\App\Helper\AbstractHelper
         $productId   = $product->getId();
         $productType = $product->getTypeId();
         
-        if ($productType == 'simple' && $this->productOptions->checkForParentId($productId)) {
-            return;
+        if ($productType === 'simple' && $this->productOptions->checkForParentId($productId)) {
+            return false;
         }
         
         $imageUrl = (!empty($product->getImage())) ? $this->productOptions->productImageUrl->getProductImageUrl($product->getImage()) : '';
         $price    = (!empty($product->getPrice())) ? $product->getPrice() : 0; // Does not return grouped/bundled parent price
         $url      = $this->storeManager->getStore($storeId)->getBaseUrl() . $product->getRequestPath();
         
-        $productOptions = $this->productOptions->getProductOptions($product);
+        if ($productType === 'configurable') {
+            $productOptions = $this->productOptions->getConfigurableOptions($product);
+        } else {
+            $productOptions = [];
+        }
         
         return [
             'categories' => $product->getCategoryIds(),
