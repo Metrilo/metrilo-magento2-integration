@@ -38,10 +38,11 @@ class Product implements ObserverInterface
             }
     
             foreach ($productStoreIds as $storeId) {
-                $client        = $this->apiClient->getClient($storeId);
-                $productParent = $this->productSerializer->productOptions->getParentIds($product->getId());
+                $client         = $this->apiClient->getClient($storeId);
+                $productParents = $this->productSerializer->productOptions->getParentIds($product->getId());
+                $productsToSync = ($productParents) ? $productParents : [$product->getId()];
                 
-                foreach ($productParent as $productId) {
+                foreach ($productsToSync as $productId) {
                     $productWithRequestPath = $this->productData->getProductWithRequestPath($productId, $storeId);
                     $client->product($this->productSerializer->serialize($productWithRequestPath));
                 }

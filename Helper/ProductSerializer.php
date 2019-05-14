@@ -18,7 +18,7 @@ class ProductSerializer extends \Magento\Framework\App\Helper\AbstractHelper
         $productId   = $product->getId();
         $productType = $product->getTypeId();
         
-        if ($productType === 'simple' && $this->productOptions->checkForParentId($productId)) {
+        if ($productType === 'simple' && $this->productOptions->getParentIds($productId) != []) {
             return false;
         }
         

@@ -5,13 +5,9 @@ namespace Metrilo\Analytics\Helper;
 class ProductOptions extends \Magento\Framework\App\Helper\AbstractHelper
 {
     public function __construct(
-        \Magento\Bundle\Model\Product\Type                           $bundleType,
-        \Magento\GroupedProduct\Model\Product\Type\Grouped           $groupedType,
         \Magento\ConfigurableProduct\Model\Product\Type\Configurable $configurableType,
         \Metrilo\Analytics\Helper\ProductImageUrl                    $productImageUrl
     ) {
-        $this->bundleType       = $bundleType; // needed only for parent check on row 43
-        $this->groupedType      = $groupedType; // needed only for parent check on row 43
         $this->configurableType = $configurableType;
         $this->productImageUrl  = $productImageUrl;
     }
@@ -38,22 +34,9 @@ class ProductOptions extends \Magento\Framework\App\Helper\AbstractHelper
         return $productOptions;
     }
     
-    public function checkForParentId($productId)
-    {
-        return $this->configurableType->getParentIdsByChild($productId) || $this->bundleType->getParentIdsByChild($productId) || $this->groupedType->getParentIdsByChild($productId);
-    }
-    
     public function getParentIds($productId)
     {
-        $configurableParentIds = $this->configurableType->getParentIdsByChild($productId);
-        
-            if ($configurableParentIds) {
-                $parentIds = $configurableParentIds;
-            } else {
-                $parentIds[] = $productId; // Magento products can have multiple parents, if there is a single parent return it as array
-            }
-        
-        return $parentIds;
+        return $this->configurableType->getParentIdsByChild($productId);
     }
 }
 
