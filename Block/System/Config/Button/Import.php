@@ -26,17 +26,17 @@ class Import extends \Magento\Config\Block\System\Config\Form\Field
      */
     public function __construct(
         \Magento\Backend\Block\Template\Context $context,
-        \Metrilo\Analytics\Helper\Data $helper,
-        \Metrilo\Analytics\Model\Import $import,
-        \Metrilo\Analytics\Model\CustomerData $customerData,
-        \Metrilo\Analytics\Model\CategoryData $categoryData,
-        \Metrilo\Analytics\Model\OrderData $orderData,
+        \Metrilo\Analytics\Helper\Data          $helper,
+        \Metrilo\Analytics\Model\CustomerData   $customerData,
+        \Metrilo\Analytics\Model\CategoryData   $categoryData,
+        \Metrilo\Analytics\Model\ProductData    $productData,
+        \Metrilo\Analytics\Model\OrderData      $orderData,
         array $data = []
     ) {
         $this->helper       = $helper;
-        $this->import       = $import;
         $this->customerData = $customerData;
         $this->categoryData = $categoryData;
+        $this->productData  = $productData;
         $this->orderData    = $orderData;
         parent::__construct($context, $data);
     }
@@ -108,16 +108,6 @@ class Import extends \Magento\Config\Block\System\Config\Form\Field
         return $this->getUrl('metrilo/import/ajax');
     }
 
-    /**
-     * Import model
-     *
-     * @return \Metrilo\Analytics\Model\Import
-     */
-    public function getImport()
-    {
-        return $this->import;
-    }
-
     public function getOrderChunks()
     {
         return $this->orderData->getOrderChunks($this->getStoreId());
@@ -131,6 +121,11 @@ class Import extends \Magento\Config\Block\System\Config\Form\Field
     public function getCategoryChunks()
     {
         return $this->categoryData->getCategoryChunks($this->getStoreId());
+    }
+    
+    public function getProductChunks()
+    {
+        return $this->productData->getProductChunks($this->getStoreId());
     }
 
     /**

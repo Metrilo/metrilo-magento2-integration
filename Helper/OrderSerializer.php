@@ -11,7 +11,7 @@ class OrderSerializer extends \Magento\Framework\App\Helper\AbstractHelper
     
         foreach ($orderItems as $orderItem) {
             $itemType = $orderItem->getProductType();
-            if ($itemType == 'configurable' || $itemType == 'bundle') { // exclude configurable/bundle parent product returned by getAllItems() method
+            if ($itemType == 'configurable') { // exclude configurable parent product returned by getAllItems() method
                 continue;
             }
             $orderProducts[] = [

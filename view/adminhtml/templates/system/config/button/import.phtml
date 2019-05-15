@@ -4,8 +4,7 @@
  */
 ?>
 <?php if ($block->buttonEnabled()): ?>
-    <?php /** @var \Metrilo\Analytics\Helper\DataSerializer $import */
-        $import  = $block->getImport();
+    <?php
         $storeId = $block->getStoreId();
     ?>
     <div class="pp-buttons-container">
@@ -22,7 +21,7 @@
             storeId: <?php echo $storeId; ?>,
             customersChunks: <?php echo $block->getCustomerChunks(); ?>,
             categoriesChunks: <?php echo $block->getCategoryChunks(); ?>,
-            productsChunks: <?php echo $import->getProductChunks($storeId); ?>,
+            productsChunks: <?php echo $block->getProductChunks(); ?>,
             ordersChunks: <?php echo $block->getOrderChunks(); ?>,
             submitUrl: '<?php echo $block->getAjaxUrl(); ?>',
             messageSelector: '#metrilo_import_status'

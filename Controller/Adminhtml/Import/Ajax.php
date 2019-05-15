@@ -12,7 +12,6 @@ class Ajax extends \Magento\Backend\App\Action
     /**
      * @param \Magento\Backend\App\Action\Context              $context
      * @param \Metrilo\Analytics\Helper\Data                   $helper
-     * @param \Metrilo\Analytics\Model\Import                  $import,
      * @param \Metrilo\Analytics\Model\OrderData               $orderData,
      * @param \Metrilo\Analytics\Helper\OrderSerializer        $orderSerializer,
      * @param \Metrilo\Analytics\Helper\ApiClient              $apiClient,
@@ -23,12 +22,13 @@ class Ajax extends \Magento\Backend\App\Action
     public function __construct(
         \Magento\Backend\App\Action\Context              $context,
         \Metrilo\Analytics\Helper\Data                   $helper,
-        \Metrilo\Analytics\Model\Import                  $import,
         \Metrilo\Analytics\Model\CustomerData            $customerData,
         \Metrilo\Analytics\Model\CategoryData            $categoryData,
+        \Metrilo\Analytics\Model\ProductData             $productData,
         \Metrilo\Analytics\Model\OrderData               $orderData,
         \Metrilo\Analytics\Helper\CustomerSerializer     $customerSerializer,
         \Metrilo\Analytics\Helper\CategorySerializer     $categorySerializer,
+        \Metrilo\Analytics\Helper\ProductSerializer      $productSerializer,
         \Metrilo\Analytics\Helper\OrderSerializer        $orderSerializer,
         \Metrilo\Analytics\Helper\ApiClient              $apiClient,
         \Magento\Framework\App\Request\Http              $request,
@@ -36,12 +36,13 @@ class Ajax extends \Magento\Backend\App\Action
     ) {
         parent::__construct($context);
         $this->helper             = $helper;
-        $this->import             = $import;
         $this->customerData       = $customerData;
         $this->categoryData       = $categoryData;
+        $this->productData        = $productData;
         $this->orderData          = $orderData;
         $this->customerSerializer = $customerSerializer;
         $this->categorySerializer = $categorySerializer;
+        $this->productSerializer  = $productSerializer;
         $this->orderSerializer    = $orderSerializer;
         $this->apiClient          = $apiClient;
         $this->request            = $request;
@@ -52,7 +53,10 @@ class Ajax extends \Magento\Backend\App\Action
         $serializedData = [];
         
         foreach($records as $record) {
-            $serializedData[] = $serializer->serialize($record);
+            $serializedRecord = $serializer->serialize($record);
+            if ($serializedRecord) {
+                $serializedData[] = $serializedRecord;
+            }
         }
         
         return $serializedData;
@@ -88,8 +92,8 @@ class Ajax extends \Magento\Backend\App\Action
                     $result['success']    = $client->categoryBatch($serializedCategories);
                     break;
                 case 'products':
-                    $client->productBatch($this->import->productData->getProducts($storeId, $chunkId));
-                    $result['success'] = 'productBatch';
+                    $serializedProducts = $this->serializeRecords($this->productData->getProducts($storeId, $chunkId), $this->productSerializer);
+                    $result['success']  = $client->productBatch($serializedProducts);
                     break;
                 case 'orders':
                     $serializedOrders  = $this->serializeRecords($this->orderData->getOrders($storeId, $chunkId), $this->orderSerializer);
@@ -106,6 +110,8 @@ class Ajax extends \Magento\Backend\App\Action
 
             return $jsonFactory->setData($result);
         } catch (\Exception $e) {
+            $this->helper->logError($e);
+            
             return $jsonFactory->setData([
                 'success' => false,
                 'message' => $e->getMessage()
