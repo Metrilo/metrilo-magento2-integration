@@ -70,11 +70,7 @@ class Customer implements ObserverInterface
         try {
             $customer = $this->getCustomerFromEvent($observer);
             
-            if ($customer) {
-                if (!$this->helper->isEnabled($customer->getStoreId())) {
-                    return;
-                }
-                
+            if ($customer && $this->helper->isEnabled($customer->getStoreId())) {
                 if (!trim($customer->getEmail())) {
                     $this->helper->logError('Customer with id = '. $customer->getId(). '  has no email address!');
                     return;
