@@ -219,12 +219,15 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             if ($storeId == 0) { // store 0 is always admin
                 continue;
             }
-            $storeIdConfigMap[$storeId] = $this->scopeConfig
-                ->getValue(
-                    'metrilo_analytics/general/api_key',
-                    \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
-                    $storeId
-                );
+            
+            if ($this->isEnabled($storeId)) {
+                $storeIdConfigMap[$storeId] = $this->scopeConfig
+                    ->getValue(
+                        'metrilo_analytics/general/api_key',
+                        \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+                        $storeId
+                    );
+            }
         }
         $storeIdConfigMap = array_unique($storeIdConfigMap);
         
