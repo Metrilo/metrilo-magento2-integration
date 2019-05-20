@@ -216,9 +216,10 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function getStoreIdsPerProject($storeIds) {
         $storeIdConfigMap = [];
         foreach ($storeIds as $storeId) {
-            if ($storeId == 0) { // store 0 is always admin
+            if ($storeId == 0 || !$this->isEnabled($storeId)) { // store 0 is always admin
                 continue;
             }
+            
             $storeIdConfigMap[$storeId] = $this->scopeConfig
                 ->getValue(
                     'metrilo_analytics/general/api_key',

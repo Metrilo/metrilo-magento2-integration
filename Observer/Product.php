@@ -34,9 +34,12 @@ class Product implements ObserverInterface
             if ($productStoreId == 0) {
                 $productStoreIds   = $this->helper->getStoreIdsPerProject($product->getStoreIds());
             } else {
+                if (!$this->helper->isEnabled($productStoreId)) {
+                    return;
+                }
                 $productStoreIds[] = $productStoreId;
             }
-    
+            
             foreach ($productStoreIds as $storeId) {
                 $client         = $this->apiClient->getClient($storeId);
                 $productParents = $this->productSerializer->productOptions->getParentIds($product->getId());
