@@ -31,15 +31,13 @@ class Analytics extends DataObject
         \Magento\Framework\App\Action\Context $context,
         \Magento\Framework\Registry $registry,
         \Magento\Search\Helper\Data $searchHelper,
-        \Magento\Framework\View\Page\Title $pageTitle,
-        \Metrilo\Analytics\Helper\ImagePathResolver $imagePathResolver
+        \Magento\Framework\View\Page\Title $pageTitle
     ) {
         $this->_context = $context;
         $this->_coreRegistry = $registry;
         $this->_searchHelper = $searchHelper;
         $this->_pageTitle = $pageTitle;
         $this->fullActionName = $this->_context->getRequest()->getFullActionName();
-        $this->imagePathResolver = $imagePathResolver;
 
         $this->addPageEvents();
 
@@ -84,35 +82,8 @@ class Analytics extends DataObject
             /** @var \Magento\Catalog\Model\Product $product */
             $product = $this->_coreRegistry->registry('current_product');
             $data =  [
-                'id'    => $product->getId(),
-                'sku'   => $product->getSku(),
-                'name'  => $product->getName(),
-                'price' => $product->getPrice(),
-                'url'   => $product->getProductUrl()
+                'productId' => $product->getId()
             ];
-            // Additional information ( image and categories )
-
-            if($product) {
-                $imageBasePath = $this->imagePathResolver->getBaseImage($product);
-                if(!empty($imageBasePath)) {
-                    $data['image_url'] = $imageBasePath;
-                }
-            }
-
-            if(count($product->getCategoryIds())) {
-                $categories = array();
-                $collection = $product->getCategoryCollection()
-                    ->addAttributeToSelect('id')
-                    ->addAttributeToSelect('name');
-
-                foreach ($collection as $category) {
-                    $categories[] = array(
-                        'id' => $category->getId(),
-                        'name' => $category->getName()
-                    );
-                }
-                $data['categories'] = $categories;
-            }
 
             $this->addEvent('track', 'view_product', $data);
             return;

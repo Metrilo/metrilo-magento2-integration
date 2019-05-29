@@ -7,25 +7,16 @@
 $events = $block->getEvents();
 ?>
 <script type="text/javascript">
-    window.metrilo||(window.metrilo=[]),window.metrilo.queue=[],window.metrilo.methods=["identify","track","event","pageview","purchase","debug","atr"],
-    window.metrilo.skelet=function(e){return function(){a=Array.prototype.slice.call(arguments);a.unshift(e);window.metrilo.queue.push(a)}};
-    for(var i=0;window.metrilo.methods.length>i;i++){var mthd=window.metrilo.methods[i];window.metrilo[mthd]=window.metrilo.skelet(mthd)}
-    window.metrilo.load=function(e){var t=document,n=t.getElementsByTagName("script")[0],r=t.createElement("script");
-    r.type="text/javascript";r.async=true;r.src="//<?php echo $block->helper->js_domain; ?>/j/"+e+".js";n.parentNode.insertBefore(r,n)};
-    metrilo.load("<?php echo $block->getApiToken(); ?>");
-    <?php foreach ($events as $event) : ?>
-        <?php if($event['method'] == 'identify') : ?>
-        metrilo.identify("<?php echo $event['data']['id']; ?>", <?php echo json_encode($event['data']['params']); ?>);
-        <?php elseif($event['method'] == 'track') : ?>
-            <?php if(is_array($event['data'])): ?>
-                metrilo.event("<?php echo $event['type']; ?>", <?php echo json_encode($event['data']); ?>);
-            <?php else : ?>
-                <?php if(array_key_exists('metaData', $event)) : ?>
-                    metrilo.event("<?php echo $event['type']; ?>", "<?php echo $event['data']; ?>", <?php echo json_encode($event['metaData']); ?>);
-                <?php else : ?>
-                    metrilo.event("<?php echo $event['type']; ?>", "<?php echo $event['data']; ?>");
+    require(['<?php echo $block->getApiEndpoint(); ?>' + '/tracking.js?token=' + '<?php echo $block->getApiToken(); ?>'], function(){
+        <?php foreach ($events as $event) : ?>
+            console.log('<?php echo 'Event Type: ' . $event['type']; ?>');
+            <?php if($event['method'] == 'identify') : ?>
+                metrilo.identify("<?php echo $event['data']['id']; ?>", <?php echo json_encode($event['data']['params']); ?>);
+            <?php elseif($event['method'] == 'track') : ?>
+                <?php if($event['type'] == 'view_product') : ?>
+                    window.metrilo.viewProduct(<?php echo $event['data']['productId']; ?>);
                 <?php endif; ?>
             <?php endif; ?>
-        <?php endif; ?>
-    <?php endforeach; ?>
+        <?php endforeach; ?>
+    });
 </script>

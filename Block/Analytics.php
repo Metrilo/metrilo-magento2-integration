@@ -49,6 +49,16 @@ class Analytics extends Template
     }
 
     /**
+     * Get API Endpoint
+     *
+     * @return bool|null|string
+     */
+    public function getApiEndpoint()
+    {
+        return $this->helper->getApiEndpoint();
+    }
+
+    /**
      * Get events to track them to metrilo js api
      *
      * @return array
