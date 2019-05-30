@@ -5,14 +5,13 @@
 
 /** @var Metrilo\Analytics\Block\Analytics $events */
 $events = $block->getEvents();
+$url    = $block->getApiEndpoint() . '/tracking.js?token=' . $block->getApiToken();
 ?>
 <script type="text/javascript">
-    require(['<?php echo $block->getApiEndpoint(); ?>' + '/tracking.js?token=' + '<?php echo $block->getApiToken(); ?>'], function(){
+    require(['<?php echo $url; ?>'], function(){
         <?php foreach ($events as $event) : ?>
             console.log('<?php echo 'Event Type: ' . $event['type']; ?>');
-            <?php if($event['method'] == 'identify') : ?>
-                metrilo.identify("<?php echo $event['data']['id']; ?>", <?php echo json_encode($event['data']['params']); ?>);
-            <?php elseif($event['method'] == 'track') : ?>
+            <?php if($event['method'] == 'track') : ?>
                 <?php if($event['type'] == 'view_product') : ?>
                     window.metrilo.viewProduct(<?php echo $event['data']['productId']; ?>);
                 <?php endif; ?>

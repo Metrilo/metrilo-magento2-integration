@@ -29,14 +29,10 @@ class Analytics extends DataObject
      */
     public function __construct(
         \Magento\Framework\App\Action\Context $context,
-        \Magento\Framework\Registry $registry,
-        \Magento\Search\Helper\Data $searchHelper,
-        \Magento\Framework\View\Page\Title $pageTitle
+        \Magento\Framework\Registry $registry
     ) {
         $this->_context = $context;
         $this->_coreRegistry = $registry;
-        $this->_searchHelper = $searchHelper;
-        $this->_pageTitle = $pageTitle;
         $this->fullActionName = $this->_context->getRequest()->getFullActionName();
 
         $this->addPageEvents();
@@ -55,45 +51,17 @@ class Analytics extends DataObject
         }
         
         switch($this->fullActionName) {
-            // Catalog search pages
-            case 'catalogsearch_result_index':
-                $query = $this->_searchHelper->getEscapedQueryText();
-                if ($query) {
-                    $params = ['query' => $query];
-                    $this->addEvent('track', 'search', $params);
-                    return;
-                }
-            // category view pages
-            case 'catalog_category_view':
-                $category = $this->_coreRegistry->registry('current_category');
-                $data =  [
-                    'id'    =>  $category->getId(),
-                    'name'  =>  $category->getName()
-                ];
-                $this->addEvent('track', 'view_category', $data);
-                return;
             // product view pages
             case 'catalog_product_view':
                 /** @var \Magento\Catalog\Model\Product $product */
                 $product = $this->_coreRegistry->registry('current_product');
                 $data =  [
-                    'productId' => $product->getId()
-                ];
+                'productId' => $product->getId()
+            ];
     
                 $this->addEvent('track', 'view_product', $data);
                 return;
-            // cart view
-            case 'checkout_cart_index':
-                $this->addEvent('track', 'view_cart', array());
-                return;
-            // checkout
-            case 'checkout_index_index':
-                $this->addEvent('track', 'checkout_start', array());
-                return;
             default:
-                // CMS and any other pages
-                $title = $this->_pageTitle->getShort();
-                $this->addEvent('track', 'pageview', $title, array('backend_hook' => $this->fullActionName));
                 break;
         }
     }
