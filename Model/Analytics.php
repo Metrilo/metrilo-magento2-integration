@@ -53,57 +53,49 @@ class Analytics extends DataObject
         if (!$this->fullActionName || $this->_isRejected($this->fullActionName)) {
             return;
         }
-
-        // Catalog search pages
-        if ($this->fullActionName == 'catalogsearch_result_index') {
-            $query = $this->_searchHelper->getEscapedQueryText();
-            if ($query) {
-                $params = ['query' => $query];
-                $this->addEvent('track', 'search', $params);
+        
+        switch($this->fullActionName) {
+            // Catalog search pages
+            case 'catalogsearch_result_index':
+                $query = $this->_searchHelper->getEscapedQueryText();
+                if ($query) {
+                    $params = ['query' => $query];
+                    $this->addEvent('track', 'search', $params);
+                    return;
+                }
+            // category view pages
+            case 'catalog_category_view':
+                $category = $this->_coreRegistry->registry('current_category');
+                $data =  [
+                    'id'    =>  $category->getId(),
+                    'name'  =>  $category->getName()
+                ];
+                $this->addEvent('track', 'view_category', $data);
                 return;
-            }
+            // product view pages
+            case 'catalog_product_view':
+                /** @var \Magento\Catalog\Model\Product $product */
+                $product = $this->_coreRegistry->registry('current_product');
+                $data =  [
+                    'productId' => $product->getId()
+                ];
+    
+                $this->addEvent('track', 'view_product', $data);
+                return;
+            // cart view
+            case 'checkout_cart_index':
+                $this->addEvent('track', 'view_cart', array());
+                return;
+            // checkout
+            case 'checkout_index_index':
+                $this->addEvent('track', 'checkout_start', array());
+                return;
+            default:
+                // CMS and any other pages
+                $title = $this->_pageTitle->getShort();
+                $this->addEvent('track', 'pageview', $title, array('backend_hook' => $this->fullActionName));
+                break;
         }
-
-        // category view pages
-        if ($this->fullActionName == 'catalog_category_view') {
-            $category = $this->_coreRegistry->registry('current_category');
-
-            $data =  [
-                'id'    =>  $category->getId(),
-                'name'  =>  $category->getName()
-            ];
-
-            $this->addEvent('track', 'view_category', $data);
-            return;
-        }
-
-        // product view pages
-        if ($this->fullActionName == 'catalog_product_view') {
-            /** @var \Magento\Catalog\Model\Product $product */
-            $product = $this->_coreRegistry->registry('current_product');
-            $data =  [
-                'productId' => $product->getId()
-            ];
-
-            $this->addEvent('track', 'view_product', $data);
-            return;
-        }
-
-        // cart view
-        if ($this->fullActionName == 'checkout_cart_index') {
-            $this->addEvent('track', 'view_cart', array());
-            return;
-        }
-
-        // checkout
-        if ($this->fullActionName == 'checkout_index_index') {
-            $this->addEvent('track', 'checkout_start', array());
-            return;
-        }
-
-        // CMS and any other pages
-        $title = $this->_pageTitle->getShort();
-        $this->addEvent('track', 'pageview', $title, array('backend_hook' => $this->fullActionName));
     }
 
     /**
