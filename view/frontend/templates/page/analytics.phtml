@@ -2,20 +2,11 @@
 /**
  * @see Metrilo\Analytics\Block\Analytics
  */
-
-/** @var Metrilo\Analytics\Block\Analytics $events */
-$events = $block->getEvents();
-$url    = $block->getApiEndpoint() . '/tracking.js?token=' . $block->getApiToken();
+$event = $block->getEvent();
+$url   = $block->getApiEndpoint() . '/tracking.js?token=' . $block->getApiToken();
 ?>
 <script type="text/javascript">
     require(['<?php echo $url; ?>'], function(){
-        <?php foreach ($events as $event) : ?>
-            console.log('<?php echo 'Event Type: ' . $event['type']; ?>');
-            <?php if($event['method'] == 'track') : ?>
-                <?php if($event['type'] == 'view_product') : ?>
-                    window.metrilo.viewProduct(<?php echo $event['data']['productId']; ?>);
-                <?php endif; ?>
-            <?php endif; ?>
-        <?php endforeach; ?>
+        <?php if($event){ echo $event->callJs();} ?>
     });
 </script>

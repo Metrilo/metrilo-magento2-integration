@@ -19,22 +19,24 @@ class Analytics extends Template
     public $helper;
 
     /**
-     * @param Context                            $context
-     * @param \Metrilo\Analytics\Helper\Data     $helper
-     * @param \Metrilo\Analytics\Model\Analytics $dataModel
-     * @param \Magento\Customer\Model\Session    $session
-     * @param array                              $data
+     * @param Context                                           $context
+     * @param \Magento\Framework\App\Action\Context             $actionContext
+     * @param \Metrilo\Analytics\Helper\Data                    $helper
+     * @param \Metrilo\Analytics\Model\Analytics                $dataModel
+     * @param \Metrilo\Analytics\Helper\Events\ProductViewEvent $productViewEvent,
+     * @param array                                             $data
      */
     public function __construct(
         Context $context,
-        \Metrilo\Analytics\Helper\Data $helper,
-        \Metrilo\Analytics\Model\Analytics $dataModel,
-        \Magento\Customer\Model\Session $session,
+        \Magento\Framework\App\Action\Context             $actionContext,
+        \Metrilo\Analytics\Helper\Data                    $helper,
+        \Metrilo\Analytics\Helper\Events\ProductViewEvent $productViewEvent,
         array $data = []
     ) {
-        $this->helper = $helper;
-        $this->dataModel = $dataModel;
-        $this->_session = $session;
+        $this->actionContext    = $actionContext;
+        $this->helper           = $helper;
+        $this->productViewEvent = $productViewEvent;
+        $this->fullActionName   = $this->actionContext->getRequest()->getFullActionName();
         parent::__construct($context, $data);
     }
 
@@ -83,5 +85,39 @@ class Analytics extends Template
             return '';
         }
         return parent::_toHtml();
+    }
+
+    /**
+     * Track page views
+     *
+     * @return mixed
+     */
+    public function getEvent()
+    {
+        if (!$this->fullActionName || $this->isRejected($this->fullActionName)) {
+            return;
+        }
+        
+        switch($this->fullActionName) {
+            // product view pages
+            case 'catalog_product_view':
+                return $this->productViewEvent;
+            default:
+                break;
+        }
+    }
+
+    /**
+     * Events that we don't want to track
+     *
+     * @param string full action name
+     */
+    protected function isRejected($action)
+    {
+        $rejected = [
+            'catalogsearch_advanced_index',
+            'catalogsearch_advanced_result'
+        ];
+        return in_array($action, $rejected);
     }
 }
