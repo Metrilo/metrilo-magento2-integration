@@ -3,7 +3,7 @@
  * @see Metrilo\Analytics\Block\Analytics
  */
 $event = $block->getEvent();
-$url   = $block->getApiEndpoint() . '/tracking.js?token=' . $block->getApiToken();
+$url   = $block->getLibraryUrl();
 ?>
 <script type="text/javascript">
     require(['<?php echo $url; ?>'], function(){

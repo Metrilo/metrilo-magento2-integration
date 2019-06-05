@@ -22,15 +22,14 @@ class Analytics extends Template
      * @param Context                                           $context
      * @param \Magento\Framework\App\Action\Context             $actionContext
      * @param \Metrilo\Analytics\Helper\Data                    $helper
-     * @param \Metrilo\Analytics\Model\Analytics                $dataModel
      * @param \Metrilo\Analytics\Helper\Events\ProductViewEvent $productViewEvent,
      * @param array                                             $data
      */
     public function __construct(
         Context $context,
-        \Magento\Framework\App\Action\Context             $actionContext,
-        \Metrilo\Analytics\Helper\Data                    $helper,
-        \Metrilo\Analytics\Helper\Events\ProductViewEvent $productViewEvent,
+        \Magento\Framework\App\Action\Context            $actionContext,
+        \Metrilo\Analytics\Helper\Data                   $helper,
+        \Metrilo\Analytics\Model\Events\ProductViewEvent $productViewEvent,
         array $data = []
     ) {
         $this->actionContext    = $actionContext;
@@ -40,24 +39,8 @@ class Analytics extends Template
         parent::__construct($context, $data);
     }
 
-    /**
-     * Get API Token
-     *
-     * @return bool|null|string
-     */
-    public function getApiToken()
-    {
-        return $this->helper->getApiToken($this->helper->getStoreId());
-    }
-
-    /**
-     * Get API Endpoint
-     *
-     * @return bool|null|string
-     */
-    public function getApiEndpoint()
-    {
-        return $this->helper->getApiEndpoint();
+    public function getLibraryUrl() {
+        return $this->helper->getApiEndpoint() . '/tracking.js?token=' . $this->helper->getApiToken($this->helper->getStoreId());
     }
 
     /**
