@@ -5,11 +5,6 @@ namespace Metrilo\Analytics\Block;
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
 
-/**
- * Block rendering events to frontend
- *
- * @author Miroslav Petrov <miro91tn@gmail.com>
- */
 class Analytics extends Template
 {
     public $helper;
@@ -18,7 +13,7 @@ class Analytics extends Template
         Context $context,
         \Magento\Framework\App\Action\Context $actionContext,
         \Metrilo\Analytics\Helper\Data        $helper,
-        \Magento\Framework\Registry $registry,
+        \Magento\Framework\Registry           $registry,
         array $data = []
     ) {
         $this->actionContext  = $actionContext;
@@ -57,7 +52,7 @@ class Analytics extends Template
         switch($this->fullActionName) {
             // product view pages
             case 'catalog_product_view':
-                return new \Metrilo\Analytics\Model\Events\ProductViewEvent($this->coreRegistry->registry('current_product')->getId());
+                return new \Metrilo\Analytics\Model\Events\ProductViewEvent($this->coreRegistry);
             default:
                 break;
         }
