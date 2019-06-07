@@ -12,30 +12,19 @@ use Magento\Framework\View\Element\Template\Context;
  */
 class Analytics extends Template
 {
-
-    /**
-     * @var \Metrilo\Analytics\Helper\Data
-     */
     public $helper;
-
-    /**
-     * @param Context                                           $context
-     * @param \Magento\Framework\App\Action\Context             $actionContext
-     * @param \Metrilo\Analytics\Helper\Data                    $helper
-     * @param \Metrilo\Analytics\Helper\Events\ProductViewEvent $productViewEvent,
-     * @param array                                             $data
-     */
+    
     public function __construct(
         Context $context,
-        \Magento\Framework\App\Action\Context            $actionContext,
-        \Metrilo\Analytics\Helper\Data                   $helper,
-        \Metrilo\Analytics\Model\Events\ProductViewEvent $productViewEvent,
+        \Magento\Framework\App\Action\Context $actionContext,
+        \Metrilo\Analytics\Helper\Data        $helper,
+        \Magento\Framework\Registry $registry,
         array $data = []
     ) {
-        $this->actionContext    = $actionContext;
-        $this->helper           = $helper;
-        $this->productViewEvent = $productViewEvent;
-        $this->fullActionName   = $this->actionContext->getRequest()->getFullActionName();
+        $this->actionContext  = $actionContext;
+        $this->helper         = $helper;
+        $this->coreRegistry   = $registry;
+        $this->fullActionName = $this->actionContext->getRequest()->getFullActionName();
         parent::__construct($context, $data);
     }
 
@@ -43,11 +32,6 @@ class Analytics extends Template
         return $this->helper->getApiEndpoint() . '/tracking.js?token=' . $this->helper->getApiToken($this->helper->getStoreId());
     }
 
-    /**
-     * Get events to track them to metrilo js api
-     *
-     * @return array
-     */
     public function getEvents()
     {
         return array_merge(
@@ -56,12 +40,6 @@ class Analytics extends Template
         );
     }
 
-    /**
-     * Render metrilo js if module is enabled
-     *
-     * @return string
-     * @codeCoverageIgnore
-     */
     protected function _toHtml()
     {
         if (!$this->helper->isEnabled($this->helper->getStoreId())) {
@@ -70,11 +48,6 @@ class Analytics extends Template
         return parent::_toHtml();
     }
 
-    /**
-     * Track page views
-     *
-     * @return mixed
-     */
     public function getEvent()
     {
         if (!$this->fullActionName || $this->isRejected($this->fullActionName)) {
@@ -84,17 +57,12 @@ class Analytics extends Template
         switch($this->fullActionName) {
             // product view pages
             case 'catalog_product_view':
-                return $this->productViewEvent;
+                return new \Metrilo\Analytics\Model\Events\ProductViewEvent($this->coreRegistry->registry('current_product')->getId());
             default:
                 break;
         }
     }
 
-    /**
-     * Events that we don't want to track
-     *
-     * @param string full action name
-     */
     protected function isRejected($action)
     {
         $rejected = [
