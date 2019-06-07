@@ -5,54 +5,28 @@ namespace Metrilo\Analytics\Block;
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
 
-/**
- * Block rendering events to frontend
- *
- * @author Miroslav Petrov <miro91tn@gmail.com>
- */
 class Analytics extends Template
 {
-
-    /**
-     * @var \Metrilo\Analytics\Helper\Data
-     */
     public $helper;
-
-    /**
-     * @param Context                            $context
-     * @param \Metrilo\Analytics\Helper\Data     $helper
-     * @param \Metrilo\Analytics\Model\Analytics $dataModel
-     * @param \Magento\Customer\Model\Session    $session
-     * @param array                              $data
-     */
+    
     public function __construct(
         Context $context,
-        \Metrilo\Analytics\Helper\Data $helper,
-        \Metrilo\Analytics\Model\Analytics $dataModel,
-        \Magento\Customer\Model\Session $session,
+        \Magento\Framework\App\Action\Context $actionContext,
+        \Metrilo\Analytics\Helper\Data        $helper,
+        \Magento\Framework\Registry           $registry,
         array $data = []
     ) {
-        $this->helper = $helper;
-        $this->dataModel = $dataModel;
-        $this->_session = $session;
+        $this->actionContext  = $actionContext;
+        $this->helper         = $helper;
+        $this->coreRegistry   = $registry;
+        $this->fullActionName = $this->actionContext->getRequest()->getFullActionName();
         parent::__construct($context, $data);
     }
 
-    /**
-     * Get API Token
-     *
-     * @return bool|null|string
-     */
-    public function getApiToken()
-    {
-        return $this->helper->getApiToken($this->helper->getStoreId());
+    public function getLibraryUrl() {
+        return $this->helper->getApiEndpoint() . '/tracking.js?token=' . $this->helper->getApiToken($this->helper->getStoreId());
     }
 
-    /**
-     * Get events to track them to metrilo js api
-     *
-     * @return array
-     */
     public function getEvents()
     {
         return array_merge(
@@ -61,17 +35,35 @@ class Analytics extends Template
         );
     }
 
-    /**
-     * Render metrilo js if module is enabled
-     *
-     * @return string
-     * @codeCoverageIgnore
-     */
     protected function _toHtml()
     {
         if (!$this->helper->isEnabled($this->helper->getStoreId())) {
             return '';
         }
         return parent::_toHtml();
+    }
+
+    public function getEvent()
+    {
+        if (!$this->fullActionName || $this->isRejected($this->fullActionName)) {
+            return;
+        }
+        
+        switch($this->fullActionName) {
+            // product view pages
+            case 'catalog_product_view':
+                return new \Metrilo\Analytics\Model\Events\ProductViewEvent($this->coreRegistry);
+            default:
+                break;
+        }
+    }
+
+    protected function isRejected($action)
+    {
+        $rejected = [
+            'catalogsearch_advanced_index',
+            'catalogsearch_advanced_result'
+        ];
+        return in_array($action, $rejected);
     }
 }
