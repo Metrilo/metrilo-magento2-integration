@@ -14,15 +14,19 @@ class Analytics extends Template
         \Magento\Framework\App\Action\Context $actionContext,
         \Metrilo\Analytics\Helper\Data        $helper,
         \Magento\Framework\Registry           $registry,
+        \Magento\Framework\View\Page\Title    $pageTitle,
+        \Magento\Framework\UrlInterface       $urlInterface,
         array $data = []
     ) {
         $this->actionContext  = $actionContext;
         $this->helper         = $helper;
         $this->coreRegistry   = $registry;
+        $this->pageTitle      = $pageTitle;
+        $this->urlInterface   = $urlInterface;
         $this->fullActionName = $this->actionContext->getRequest()->getFullActionName();
         parent::__construct($context, $data);
     }
-
+    
     public function getLibraryUrl() {
         return $this->helper->getApiEndpoint() . '/tracking.js?token=' . $this->helper->getApiToken($this->helper->getStoreId());
     }
@@ -53,8 +57,9 @@ class Analytics extends Template
             // product view pages
             case 'catalog_product_view':
                 return new \Metrilo\Analytics\Model\Events\ProductViewEvent($this->coreRegistry);
+            // CMS and any other pages
             default:
-                break;
+                return new \Metrilo\Analytics\Model\Events\PageViewEvent($this->pageTitle, $this->urlInterface);
         }
     }
 
