@@ -12,8 +12,6 @@ class PageViewEvent
         $this->urlInterface = $urlInterface;
     }
     public function callJS() {
-        $url          = $this->urlInterface->getCurrentUrl();
-        $name['name'] = $this->pageTitle->getShort();
-        return "window.metrilo.viewPage('" . $url . "', " . json_encode($name) . ");";
+        return "window.metrilo.viewPage('" . $this->urlInterface->getCurrentUrl() . "', " . json_encode(array('name' => $this->pageTitle->getShort())) . ");";
     }
 }
