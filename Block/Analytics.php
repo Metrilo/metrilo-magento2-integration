@@ -11,32 +11,22 @@ class Analytics extends Template
     
     public function __construct(
         Context $context,
-        \Magento\Framework\App\Action\Context $actionContext,
-        \Metrilo\Analytics\Helper\Data        $helper,
-        \Magento\Framework\Registry           $registry,
-        \Magento\Framework\View\Page\Title    $pageTitle,
-        \Magento\Framework\UrlInterface       $urlInterface,
+        \Magento\Framework\App\Action\Context            $actionContext,
+        \Metrilo\Analytics\Helper\Data                   $helper,
+        \Magento\Framework\Registry                      $registry,
+        \Metrilo\Analytics\Model\Events\PageViewEvent    $pageViewEvent,
         array $data = []
     ) {
-        $this->actionContext  = $actionContext;
-        $this->helper         = $helper;
-        $this->coreRegistry   = $registry;
-        $this->pageTitle      = $pageTitle;
-        $this->urlInterface   = $urlInterface;
-        $this->fullActionName = $this->actionContext->getRequest()->getFullActionName();
+        $this->actionContext    = $actionContext;
+        $this->helper           = $helper;
+        $this->registry         = $registry;
+        $this->pageViewEvent    = $pageViewEvent;
+        $this->fullActionName   = $this->actionContext->getRequest()->getFullActionName();
         parent::__construct($context, $data);
     }
     
     public function getLibraryUrl() {
         return $this->helper->getApiEndpoint() . '/tracking.js?token=' . $this->helper->getApiToken($this->helper->getStoreId());
-    }
-
-    public function getEvents()
-    {
-        return array_merge(
-            $this->helper->getSessionEvents(),
-            $this->dataModel->getEvents()
-        );
     }
 
     protected function _toHtml()
@@ -59,7 +49,7 @@ class Analytics extends Template
                 return new \Metrilo\Analytics\Model\Events\ProductViewEvent($this->coreRegistry);
             // CMS and any other pages
             default:
-                return new \Metrilo\Analytics\Model\Events\PageViewEvent($this->pageTitle, $this->urlInterface);
+                return $this->pageViewEvent->callJS();
         }
     }
 

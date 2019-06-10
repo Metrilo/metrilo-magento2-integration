@@ -5,8 +5,8 @@ namespace Metrilo\Analytics\Model\Events;
 class PageViewEvent
 {
     public function __construct(
-        $pageTitle,
-        $urlInterface
+        \Magento\Framework\View\Page\Title $pageTitle,
+        \Magento\Framework\UrlInterface    $urlInterface
     ) {
         $this->pageTitle    = $pageTitle;
         $this->urlInterface = $urlInterface;

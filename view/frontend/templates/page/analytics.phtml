@@ -7,6 +7,6 @@ $url   = $block->getLibraryUrl();
 ?>
 <script type="text/javascript">
     require(['<?php echo $url; ?>'], function(){
-        <?php if($event){ echo $event->callJs(); } ?>
+        <?php if($event){ echo $event; } ?>
     });
 </script>
