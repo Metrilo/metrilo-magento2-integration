@@ -13,13 +13,13 @@ class Analytics extends Template
         Context $context,
         \Magento\Framework\App\Action\Context            $actionContext,
         \Metrilo\Analytics\Helper\Data                   $helper,
-        \Magento\Framework\Registry                      $registry,
+        \Metrilo\Analytics\Model\Events\ProductViewEvent $productViewEvent,
         \Metrilo\Analytics\Model\Events\PageViewEvent    $pageViewEvent,
         array $data = []
     ) {
         $this->actionContext    = $actionContext;
         $this->helper           = $helper;
-        $this->registry         = $registry;
+        $this->productViewEvent = $productViewEvent;
         $this->pageViewEvent    = $pageViewEvent;
         $this->fullActionName   = $this->actionContext->getRequest()->getFullActionName();
         parent::__construct($context, $data);
@@ -46,7 +46,7 @@ class Analytics extends Template
         switch($this->fullActionName) {
             // product view pages
             case 'catalog_product_view':
-                return new \Metrilo\Analytics\Model\Events\ProductViewEvent($this->coreRegistry);
+                return $this->productViewEvent->callJS();
             // CMS and any other pages
             default:
                 return $this->pageViewEvent->callJS();

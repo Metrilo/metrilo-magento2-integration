@@ -5,7 +5,7 @@ namespace Metrilo\Analytics\Model\Events;
 class ProductViewEvent
 {
     public function __construct(
-        $registry
+        \Magento\Framework\Registry $registry
     ) {
         $this->coreRegistry = $registry;
     }
