@@ -11,28 +11,22 @@ class Analytics extends Template
     
     public function __construct(
         Context $context,
-        \Magento\Framework\App\Action\Context $actionContext,
-        \Metrilo\Analytics\Helper\Data        $helper,
-        \Magento\Framework\Registry           $registry,
+        \Magento\Framework\App\Action\Context            $actionContext,
+        \Metrilo\Analytics\Helper\Data                   $helper,
+        \Metrilo\Analytics\Model\Events\ProductViewEvent $productViewEvent,
+        \Metrilo\Analytics\Model\Events\PageViewEvent    $pageViewEvent,
         array $data = []
     ) {
-        $this->actionContext  = $actionContext;
-        $this->helper         = $helper;
-        $this->coreRegistry   = $registry;
-        $this->fullActionName = $this->actionContext->getRequest()->getFullActionName();
+        $this->actionContext    = $actionContext;
+        $this->helper           = $helper;
+        $this->productViewEvent = $productViewEvent;
+        $this->pageViewEvent    = $pageViewEvent;
+        $this->fullActionName   = $this->actionContext->getRequest()->getFullActionName();
         parent::__construct($context, $data);
     }
-
+    
     public function getLibraryUrl() {
         return $this->helper->getApiEndpoint() . '/tracking.js?token=' . $this->helper->getApiToken($this->helper->getStoreId());
-    }
-
-    public function getEvents()
-    {
-        return array_merge(
-            $this->helper->getSessionEvents(),
-            $this->dataModel->getEvents()
-        );
     }
 
     protected function _toHtml()
@@ -52,9 +46,10 @@ class Analytics extends Template
         switch($this->fullActionName) {
             // product view pages
             case 'catalog_product_view':
-                return new \Metrilo\Analytics\Model\Events\ProductViewEvent($this->coreRegistry);
+                return $this->productViewEvent->callJS();
+            // CMS and any other pages
             default:
-                break;
+                return $this->pageViewEvent->callJS();
         }
     }
 
