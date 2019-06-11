@@ -9,4 +9,9 @@
             <argument name="pageViewEvent" xsi:type="object">Metrilo\Analytics\Model\Events\PageViewEvent\Proxy</argument>
         </arguments>
     </type>
+    <type name="Metrilo\Analytics\Block\Analytics">
+        <arguments>
+            <argument name="categoryViewEvent" xsi:type="object">Metrilo\Analytics\Model\Events\CategoryViewEvent\Proxy</argument>
+        </arguments>
+    </type>
 </config>

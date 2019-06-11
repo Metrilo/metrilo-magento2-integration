@@ -11,17 +11,19 @@ class Analytics extends Template
     
     public function __construct(
         Context $context,
-        \Magento\Framework\App\Action\Context            $actionContext,
-        \Metrilo\Analytics\Helper\Data                   $helper,
-        \Metrilo\Analytics\Model\Events\ProductViewEvent $productViewEvent,
-        \Metrilo\Analytics\Model\Events\PageViewEvent    $pageViewEvent,
+        \Magento\Framework\App\Action\Context             $actionContext,
+        \Metrilo\Analytics\Helper\Data                    $helper,
+        \Metrilo\Analytics\Model\Events\ProductViewEvent  $productViewEvent,
+        \Metrilo\Analytics\Model\Events\PageViewEvent     $pageViewEvent,
+        \Metrilo\Analytics\Model\Events\CategoryViewEvent $categoryViewEvent,
         array $data = []
     ) {
-        $this->actionContext    = $actionContext;
-        $this->helper           = $helper;
-        $this->productViewEvent = $productViewEvent;
-        $this->pageViewEvent    = $pageViewEvent;
-        $this->fullActionName   = $this->actionContext->getRequest()->getFullActionName();
+        $this->actionContext     = $actionContext;
+        $this->helper            = $helper;
+        $this->productViewEvent  = $productViewEvent;
+        $this->pageViewEvent     = $pageViewEvent;
+        $this->categoryViewEvent = $categoryViewEvent;
+        $this->fullActionName    = $this->actionContext->getRequest()->getFullActionName();
         parent::__construct($context, $data);
     }
     
@@ -47,6 +49,9 @@ class Analytics extends Template
             // product view pages
             case 'catalog_product_view':
                 return $this->productViewEvent->callJS();
+            // category view pages
+            case 'catalog_category_view':
+                return $this->categoryViewEvent->callJS();
             // CMS and any other pages
             default:
                 return $this->pageViewEvent->callJS();
