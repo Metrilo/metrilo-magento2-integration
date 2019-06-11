@@ -2,7 +2,7 @@
 
 namespace Metrilo\Analytics\Model\Events;
 
-class PageViewEvent
+class PageView
 {
     public function __construct(
         \Magento\Framework\View\Page\Title $pageTitle,
