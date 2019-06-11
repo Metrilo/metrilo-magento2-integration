@@ -1,5 +1,5 @@
 <?php
-
+    
 namespace Metrilo\Analytics\Block;
 
 use Magento\Framework\View\Element\Template;
@@ -11,24 +11,26 @@ class Analytics extends Template
     
     public function __construct(
         Context $context,
-        \Magento\Framework\App\Action\Context            $actionContext,
-        \Metrilo\Analytics\Helper\Data                   $helper,
-        \Metrilo\Analytics\Model\Events\ProductViewEvent $productViewEvent,
-        \Metrilo\Analytics\Model\Events\PageViewEvent    $pageViewEvent,
+        \Magento\Framework\App\Action\Context         $actionContext,
+        \Metrilo\Analytics\Helper\Data                $helper,
+        \Metrilo\Analytics\Model\Events\ProductView   $productViewEvent,
+        \Metrilo\Analytics\Model\Events\PageView      $pageViewEvent,
+        \Metrilo\Analytics\Model\Events\CategoryView  $categoryViewEvent,
         array $data = []
     ) {
-        $this->actionContext    = $actionContext;
-        $this->helper           = $helper;
-        $this->productViewEvent = $productViewEvent;
-        $this->pageViewEvent    = $pageViewEvent;
-        $this->fullActionName   = $this->actionContext->getRequest()->getFullActionName();
+        $this->actionContext      = $actionContext;
+        $this->helper             = $helper;
+        $this->productViewEvent   = $productViewEvent;
+        $this->pageViewEvent      = $pageViewEvent;
+        $this->categoryViewEvent  = $categoryViewEvent;
+        $this->fullActionName     = $this->actionContext->getRequest()->getFullActionName();
         parent::__construct($context, $data);
     }
     
     public function getLibraryUrl() {
         return $this->helper->getApiEndpoint() . '/tracking.js?token=' . $this->helper->getApiToken($this->helper->getStoreId());
     }
-
+    
     protected function _toHtml()
     {
         if (!$this->helper->isEnabled($this->helper->getStoreId())) {
@@ -36,7 +38,7 @@ class Analytics extends Template
         }
         return parent::_toHtml();
     }
-
+    
     public function getEvent()
     {
         if (!$this->fullActionName || $this->isRejected($this->fullActionName)) {
@@ -47,12 +49,15 @@ class Analytics extends Template
             // product view pages
             case 'catalog_product_view':
                 return $this->productViewEvent->callJS();
+            // category view pages
+            case 'catalog_category_view':
+                return $this->categoryViewEvent->callJS();
             // CMS and any other pages
             default:
                 return $this->pageViewEvent->callJS();
         }
     }
-
+    
     protected function isRejected($action)
     {
         $rejected = [
