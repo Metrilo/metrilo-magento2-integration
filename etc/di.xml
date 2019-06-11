@@ -14,4 +14,9 @@
             <argument name="categoryViewEvent" xsi:type="object">Metrilo\Analytics\Model\Events\CategoryView\Proxy</argument>
         </arguments>
     </type>
+    <type name="Metrilo\Analytics\Block\Analytics">
+        <arguments>
+            <argument name="catalogSearchEvent" xsi:type="object">Metrilo\Analytics\Model\Events\CatalogSearch\Proxy</argument>
+        </arguments>
+    </type>
 </config>
