@@ -76,4 +76,14 @@ class Analytics extends Template
         ];
         return in_array($action, $rejected);
     }
+    
+    public function getCatalogSession() {
+        return $this->helper->catalogSession;
+    }
+    
+    public function cartEventsLoop($eventsData, $eventMethod){
+        foreach($eventsData as $event) {
+            echo "metrilo." . $eventMethod . "('" . $event['data']['productId'] . "', " . $event['data']['quantity'] . ");";
+        }
+    }
 }

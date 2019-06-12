@@ -2,75 +2,33 @@
 
 namespace Metrilo\Analytics\Helper;
 
-/**
- * Helper class
- *
- * @author Miroslav Petrov <miro91tn@gmail.com>
- */
 class Data extends \Magento\Framework\App\Helper\AbstractHelper
 {
     const chunkItems = 50;
 
-    const DATA_TAG = 'metrilo_events';
-
     const MODULE_NAME = 'Metrilo_Analytics';
 
-    public $js_domain = 't.metrilo.com';
-    private $push_domain = 'http://p.metrilo.com';
-
-    /**
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface $config
-     * @param \Magento\Customer\Model\Session                    $session
-     * @param \Psr\Log\LoggerInterface                           $logger
-     * @param \Magento\Framework\Json\Helper\Data                $jsonHelper
-     * @param Client                                             $clientHelper
-     * @param OrderSerializer                                    $orderSerializer
-     * @param \Magento\Store\Model\StoreManagerInterface         $storeManager
-     * @param \Magento\Framework\App\ProductMetadata             $metaData
-     * @param \Magento\Framework\Module\ModuleListInterface      $moduleList
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
-     */
     public function __construct(
         \Magento\Framework\App\Config\ScopeConfigInterface $config,
-        \Magento\Customer\Model\Session                    $session,
+        \Magento\Catalog\Model\Session                     $catalogSession,
         \Psr\Log\LoggerInterface                           $logger,
-        \Magento\Framework\Json\Helper\Data                $jsonHelper,
         \Metrilo\Analytics\Helper\Client                   $clientHelper,
         \Metrilo\Analytics\Helper\AdminStoreResolver       $resolver,
-        \Magento\Store\Model\StoreManagerInterface         $storeManager,
-        \Magento\Framework\App\ProductMetadata             $metaData,
-        \Magento\Framework\Module\ModuleListInterface      $moduleList,
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+        \Magento\Store\Model\StoreManagerInterface         $storeManager
     ) {
-        $this->config       = $config;
-        $this->session      = $session;
-        $this->logger       = $logger;
-        $this->jsonHelper   = $jsonHelper;
-        $this->clientHelper = $clientHelper;
-        $this->resolver     = $resolver;
-        $this->storeManager = $storeManager;
-        $this->metaData     = $metaData;
-        $this->moduleList   = $moduleList;
-        $this->scopeConfig  = $scopeConfig;
+        $this->config         = $config;
+        $this->catalogSession = $catalogSession;
+        $this->logger         = $logger;
+        $this->clientHelper   = $clientHelper;
+        $this->resolver       = $resolver;
+        $this->storeManager   = $storeManager;
     }
 
-    /**
-     * Get storeId for the current request context
-     *
-     * @param null $request
-     *
-     * @return int
-     */
     public function getStoreId()
     {
         return $this->storeManager->getStore()->getId();
     }
 
-    /**
-     * Check if metrilo module is enabled
-     *
-     * @return boolean
-     */
     public function isEnabled($storeId)
     {
         return $this->config->getValue(
@@ -80,11 +38,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         );
     }
 
-    /**
-     * Get API Token from system configuration
-     *
-     * @return string
-     */
     public function getApiToken($storeId)
     {
         return $this->config->getValue(
@@ -94,11 +47,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         );
     }
 
-    /**
-     * Get API Secret from system configuration
-     *
-     * @return string
-     */
     public function getApiSecret($storeId)
     {
         return $this->config->getValue(
@@ -108,11 +56,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         );
     }
 
-    /**
-     * Get API Secret from system configuration
-     *
-     * @return string
-     */
     public function getApiEndpoint()
     {
         return $this->config->getValue(
@@ -120,44 +63,28 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         );
     }
 
-    /**
-     * Get session data with "metrilo_events" key
-     *
-     * @return array
-     */
-    public function getSessionEvents()
+    public function getSessionEvents($type)
     {
         $events = [];
-        if ($this->session->getData(self::DATA_TAG)) {
-            $events = $this->session->getData(self::DATA_TAG, true);
+        if ($this->catalogSession->getData($type)) {
+            $events = $this->catalogSession->getData($type, true);
         }
         return $events;
     }
 
-    /**
-     * Add event to session
-     *
-     * @param string  $method
-     * @param string  $type
-     * @param array   $data
-     * @param boolean|string $metaData
-     */
-    public function addSessionEvent($method, $type, $data, $metaData = false)
+    public function addSessionEvent($type, $data)
     {
         $events = [];
-        if ($this->session->getData(self::DATA_TAG) != '') {
-            $events = (array)$this->session->getData(self::DATA_TAG);
+        if ($this->catalogSession->getData($type) != '') {
+            $events = (array)$this->catalogSession->getData($type);
         }
         $eventToAdd = array(
-            'method' => $method,
             'type' => $type,
             'data' => $data
         );
-        if ($metaData) {
-            $eventToAdd['metaData'] = $metaData;
-        }
+
         array_push($events, $eventToAdd);
-        $this->session->setData(self::DATA_TAG, $events);
+        $this->catalogSession->setData($type, $events);
     }
 
     public function log($value)
@@ -169,13 +96,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $logger->err($value);
     }
 
-    /**
-     * Creates project activity
-     *
-     * @param string $type The type of the activity to create
-     *
-     * @return boolean Indicates if the creation was successful
-     */
     public function createActivity($storeId, $type)
     {
         $key = $this->getApiToken($storeId);
@@ -193,12 +113,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         return $responseCode == 200;
     }
 
-    /**
-     * Log error to logs
-     *
-     * @param  \Exception $exception
-     * @return void
-     */
     public function logError($exception)
     {
         if ($exception instanceof \Exception) {
@@ -220,7 +134,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                 continue;
             }
             
-            $storeIdConfigMap[$storeId] = $this->scopeConfig
+            $storeIdConfigMap[$storeId] = $this->config
                 ->getValue(
                     'metrilo_analytics/general/api_key',
                     \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
