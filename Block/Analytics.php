@@ -17,6 +17,7 @@ class Analytics extends Template
         \Metrilo\Analytics\Model\Events\PageView      $pageViewEvent,
         \Metrilo\Analytics\Model\Events\CategoryView  $categoryViewEvent,
         \Metrilo\Analytics\Model\Events\CatalogSearch $catalogSearchEvent,
+        \Metrilo\Analytics\Model\Events\CartView      $cartView,
         array $data = []
     ) {
         $this->actionContext      = $actionContext;
@@ -25,6 +26,7 @@ class Analytics extends Template
         $this->pageViewEvent      = $pageViewEvent;
         $this->categoryViewEvent  = $categoryViewEvent;
         $this->catalogSearchEvent = $catalogSearchEvent;
+        $this->cartViewEvent      = $cartViewEvent;
         $this->fullActionName     = $this->actionContext->getRequest()->getFullActionName();
         parent::__construct($context, $data);
     }
@@ -57,6 +59,9 @@ class Analytics extends Template
             // catalog search pages
             case 'catalogsearch_result_index':
                 return $this->catalogSearchEvent->callJS();
+            // cart view pages
+            case 'checkout_cart_index':
+                return $this->cartView->callJS();
             // CMS and any other pages
             default:
                 return $this->pageViewEvent->callJS();
