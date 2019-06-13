@@ -10,18 +10,18 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
     public function __construct(
         \Magento\Framework\App\Config\ScopeConfigInterface $config,
-        \Magento\Catalog\Model\Session                     $catalogSession,
         \Psr\Log\LoggerInterface                           $logger,
         \Metrilo\Analytics\Helper\Client                   $clientHelper,
         \Metrilo\Analytics\Helper\AdminStoreResolver       $resolver,
+        \Metrilo\Analytics\Helper\CartEvents               $cartEvents,
         \Magento\Store\Model\StoreManagerInterface         $storeManager
     ) {
-        $this->config         = $config;
-        $this->catalogSession = $catalogSession;
-        $this->logger         = $logger;
-        $this->clientHelper   = $clientHelper;
-        $this->resolver       = $resolver;
-        $this->storeManager   = $storeManager;
+        $this->config       = $config;
+        $this->logger       = $logger;
+        $this->clientHelper = $clientHelper;
+        $this->resolver     = $resolver;
+        $this->cartEvents   = $cartEvents;
+        $this->storeManager = $storeManager;
     }
 
     public function getStoreId()
@@ -61,30 +61,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         return $this->config->getValue(
             'metrilo_analytics/general/api_endpoint'
         );
-    }
-
-    public function getSessionEvents($type)
-    {
-        $events = [];
-        if ($this->catalogSession->getData($type)) {
-            $events = $this->catalogSession->getData($type, true);
-        }
-        return $events;
-    }
-
-    public function addSessionEvent($type, $data)
-    {
-        $events = [];
-        if ($this->catalogSession->getData($type) != '') {
-            $events = (array)$this->catalogSession->getData($type);
-        }
-        $eventToAdd = array(
-            'type' => $type,
-            'data' => $data
-        );
-
-        array_push($events, $eventToAdd);
-        $this->catalogSession->setData($type, $events);
     }
 
     public function log($value)

@@ -20,7 +20,7 @@ class AddToCart implements ObserverInterface
             $data['quantity']  = $observer->getEvent()->getQuoteItem()->getQty();
             $data['productId'] = $observer->getEvent()->getProduct()->getId();
             
-            $this->helper->addSessionEvent('metrilo_add_to_cart', $data);
+            $this->helper->cartEvents->addSessionEvent('metrilo_add_to_cart', $data);
         } catch (\Exception $e) {
             $this->helper->logError($e);
         }
