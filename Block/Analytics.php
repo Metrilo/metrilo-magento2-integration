@@ -80,10 +80,4 @@ class Analytics extends Template
     public function getCartEvents() {
         return $this->helper->cartEvents;
     }
-    
-    public function cartEventsLoop($eventsData, $eventMethod){
-        foreach($eventsData as $event) {
-            echo "metrilo." . $eventMethod . "('" . $event['productId'] . "', " . $event['quantity'] . ");";
-        }
-    }
 }

@@ -8,11 +8,9 @@ $addToCartEvents = $block->getCartEvents()->getSessionEvents('metrilo_add_to_car
 ?>
 <script type="text/javascript">
     require(['<?php echo $url; ?>'], function(){
-        <?php if($addToCartEvents){
-            foreach($addToCartEvents as $event) {
+        <?php foreach($addToCartEvents as $event) {
                 echo "metrilo.addToCart('" . $event['productId'] . "', " . $event['quantity'] . ");";
-            }
-        } ?>
+            } ?>
         <?php if($event){ echo $event; } ?>
     });
 </script>
