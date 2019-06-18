@@ -24,12 +24,12 @@ class SessionEvents extends \Magento\Framework\App\Helper\AbstractHelper
     public function addSessionEvent($type, $data)
     {
         $events = [];
-        $sessionData = $this->catalogSession->getData($type);
-        if ($sessionData != '') {
-            $events[] = $sessionData;
+        $sessionData = $this->catalogSession->getData($type, true);
+        if ($sessionData !== null) {
+            $events = $sessionData;
         }
         
-        array_push($events, $data);
+        $events[] = $data;
         $this->catalogSession->setData($type, $events);
     }
 }

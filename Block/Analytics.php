@@ -13,22 +13,22 @@ class Analytics extends Template
         Context $context,
         \Magento\Framework\App\Action\Context         $actionContext,
         \Metrilo\Analytics\Helper\Data                $helper,
+        \Metrilo\Analytics\Helper\SessionEvents       $sessionEvents,
         \Metrilo\Analytics\Model\Events\ProductView   $productViewEvent,
         \Metrilo\Analytics\Model\Events\PageView      $pageViewEvent,
         \Metrilo\Analytics\Model\Events\CategoryView  $categoryViewEvent,
         \Metrilo\Analytics\Model\Events\CatalogSearch $catalogSearchEvent,
         \Metrilo\Analytics\Model\Events\CartView      $cartViewEvent,
-        \Metrilo\Analytics\Model\Events\AddToCart     $addToCartEvent,
         array $data = []
     ) {
         $this->actionContext      = $actionContext;
         $this->helper             = $helper;
+        $this->sessionEvents      = $sessionEvents;
         $this->productViewEvent   = $productViewEvent;
         $this->pageViewEvent      = $pageViewEvent;
         $this->categoryViewEvent  = $categoryViewEvent;
         $this->catalogSearchEvent = $catalogSearchEvent;
         $this->cartViewEvent      = $cartViewEvent;
-        $this->addToCartEvent     = $addToCartEvent;
         $this->fullActionName     = $this->actionContext->getRequest()->getFullActionName();
         parent::__construct($context, $data);
     }
@@ -79,7 +79,17 @@ class Analytics extends Template
         return in_array($action, $rejected);
     }
     
-    public function getAddToCartEvents() {
-        return $this->addToCartEvent->callJs();
+    public function getEvents() {
+        $cartEvents    = '';
+        $pageEvent     = $this->getEvent();
+        $sessionEvents = $this->sessionEvents->getSessionEvents($this->helper::ADD_TO_CART);
+        if ($sessionEvents === null) {
+            $sessionEvents = [];
+        }
+        foreach ($sessionEvents as $event) {
+            $cartEvents .= $event;
+        }
+        
+        return $pageEvent . $cartEvents;
     }
 }

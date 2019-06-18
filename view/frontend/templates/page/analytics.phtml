@@ -2,13 +2,12 @@
 /**
  * @see Metrilo\Analytics\Block\Analytics
  */
-$event           = $block->getEvent();
+
 $url             = $block->getLibraryUrl();
 $addToCartEvents = $block->getAddToCartEvents();
 ?>
 <script type="text/javascript">
     require(['<?php echo $url; ?>'], function(){
-        <?php foreach($addToCartEvents as $event) { echo $event; } ?>
-        <?php if($event){ echo $event; } ?>
+        <?php echo $block->getEvents(); ?>
     });
 </script>
