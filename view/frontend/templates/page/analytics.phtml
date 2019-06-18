@@ -4,13 +4,11 @@
  */
 $event           = $block->getEvent();
 $url             = $block->getLibraryUrl();
-$addToCartEvents = $block->getCartEvents()->getSessionEvents('metrilo_add_to_cart');
+$addToCartEvents = $block->getAddToCartEvents();
 ?>
 <script type="text/javascript">
     require(['<?php echo $url; ?>'], function(){
-        <?php foreach($addToCartEvents as $event) {
-                echo "metrilo.addToCart('" . $event['productId'] . "', " . $event['quantity'] . ");";
-            } ?>
+        <?php foreach($addToCartEvents as $event) { echo $event; } ?>
         <?php if($event){ echo $event; } ?>
     });
 </script>

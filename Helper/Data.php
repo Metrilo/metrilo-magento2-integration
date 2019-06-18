@@ -13,14 +13,12 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         \Psr\Log\LoggerInterface                           $logger,
         \Metrilo\Analytics\Helper\Client                   $clientHelper,
         \Metrilo\Analytics\Helper\AdminStoreResolver       $resolver,
-        \Metrilo\Analytics\Helper\CartEvents               $cartEvents,
         \Magento\Store\Model\StoreManagerInterface         $storeManager
     ) {
         $this->config       = $config;
         $this->logger       = $logger;
         $this->clientHelper = $clientHelper;
         $this->resolver     = $resolver;
-        $this->cartEvents   = $cartEvents;
         $this->storeManager = $storeManager;
     }
 

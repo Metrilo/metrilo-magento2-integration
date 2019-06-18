@@ -9,9 +9,11 @@ class AddToCart implements ObserverInterface
 {
 
     public function __construct(
-        \Metrilo\Analytics\Helper\Data $helper
+        \Metrilo\Analytics\Helper\Data          $helper,
+        \Metrilo\Analytics\Helper\SessionEvents $sessionEvents
     ) {
-        $this->helper = $helper;
+        $this->helper        = $helper;
+        $this->sessionEvents = $sessionEvents;
     }
     
     public function execute(Observer $observer)
@@ -20,7 +22,7 @@ class AddToCart implements ObserverInterface
             $data['quantity']  = $observer->getEvent()->getQuoteItem()->getQty();
             $data['productId'] = $observer->getEvent()->getProduct()->getId();
             
-            $this->helper->cartEvents->addSessionEvent('metrilo_add_to_cart', $data);
+            $this->sessionEvents->addSessionEvent('metrilo_add_to_cart', $data);
         } catch (\Exception $e) {
             $this->helper->logError($e);
         }

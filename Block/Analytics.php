@@ -18,6 +18,7 @@ class Analytics extends Template
         \Metrilo\Analytics\Model\Events\CategoryView  $categoryViewEvent,
         \Metrilo\Analytics\Model\Events\CatalogSearch $catalogSearchEvent,
         \Metrilo\Analytics\Model\Events\CartView      $cartViewEvent,
+        \Metrilo\Analytics\Model\Events\AddToCart     $addToCartEvent,
         array $data = []
     ) {
         $this->actionContext      = $actionContext;
@@ -27,6 +28,7 @@ class Analytics extends Template
         $this->categoryViewEvent  = $categoryViewEvent;
         $this->catalogSearchEvent = $catalogSearchEvent;
         $this->cartViewEvent      = $cartViewEvent;
+        $this->addToCartEvent     = $addToCartEvent;
         $this->fullActionName     = $this->actionContext->getRequest()->getFullActionName();
         parent::__construct($context, $data);
     }
@@ -77,7 +79,7 @@ class Analytics extends Template
         return in_array($action, $rejected);
     }
     
-    public function getCartEvents() {
-        return $this->helper->cartEvents;
+    public function getAddToCartEvents() {
+        return $this->addToCartEvent->callJs();
     }
 }

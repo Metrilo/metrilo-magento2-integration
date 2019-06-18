@@ -2,30 +2,31 @@
 
 namespace Metrilo\Analytics\Helper;
 
-class CartEvents extends \Magento\Framework\App\Helper\AbstractHelper
+class SessionEvents extends \Magento\Framework\App\Helper\AbstractHelper
 {
     public function __construct(
         \Magento\Catalog\Model\Session $catalogSession
-    )
-    {
+    ) {
         $this->catalogSession = $catalogSession;
     }
     
     public function getSessionEvents($type)
     {
-        $events = [];
-        $data   = $this->catalogSession->getData($type, true);
-        if ($data) {
-            $events = $data;
+        $sessionEvents = $this->catalogSession->getData($type, true);
+        
+        if ($sessionEvents === null) {
+            $sessionEvents = [];
         }
-        return $events;
+        
+        return $sessionEvents;
     }
     
     public function addSessionEvent($type, $data)
     {
         $events = [];
-        if ($this->catalogSession->getData($type) != '') {
-            $events = (array)$this->catalogSession->getData($type);
+        $sessionData = $this->catalogSession->getData($type);
+        if ($sessionData != '') {
+            $events[] = $sessionData;
         }
         
         array_push($events, $data);
