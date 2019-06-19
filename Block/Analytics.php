@@ -80,16 +80,8 @@ class Analytics extends Template
     }
     
     public function getEvents() {
-        $cartEvents    = '';
-        $pageEvent     = $this->getEvent();
-        $sessionEvents = $this->sessionEvents->getSessionEvents($this->helper::ADD_TO_CART);
-        if ($sessionEvents === null) {
-            $sessionEvents = [];
-        }
-        foreach ($sessionEvents as $event) {
-            $cartEvents .= $event;
-        }
-        
-        return $pageEvent . $cartEvents;
+        $sessionEvents   = $this->sessionEvents->getSessionEvents();
+        $sessionEvents[] = $this->getEvent();
+        return $sessionEvents;
     }
 }

@@ -8,7 +8,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
     const MODULE_NAME = 'Metrilo_Analytics';
 
-    const ADD_TO_CART = 'metrilo_add_to_cart';
+    const METRILO_SESSION_EVENTS = 'metrilo_session_events';
 
     public function __construct(
         \Magento\Framework\App\Config\ScopeConfigInterface $config,

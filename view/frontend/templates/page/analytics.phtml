@@ -3,11 +3,11 @@
  * @see Metrilo\Analytics\Block\Analytics
  */
 
-$url             = $block->getLibraryUrl();
-$addToCartEvents = $block->getAddToCartEvents();
+$url    = $block->getLibraryUrl();
+$events = $block->getEvents();
 ?>
 <script type="text/javascript">
     require(['<?php echo $url; ?>'], function(){
-        <?php echo $block->getEvents(); ?>
+        <?php foreach($events as $event) { echo $event; } ?>
     });
 </script>

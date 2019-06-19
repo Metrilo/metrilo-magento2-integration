@@ -4,15 +4,17 @@ namespace Metrilo\Analytics\Helper;
 
 class SessionEvents extends \Magento\Framework\App\Helper\AbstractHelper
 {
+    private $metriloSessionEvents = Data::METRILO_SESSION_EVENTS;
+    
     public function __construct(
         \Magento\Catalog\Model\Session $catalogSession
     ) {
         $this->catalogSession = $catalogSession;
     }
     
-    public function getSessionEvents($type)
+    public function getSessionEvents()
     {
-        $sessionEvents = $this->catalogSession->getData($type, true);
+        $sessionEvents = $this->catalogSession->getData($this->metriloSessionEvents, true);
         
         if ($sessionEvents === null) {
             $sessionEvents = [];
@@ -21,15 +23,15 @@ class SessionEvents extends \Magento\Framework\App\Helper\AbstractHelper
         return $sessionEvents;
     }
     
-    public function addSessionEvent($type, $data)
+    public function addSessionEvent($data)
     {
         $events = [];
-        $sessionData = $this->catalogSession->getData($type, true);
+        $sessionData = $this->catalogSession->getData($this->metriloSessionEvents, true);
         if ($sessionData !== null) {
             $events = $sessionData;
         }
         
         $events[] = $data;
-        $this->catalogSession->setData($type, $events);
+        $this->catalogSession->setData($this->metriloSessionEvents, $events);
     }
 }

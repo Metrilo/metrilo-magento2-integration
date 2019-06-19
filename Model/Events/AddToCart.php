@@ -2,7 +2,7 @@
 
 namespace Metrilo\Analytics\Model\Events;
 
-class CartAdd
+class AddToCart
 {
     public function __construct(
         $event
