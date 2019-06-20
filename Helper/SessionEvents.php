@@ -25,8 +25,8 @@ class SessionEvents extends \Magento\Framework\App\Helper\AbstractHelper
     
     public function addSessionEvent($data)
     {
-        $sessionData = $this->getSessionEvents();
-        $events[]    = $data;
+        $events   = $this->getSessionEvents();
+        $events[] = $data;
         $this->catalogSession->setData($this->metriloSessionEvents, $events);
     }
 }
