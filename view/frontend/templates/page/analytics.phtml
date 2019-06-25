@@ -2,11 +2,12 @@
 /**
  * @see Metrilo\Analytics\Block\Analytics
  */
-$event = $block->getEvent();
-$url   = $block->getLibraryUrl();
+
+$url    = $block->getLibraryUrl();
+$events = $block->getEvents();
 ?>
 <script type="text/javascript">
     require(['<?php echo $url; ?>'], function(){
-        <?php if($event){ echo $event; } ?>
+        <?php foreach($events as $event) { echo $event; } ?>
     });
 </script>
