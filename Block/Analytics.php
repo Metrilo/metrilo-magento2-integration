@@ -13,6 +13,7 @@ class Analytics extends Template
         Context $context,
         \Magento\Framework\App\Action\Context         $actionContext,
         \Metrilo\Analytics\Helper\Data                $helper,
+        \Metrilo\Analytics\Helper\SessionEvents       $sessionEvents,
         \Metrilo\Analytics\Model\Events\ProductView   $productViewEvent,
         \Metrilo\Analytics\Model\Events\PageView      $pageViewEvent,
         \Metrilo\Analytics\Model\Events\CategoryView  $categoryViewEvent,
@@ -22,6 +23,7 @@ class Analytics extends Template
     ) {
         $this->actionContext      = $actionContext;
         $this->helper             = $helper;
+        $this->sessionEvents      = $sessionEvents;
         $this->productViewEvent   = $productViewEvent;
         $this->pageViewEvent      = $pageViewEvent;
         $this->categoryViewEvent  = $categoryViewEvent;
@@ -75,5 +77,11 @@ class Analytics extends Template
             'catalogsearch_advanced_result'
         ];
         return in_array($action, $rejected);
+    }
+    
+    public function getEvents() {
+        $sessionEvents   = $this->sessionEvents->getSessionEvents();
+        $sessionEvents[] = $this->getEvent();
+        return $sessionEvents;
     }
 }
