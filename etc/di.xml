@@ -19,4 +19,9 @@
             <argument name="catalogSearchEvent" xsi:type="object">Metrilo\Analytics\Model\Events\CatalogSearch\Proxy</argument>
         </arguments>
     </type>
+    <type name="Metrilo\Analytics\Block\Analytics">
+        <arguments>
+            <argument name="checkoutStartEvent" xsi:type="object">Metrilo\Analytics\Model\Events\CheckoutView\Proxy</argument>
+        </arguments>
+    </type>
 </config>
