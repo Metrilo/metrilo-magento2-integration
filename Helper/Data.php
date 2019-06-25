@@ -7,11 +7,10 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     const chunkItems = 50;
 
     const MODULE_NAME = 'Metrilo_Analytics';
-    
+
     public function __construct(
         \Magento\Framework\App\Config\ScopeConfigInterface $config,
         \Psr\Log\LoggerInterface                           $logger,
-        \Magento\Framework\Json\Helper\Data                $jsonHelper,
         \Metrilo\Analytics\Helper\Client                   $clientHelper,
         \Metrilo\Analytics\Helper\AdminStoreResolver       $resolver,
         \Magento\Store\Model\StoreManagerInterface         $storeManager
@@ -22,12 +21,12 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $this->resolver     = $resolver;
         $this->storeManager = $storeManager;
     }
-    
+
     public function getStoreId()
     {
         return $this->storeManager->getStore()->getId();
     }
-    
+
     public function isEnabled($storeId)
     {
         return $this->config->getValue(
@@ -36,7 +35,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             $storeId
         );
     }
-    
+
     public function getApiToken($storeId)
     {
         return $this->config->getValue(
@@ -45,7 +44,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             $storeId
         );
     }
-    
+
     public function getApiSecret($storeId)
     {
         return $this->config->getValue(
@@ -54,39 +53,12 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             $storeId
         );
     }
-    
+
     public function getApiEndpoint()
     {
         return $this->config->getValue(
             'metrilo_analytics/general/api_endpoint'
         );
-    }
-
-    public function getSessionEvents()
-    {
-        $events = [];
-        if ($this->session->getData(self::DATA_TAG)) {
-            $events = $this->session->getData(self::DATA_TAG, true);
-        }
-        return $events;
-    }
-
-    public function addSessionEvent($method, $type, $data, $metaData = false)
-    {
-        $events = [];
-        if ($this->session->getData(self::DATA_TAG) != '') {
-            $events = (array)$this->session->getData(self::DATA_TAG);
-        }
-        $eventToAdd = array(
-            'method' => $method,
-            'type' => $type,
-            'data' => $data
-        );
-        if ($metaData) {
-            $eventToAdd['metaData'] = $metaData;
-        }
-        array_push($events, $eventToAdd);
-        $this->session->setData(self::DATA_TAG, $events);
     }
 
     public function log($value)
