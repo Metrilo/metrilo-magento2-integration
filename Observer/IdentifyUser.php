@@ -36,7 +36,6 @@ class IdentifyUser implements ObserverInterface
     
     public function execute(Observer $observer)
     {
-        $test = $observer;
         try {
             $identifyEmail = $this->getEventEmail($observer);
             

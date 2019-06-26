@@ -9,7 +9,7 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
     <event name="sales_order_save_after">
         <observer name="metrilo_event_order" instance="Metrilo\Analytics\Observer\Order"/>
-        <observer name="metrilo_identify_customer_order" instance="Metrilo\Analytics\Observer\IdentifyUser"/>
+        <observer name="metrilo_identify_user_order" instance="Metrilo\Analytics\Observer\IdentifyUser"/>
     </event>
     <event name="newsletter_subscriber_save_after">
         <observer name="metrilo_event_subscriber_update" instance="Metrilo\Analytics\Observer\Customer" />
