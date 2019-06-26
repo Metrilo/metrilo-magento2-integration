@@ -4,9 +4,9 @@ namespace Metrilo\Analytics\Observer;
 
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
-use Metrilo\Analytics\Model\Events\IdentifyUser as IdentifyUserEvent;
+use Metrilo\Analytics\Model\Events\IdentifyCustomer as IdentifyCustomerEvent;
 
-class IdentifyUser implements ObserverInterface
+class IdentifyCustomer implements ObserverInterface
 {
     public function __construct(
         \Metrilo\Analytics\Helper\Data          $helper,
@@ -40,8 +40,8 @@ class IdentifyUser implements ObserverInterface
             $identifyEmail = $this->getEventEmail($observer);
             
             if ($identifyEmail && $this->helper->isEnabled($observer->getEvent()->getStoreId())) {
-                $identifyUserEvent = new IdentifyUserEvent($identifyEmail);
-                $this->sessionEvents->addSessionEvent($identifyUserEvent->callJs());
+                $identifyCustomerEvent = new IdentifyCustomerEvent($identifyEmail);
+                $this->sessionEvents->addSessionEvent($identifyCustomerEvent->callJs());
             }
         } catch (\Exception $e) {
             $this->helper->logError($e);

@@ -2,7 +2,7 @@
 
 namespace Metrilo\Analytics\Model\Events;
 
-class IdentifyUser
+class IdentifyCustomer
 {
     public function __construct(
         $email
