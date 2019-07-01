@@ -20,6 +20,9 @@ class AddToCart implements ObserverInterface
     public function execute(Observer $observer)
     {
         try {
+            if (!$this->helper->isEnabled($observer->getEvent()->getProduct()->getStoreId())) {
+                return;
+            }
             $addToCartEvent = new AddToCartEvent($observer->getEvent());
             $this->sessionEvents->addSessionEvent($addToCartEvent->callJs());
         } catch (\Exception $e) {

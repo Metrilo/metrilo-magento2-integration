@@ -20,6 +20,9 @@ class RemoveFromCart implements ObserverInterface
     public function execute(Observer $observer)
     {
         try {
+            if (!$this->helper->isEnabled($observer->getEvent()->getQuoteItem()->getStoreId())) {
+                return;
+            }
             $removeFromCartEvent = new RemoveFromCartEvent($observer->getEvent());
             $this->sessionEvents->addSessionEvent($removeFromCartEvent->callJs());
         } catch (\Exception $e) {
