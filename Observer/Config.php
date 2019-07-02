@@ -7,24 +7,30 @@ use Magento\Framework\Event\ObserverInterface;
 
 class Config implements ObserverInterface
 {
-
-    private $_helper;
-
     public function __construct(
-        \Metrilo\Analytics\Helper\Data $helper,
         \Magento\Framework\Message\ManagerInterface $messageManager,
-        \Metrilo\Analytics\Helper\AdminStoreResolver $resolver
+        \Magento\Framework\App\Request\Http         $request,
+        \Metrilo\Analytics\Helper\Data              $helper,
+        \Metrilo\Analytics\Helper\ApiClient         $apiClient
     ) {
         $this->messageManager = $messageManager;
-        $this->resolver = $resolver;
-        $this->_helper = $helper;
+        $this->request        = $request;
+        $this->helper         = $helper;
+        $this->apiClient      = $apiClient;
     }
 
     public function execute(Observer $observer)
     {
-        $storeId = $this->resolver->getAdminStoreId();
-        if (!$this->_helper->createActivity($storeId, 'integrated')) {
-            $this->messageManager->addError('The API Token and/or API Secret you have entered are invalid. You can find the correct ones in Settings -> Installation in your Metrilo account.');
+        try {
+            $storeId  = (int)$this->request->getParam('store', 0);
+            $activity = $this->helper->createActivity($storeId, 'integrated');
+            $client   = $this->apiClient->getClient($storeId);
+    
+            if (!$client->createActivity($activity['url'], $activity['data'])) {
+                $this->messageManager->addError('The API Token and/or API Secret you have entered are invalid. You can find the correct ones in Settings -> Installation in your Metrilo account.');
+            }
+        } catch (\Exception $e) {
+            $this->helper->logError($e);
         }
     }
 }

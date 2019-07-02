@@ -11,14 +11,10 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function __construct(
         \Magento\Framework\App\Config\ScopeConfigInterface $config,
         \Psr\Log\LoggerInterface                           $logger,
-        \Metrilo\Analytics\Helper\Client                   $clientHelper,
-        \Metrilo\Analytics\Helper\AdminStoreResolver       $resolver,
         \Magento\Store\Model\StoreManagerInterface         $storeManager
     ) {
         $this->config       = $config;
         $this->logger       = $logger;
-        $this->clientHelper = $clientHelper;
-        $this->resolver     = $resolver;
         $this->storeManager = $storeManager;
     }
 
@@ -72,19 +68,18 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
     public function createActivity($storeId, $type)
     {
-        $key = $this->getApiToken($storeId);
-        $secret = $this->getApiSecret($storeId);
+        $key      = $this->getApiToken($storeId);
+        $secret   = $this->getApiSecret($storeId);
+        $endPoint = $this->getApiEndpoint();
 
         $data = array(
             'type' => $type,
             'signature' => md5($key . $type . $secret)
         );
 
-        $url = $this->push_domain.'/tracking/' . $key . '/activity';
+        $url = $endPoint . '/tracking/' . $key . '/activity';
 
-        $responseCode = $this->clientHelper->post($url, $data)['code'];
-
-        return $responseCode == 200;
+        return array('url' => $url, 'data' => $data);
     }
 
     public function logError($exception)

@@ -135,6 +135,6 @@ class Import extends \Magento\Config\Block\System\Config\Form\Field
      */
     public function getStoreId()
     {
-        return (int) $this->helper->resolver->getAdminStoreId();
+        return (int) $this->helper->getStoreId();
     }
 }
