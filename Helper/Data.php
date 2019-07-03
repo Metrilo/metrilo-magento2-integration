@@ -66,22 +66,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $logger->err($value);
     }
 
-    public function createActivity($storeId, $type)
-    {
-        $key      = $this->getApiToken($storeId);
-        $secret   = $this->getApiSecret($storeId);
-        $endPoint = $this->getApiEndpoint();
-
-        $data = array(
-            'type' => $type,
-            'signature' => md5($key . $type . $secret)
-        );
-
-        $url = $endPoint . '/tracking/' . $key . '/activity';
-
-        return array('url' => $url, 'data' => $data);
-    }
-
     public function logError($exception)
     {
         if ($exception instanceof \Exception) {
