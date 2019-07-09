@@ -10,23 +10,17 @@ class Config implements ObserverInterface
     public function __construct(
         \Magento\Framework\Message\ManagerInterface $messageManager,
         \Metrilo\Analytics\Helper\Data              $dataHelper,
-        \Metrilo\Analytics\Helper\Activity          $activityHelper,
-        \Metrilo\Analytics\Helper\ApiClient         $apiClient
+        \Metrilo\Analytics\Helper\Activity          $activityHelper
     ) {
         $this->messageManager = $messageManager;
         $this->dataHelper     = $dataHelper;
         $this->activityHelper = $activityHelper;
-        $this->apiClient      = $apiClient;
     }
 
     public function execute(Observer $observer)
     {
         try {
-            $storeId  = $observer->getStore();
-            $activity = $this->activityHelper->createActivity($storeId, 'integrated');
-            $client   = $this->apiClient->getClient($storeId);
-    
-            if (!$client->createActivity($activity['url'], $activity['data'])) {
+            if (!$this->activityHelper->createActivity($observer->getStore(), 'integrated')) {
                 $this->messageManager->addError('The API Token and/or API Secret you have entered are invalid. You can find the correct ones in Settings -> Installation in your Metrilo account.');
             }
         } catch (\Exception $e) {

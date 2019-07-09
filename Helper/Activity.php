@@ -5,9 +5,11 @@ namespace Metrilo\Analytics\Helper;
 class Activity extends \Magento\Framework\App\Helper\AbstractHelper
 {
     public function __construct(
-        \Metrilo\Analytics\Helper\Data $dataHelper
+        \Metrilo\Analytics\Helper\Data      $dataHelper,
+        \Metrilo\Analytics\Helper\ApiClient $apiClient
     ) {
         $this->dataHelper = $dataHelper;
+        $this->apiClient  = $apiClient;
     }
     
     public function createActivity($storeId, $type)
@@ -15,6 +17,7 @@ class Activity extends \Magento\Framework\App\Helper\AbstractHelper
         $token    = $this->dataHelper->getApiToken($storeId);
         $secret   = $this->dataHelper->getApiSecret($storeId);
         $endPoint = $this->dataHelper->getActivityEndpoint();
+        $client   = $this->apiClient->getClient($storeId);
         
         $data = array(
             'type'          => $type,
@@ -24,6 +27,6 @@ class Activity extends \Magento\Framework\App\Helper\AbstractHelper
         
         $url = $endPoint . '/tracking/' . $token . '/activity';
         
-        return array('url' => $url, 'data' => $data);
+        return $client->createActivity($url, $data);
     }
 }
