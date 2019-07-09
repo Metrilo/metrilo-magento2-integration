@@ -52,16 +52,22 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
     public function getApiEndpoint()
     {
-        return $this->config->getValue(
+        $apiEndpoint = $this->config->getValue(
             'metrilo_analytics/general/api_endpoint'
         );
+        
+        $endPoint = ($apiEndpoint) ? $apiEndpoint : 'https://tracking.metrilo.com';
+        return $endPoint;
     }
 
     public function getActivityEndpoint()
     {
-        return $this->config->getValue(
+        $activityEndpoint = $this->config->getValue(
             'metrilo_analytics/general/activity_endpoint'
         );
+        
+        $endPoint = ($activityEndpoint) ? $activityEndpoint : 'http://p.metrilo.com';
+        return $endPoint;
     }
 
     public function log($value)
