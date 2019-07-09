@@ -9,13 +9,11 @@ class Config implements ObserverInterface
 {
     public function __construct(
         \Magento\Framework\Message\ManagerInterface $messageManager,
-        \Magento\Framework\App\Request\Http         $request,
         \Metrilo\Analytics\Helper\Data              $dataHelper,
         \Metrilo\Analytics\Helper\Activity          $activityHelper,
         \Metrilo\Analytics\Helper\ApiClient         $apiClient
     ) {
         $this->messageManager = $messageManager;
-        $this->request        = $request;
         $this->dataHelper     = $dataHelper;
         $this->activityHelper = $activityHelper;
         $this->apiClient      = $apiClient;
@@ -24,7 +22,7 @@ class Config implements ObserverInterface
     public function execute(Observer $observer)
     {
         try {
-            $storeId  = (int)$this->request->getParam('store', 0);
+            $storeId  = $observer->getStore();
             $activity = $this->activityHelper->createActivity($storeId, 'integrated');
             $client   = $this->apiClient->getClient($storeId);
     

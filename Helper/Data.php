@@ -57,6 +57,13 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         );
     }
 
+    public function getActivityEndpoint()
+    {
+        return $this->config->getValue(
+            'metrilo_analytics/general/activity_endpoint'
+        );
+    }
+
     public function log($value)
     {
         $writer = new \Zend\Log\Writer\Stream(BP . '/var/log/metrilo.log');

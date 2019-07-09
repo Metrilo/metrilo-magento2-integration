@@ -14,7 +14,7 @@ class Activity extends \Magento\Framework\App\Helper\AbstractHelper
     {
         $token    = $this->dataHelper->getApiToken($storeId);
         $secret   = $this->dataHelper->getApiSecret($storeId);
-        $endPoint = $this->dataHelper->getApiEndpoint();
+        $endPoint = $this->dataHelper->getActivityEndpoint();
         
         $data = array(
             'type'          => $type,
