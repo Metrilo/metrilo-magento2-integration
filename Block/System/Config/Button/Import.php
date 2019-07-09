@@ -31,6 +31,7 @@ class Import extends \Magento\Config\Block\System\Config\Form\Field
         \Metrilo\Analytics\Model\CategoryData   $categoryData,
         \Metrilo\Analytics\Model\ProductData    $productData,
         \Metrilo\Analytics\Model\OrderData      $orderData,
+        \Magento\Framework\App\Request\Http     $request,
         array $data = []
     ) {
         $this->helper       = $helper;
@@ -38,6 +39,7 @@ class Import extends \Magento\Config\Block\System\Config\Form\Field
         $this->categoryData = $categoryData;
         $this->productData  = $productData;
         $this->orderData    = $orderData;
+        $this->request      = $request;
         parent::__construct($context, $data);
     }
 
@@ -135,6 +137,6 @@ class Import extends \Magento\Config\Block\System\Config\Form\Field
      */
     public function getStoreId()
     {
-        return (int) $this->helper->getStoreId();
+        return (int)$this->request->getParam('store', 0);
     }
 }

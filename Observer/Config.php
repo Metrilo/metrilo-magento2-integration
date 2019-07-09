@@ -25,7 +25,7 @@ class Config implements ObserverInterface
     {
         try {
             $storeId  = (int)$this->request->getParam('store', 0);
-            $activity = $this->activityHelper->createActivity($storeId, 'integrated', $this->dataHelper->getApiToken($storeId), $this->dataHelper->getApiSecret($storeId));
+            $activity = $this->activityHelper->createActivity($storeId, 'integrated');
             $client   = $this->apiClient->getClient($storeId);
     
             if (!$client->createActivity($activity['url'], $activity['data'])) {

@@ -20,7 +20,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
     public function getStoreId()
     {
-        return $this->storeManager->getStore()->getId();
+        return (int)$this->storeManager->getStore()->getId();
     }
 
     public function isEnabled($storeId)
