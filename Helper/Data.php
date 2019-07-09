@@ -56,8 +56,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             'metrilo_analytics/general/api_endpoint'
         );
         
-        $endPoint = ($apiEndpoint) ? $apiEndpoint : 'https://tracking.metrilo.com';
-        return $endPoint;
+        return ($apiEndpoint) ? $apiEndpoint : 'https://tracking.metrilo.com';
     }
 
     public function getActivityEndpoint()
@@ -66,8 +65,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             'metrilo_analytics/general/activity_endpoint'
         );
         
-        $endPoint = ($activityEndpoint) ? $activityEndpoint : 'http://p.metrilo.com';
-        return $endPoint;
+        return ($activityEndpoint) ? $activityEndpoint : 'https://p.metrilo.com';
     }
 
     public function log($value)
