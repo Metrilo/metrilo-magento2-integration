@@ -15,7 +15,7 @@
             $encodedBody = $bodyArray ? json_encode($bodyArray) : '';
             $parsedUrl = parse_url($url);
             $headers = [
-                'Content-Type: text/plain',
+                'Content-Type: application/json',
                 'Accept: */*',
                 'User-Agent: HttpClient/1.0.0',
                 'Connection: Close',
@@ -46,10 +46,10 @@
             curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
             curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
             curl_setopt($curl, CURLOPT_POSTFIELDS, $body);
-        
+    
             $response = curl_exec($curl);
             $code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-        
+            
             curl_close($curl);
         
             return array(

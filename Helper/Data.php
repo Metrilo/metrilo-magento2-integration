@@ -11,20 +11,16 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function __construct(
         \Magento\Framework\App\Config\ScopeConfigInterface $config,
         \Psr\Log\LoggerInterface                           $logger,
-        \Metrilo\Analytics\Helper\Client                   $clientHelper,
-        \Metrilo\Analytics\Helper\AdminStoreResolver       $resolver,
         \Magento\Store\Model\StoreManagerInterface         $storeManager
     ) {
         $this->config       = $config;
         $this->logger       = $logger;
-        $this->clientHelper = $clientHelper;
-        $this->resolver     = $resolver;
         $this->storeManager = $storeManager;
     }
 
     public function getStoreId()
     {
-        return $this->storeManager->getStore()->getId();
+        return (int)$this->storeManager->getStore()->getId();
     }
 
     public function isEnabled($storeId)
@@ -56,9 +52,20 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
     public function getApiEndpoint()
     {
-        return $this->config->getValue(
+        $apiEndpoint = $this->config->getValue(
             'metrilo_analytics/general/api_endpoint'
         );
+        
+        return ($apiEndpoint) ? $apiEndpoint : 'https://tracking.metrilo.com';
+    }
+
+    public function getActivityEndpoint()
+    {
+        $activityEndpoint = $this->config->getValue(
+            'metrilo_analytics/general/activity_endpoint'
+        );
+        
+        return ($activityEndpoint) ? $activityEndpoint : 'https://p.metrilo.com';
     }
 
     public function log($value)
@@ -68,23 +75,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $logger->addWriter($writer);
 
         $logger->err($value);
-    }
-
-    public function createActivity($storeId, $type)
-    {
-        $key = $this->getApiToken($storeId);
-        $secret = $this->getApiSecret($storeId);
-
-        $data = array(
-            'type' => $type,
-            'signature' => md5($key . $type . $secret)
-        );
-
-        $url = $this->push_domain.'/tracking/' . $key . '/activity';
-
-        $responseCode = $this->clientHelper->post($url, $data)['code'];
-
-        return $responseCode == 200;
     }
 
     public function logError($exception)

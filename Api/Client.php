@@ -91,4 +91,10 @@
                 return $this->backendCall('/order/batch', ['batch' => $validOrders]);
             }
         }
+    
+        public function createActivity($url, $data) {
+            $connection = new Connection();
+            $result = $connection->post($url, $data);
+            return  $result['code'] == 200;
+        }
     }

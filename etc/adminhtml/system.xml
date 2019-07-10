@@ -50,6 +50,11 @@
                     <label>API Url</label>
                     <backend_model>Metrilo\Analytics\Model\Trimmed</backend_model>
                 </field>
+                <field id="activity_endpoint" sortOrder="40" type="text" translate="label" showInDefault="0" showInWebsite="0" showInStore="0">
+                    <depends><field id="enable">1</field></depends>
+                    <label>ACTIVITY Url</label>
+                    <backend_model>Metrilo\Analytics\Model\Trimmed</backend_model>
+                </field>
                 <field id="import" sortOrder="50" type="button" translate="label" showInDefault="0" showInWebsite="0" showInStore="1">
                     <label>Import</label>
                     <button_label><![CDATA[Import]]></button_label>
