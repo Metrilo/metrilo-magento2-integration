@@ -56,7 +56,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             'metrilo_analytics/general/api_endpoint'
         );
         
-        return ($apiEndpoint) ? $apiEndpoint : 'https://tracking.metrilo.com';
+        return ($apiEndpoint) ? $apiEndpoint : 'https://trk.mtrl.me';
     }
 
     public function getActivityEndpoint()
