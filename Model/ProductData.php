@@ -19,15 +19,15 @@ class ProductData
                     ->addUrlRewrite()
                     ->addAttributeToSelect(['entity_id','type_id','sku','created_at','updated_at','name','image','price','request_path', 'visibility'])
                     ->addAttributeToFilter('visibility', \Magento\Catalog\Model\Product\Visibility::VISIBILITY_BOTH)
-                    ->addStoreFilter($storeId)
-                    ->setDataToAll('store_id', $storeId);
+                    ->addStoreFilter($storeId);
     }
 
     public function getProducts($storeId, $chunkId)
     {
         return $this->getProductQuery($storeId)
                     ->setPageSize($this->chunkItems)
-                    ->setCurPage($chunkId + 1);
+                    ->setCurPage($chunkId + 1)
+                    ->setDataToAll('store_id', $storeId);
     }
     
     public function getProductChunks($storeId)
