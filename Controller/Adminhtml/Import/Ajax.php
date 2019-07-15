@@ -31,6 +31,7 @@ class Ajax extends \Magento\Backend\App\Action
         \Metrilo\Analytics\Helper\ProductSerializer      $productSerializer,
         \Metrilo\Analytics\Helper\OrderSerializer        $orderSerializer,
         \Metrilo\Analytics\Helper\ApiClient              $apiClient,
+        \Metrilo\Analytics\Helper\Activity               $activityHelper,
         \Magento\Framework\App\Request\Http              $request,
         \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory
     ) {
@@ -45,6 +46,7 @@ class Ajax extends \Magento\Backend\App\Action
         $this->productSerializer  = $productSerializer;
         $this->orderSerializer    = $orderSerializer;
         $this->apiClient          = $apiClient;
+        $this->activityHelper     = $activityHelper;
         $this->request            = $request;
         $this->resultJsonFactory  = $resultJsonFactory;
     }
@@ -75,12 +77,13 @@ class Ajax extends \Magento\Backend\App\Action
             $jsonFactory       = $this->resultJsonFactory->create();
             $storeId           = (int)$this->request->getParam('storeId');
             $chunkId           = (int)$this->request->getParam('chunkId');
+            $orderChunks       = (int)$this->request->getParam('ordersChunks');
             $importType        = (string)$this->request->getParam('importType');
             $client            = $this->apiClient->getClient($storeId);
 
-//            if ($chunkId == 0) {
-//                $this->helper->createActivity($storeId, 'import_start');
-//            }
+            if ($chunkId == 0 && $importType == 'customers') {
+                $this->activityHelper->createActivity($storeId, 'import_start');
+            }
 
             switch ($importType) {
                 case 'customers':
@@ -103,10 +106,10 @@ class Ajax extends \Magento\Backend\App\Action
                     $result['success'] = false;
                     break;
             }
-
-//            if ($chunkId == $totalChunks - 1) {
-//                $this->helper->createActivity($storeId, 'import_end');
-//            }
+    
+            if ($chunkId == $orderChunks - 1 && $importType == 'orders') {
+                $this->activityHelper->createActivity($storeId, 'import_end');
+            }
 
             return $jsonFactory->setData($result);
         } catch (\Exception $e) {
