@@ -82,7 +82,7 @@ class Ajax extends \Magento\Backend\App\Action
 
             switch ($importType) {
                 case 'customers':
-                    if ($chunkId == 0 && $importType == 'customers') {
+                    if ($chunkId == 0) {
                         $this->activityHelper->createActivity($storeId, 'import_start');
                     }
                     $serializedCustomers = $this->serializeRecords($this->customerData->getCustomers($storeId, $chunkId), $this->customerSerializer);
@@ -99,7 +99,7 @@ class Ajax extends \Magento\Backend\App\Action
                 case 'orders':
                     $serializedOrders  = $this->serializeRecords($this->orderData->getOrders($storeId, $chunkId), $this->orderSerializer);
                     $result['success'] = $client->orderBatch($serializedOrders);
-                    if ($chunkId == (int)$this->request->getParam('ordersChunks') - 1 && $importType == 'orders') {
+                    if ($chunkId == (int)$this->request->getParam('ordersChunks') - 1) {
                         $this->activityHelper->createActivity($storeId, 'import_end');
                     }
                     break;
