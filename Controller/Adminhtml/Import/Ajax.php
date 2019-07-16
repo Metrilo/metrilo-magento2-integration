@@ -81,12 +81,11 @@ class Ajax extends \Magento\Backend\App\Action
             $importType        = (string)$this->request->getParam('importType');
             $client            = $this->apiClient->getClient($storeId);
 
-            if ($chunkId == 0 && $importType == 'customers') {
-                $this->activityHelper->createActivity($storeId, 'import_start');
-            }
-
             switch ($importType) {
                 case 'customers':
+                    if ($chunkId == 0 && $importType == 'customers') {
+                        $this->activityHelper->createActivity($storeId, 'import_start');
+                    }
                     $serializedCustomers = $this->serializeRecords($this->customerData->getCustomers($storeId, $chunkId), $this->customerSerializer);
                     $result['success']   = $client->customerBatch($serializedCustomers);
                     break;
@@ -101,14 +100,13 @@ class Ajax extends \Magento\Backend\App\Action
                 case 'orders':
                     $serializedOrders  = $this->serializeRecords($this->orderData->getOrders($storeId, $chunkId), $this->orderSerializer);
                     $result['success'] = $client->orderBatch($serializedOrders);
+                    if ($chunkId == (int)$this->request->getParam('ordersChunks') - 1 && $importType == 'orders') {
+                        $this->activityHelper->createActivity($storeId, 'import_end');
+                    }
                     break;
                 default:
                     $result['success'] = false;
                     break;
-            }
-    
-            if ($chunkId == $orderChunks - 1 && $importType == 'orders') {
-                $this->activityHelper->createActivity($storeId, 'import_end');
             }
 
             return $jsonFactory->setData($result);
