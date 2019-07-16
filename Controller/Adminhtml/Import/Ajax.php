@@ -31,6 +31,7 @@ class Ajax extends \Magento\Backend\App\Action
         \Metrilo\Analytics\Helper\ProductSerializer      $productSerializer,
         \Metrilo\Analytics\Helper\OrderSerializer        $orderSerializer,
         \Metrilo\Analytics\Helper\ApiClient              $apiClient,
+        \Metrilo\Analytics\Helper\Activity               $activityHelper,
         \Magento\Framework\App\Request\Http              $request,
         \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory
     ) {
@@ -45,6 +46,7 @@ class Ajax extends \Magento\Backend\App\Action
         $this->productSerializer  = $productSerializer;
         $this->orderSerializer    = $orderSerializer;
         $this->apiClient          = $apiClient;
+        $this->activityHelper     = $activityHelper;
         $this->request            = $request;
         $this->resultJsonFactory  = $resultJsonFactory;
     }
@@ -78,12 +80,11 @@ class Ajax extends \Magento\Backend\App\Action
             $importType        = (string)$this->request->getParam('importType');
             $client            = $this->apiClient->getClient($storeId);
 
-//            if ($chunkId == 0) {
-//                $this->helper->createActivity($storeId, 'import_start');
-//            }
-
             switch ($importType) {
                 case 'customers':
+                    if ($chunkId == 0) {
+                        $this->activityHelper->createActivity($storeId, 'import_start');
+                    }
                     $serializedCustomers = $this->serializeRecords($this->customerData->getCustomers($storeId, $chunkId), $this->customerSerializer);
                     $result['success']   = $client->customerBatch($serializedCustomers);
                     break;
@@ -98,15 +99,14 @@ class Ajax extends \Magento\Backend\App\Action
                 case 'orders':
                     $serializedOrders  = $this->serializeRecords($this->orderData->getOrders($storeId, $chunkId), $this->orderSerializer);
                     $result['success'] = $client->orderBatch($serializedOrders);
+                    if ($chunkId == (int)$this->request->getParam('ordersChunks') - 1) {
+                        $this->activityHelper->createActivity($storeId, 'import_end');
+                    }
                     break;
                 default:
                     $result['success'] = false;
                     break;
             }
-
-//            if ($chunkId == $totalChunks - 1) {
-//                $this->helper->createActivity($storeId, 'import_end');
-//            }
 
             return $jsonFactory->setData($result);
         } catch (\Exception $e) {
