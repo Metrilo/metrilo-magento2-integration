@@ -69,7 +69,10 @@ class Analytics extends DataObject
         // category view pages
         if ($this->fullActionName == 'catalog_category_view') {
             $category = $this->_coreRegistry->registry('current_category');
-
+            if (!isset($category)) {
+                return;
+            }
+            
             $data =  [
                 'id'    =>  $category->getId(),
                 'name'  =>  $category->getName()
@@ -83,6 +86,10 @@ class Analytics extends DataObject
         if ($this->fullActionName == 'catalog_product_view') {
             /** @var \Magento\Catalog\Model\Product $product */
             $product = $this->_coreRegistry->registry('current_product');
+            if (!isset($product)) {
+                return;
+            }
+            
             $data =  [
                 'id'    => $product->getId(),
                 'sku'   => $product->getSku(),
