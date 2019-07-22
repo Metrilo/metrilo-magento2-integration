@@ -3,9 +3,14 @@
     namespace Metrilo\Analytics\Api;
     
     class Validator {
-        public $logDestination = __DIR__ . '/MetriloApiErrors.log'; // construct log path in ajax controller and pass it as constructor param for Validator class
-    
+        
         public $errors = [];
+    
+        public function __construct(
+            $logPath
+        ) {
+            $this->logPath = $logPath . '/MetriloApiValidationErrors.log';
+        }
     
         public function check($var){
             $this->var = $var;
@@ -70,7 +75,7 @@
         public function logger($error) {
             $validationErrors = implode("| ", $this->getErrors());
             $error           .= $validationErrors;
-            return error_log($error . PHP_EOL, 3, $this->logDestination);
+            return error_log($error . PHP_EOL, 3, $this->logPath);
         }
         
         public function validateCustomer($customer) {

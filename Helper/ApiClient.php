@@ -15,13 +15,15 @@
             \Metrilo\Analytics\Helper\Data                $helper,
             \Magento\Store\Model\StoreManagerInterface    $storeManager,
             \Magento\Framework\App\ProductMetadata        $metaData,
-            \Magento\Framework\Module\ModuleListInterface $moduleList
+            \Magento\Framework\Module\ModuleListInterface $moduleList,
+            \Magento\Framework\Filesystem\DirectoryList   $dirList
         )
         {
             $this->helper       = $helper;
             $this->storeManager = $storeManager;
             $this->metaData     = $metaData;
             $this->moduleList   = $moduleList;
+            $this->dirList      = $dirList;
         }
     
         public function getClient($storeId)
@@ -30,6 +32,6 @@
             $platform      = 'Magento ' . $this->metaData->getEdition() . ' ' . $this->metaData->getVersion();
             $pluginVersion = $this->moduleList->getOne($this->helper::MODULE_NAME)['setup_version'];
             $apiEndpoint   = $this->helper->getApiEndpoint();
-            return new Client($token, $platform, $pluginVersion, $apiEndpoint);
+            return new Client($token, $platform, $pluginVersion, $apiEndpoint, $this->dirList->getPath('log'));
         }
     }

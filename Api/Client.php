@@ -11,13 +11,14 @@
             $token,
             $platform,
             $pluginVersion,
-            $apiEndpoint
+            $apiEndpoint,
+            $logPath
         ) {
             $this->backendParams['token']         = $token;
             $this->backendParams['platform']      = $platform;
             $this->backendParams['pluginVersion'] = $pluginVersion;
             $this->apiEndpoint                    = $apiEndpoint;
-            $this->validator                      = new Validator();
+            $this->validator                      = new Validator($logPath);
         }
     
         public function backendCall($path, $body) {
