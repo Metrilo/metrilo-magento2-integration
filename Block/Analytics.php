@@ -62,10 +62,10 @@ class Analytics extends Template
                 return $this->categoryViewEvent->callJS();
             // catalog search pages
             case 'catalogsearch_result_index':
-                return $this->catalogSearchEvent->callJS($this->actionContext->getRequest()->getParam('q'));
+                return $this->catalogSearchEvent->callJS();
             // catalog advanced result page
             case 'catalogsearch_advanced_result':
-                return $this->catalogSearchEvent->callJS($this->actionContext->getRequest()->getParam('name'));
+                return $this->catalogSearchEvent->callJS();
             // cart view pages
             case 'checkout_cart_index':
                 return $this->cartViewEvent->callJS();
