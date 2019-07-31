@@ -49,7 +49,7 @@ class Analytics extends Template
     
     public function getEvent()
     {
-        if (!$this->fullActionName || $this->isRejected($this->fullActionName)) {
+        if (!$this->fullActionName) {
             return;
         }
         
@@ -62,7 +62,10 @@ class Analytics extends Template
                 return $this->categoryViewEvent->callJS();
             // catalog search pages
             case 'catalogsearch_result_index':
-                return $this->catalogSearchEvent->callJS();
+                return $this->catalogSearchEvent->callJS($this->actionContext->getRequest()->getParam('q'));
+            // catalog advanced result page
+            case 'catalogsearch_advanced_result':
+                return $this->catalogSearchEvent->callJS($this->actionContext->getRequest()->getParam('name'));
             // cart view pages
             case 'checkout_cart_index':
                 return $this->cartViewEvent->callJS();
@@ -73,15 +76,6 @@ class Analytics extends Template
             default:
                 return $this->pageViewEvent->callJS();
         }
-    }
-    
-    protected function isRejected($action)
-    {
-        $rejected = [
-            'catalogsearch_advanced_index',
-            'catalogsearch_advanced_result'
-        ];
-        return in_array($action, $rejected);
     }
     
     public function getEvents() {
