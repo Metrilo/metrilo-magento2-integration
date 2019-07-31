@@ -49,10 +49,6 @@ class Analytics extends Template
     
     public function getEvent()
     {
-        if (!$this->fullActionName) {
-            return;
-        }
-        
         switch($this->fullActionName) {
             // product view pages
             case 'catalog_product_view':
