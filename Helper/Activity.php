@@ -20,9 +20,8 @@ class Activity extends \Magento\Framework\App\Helper\AbstractHelper
         $client   = $this->apiClient->getClient($storeId);
         
         $data = array(
-            'type'          => $type,
-            'project_token' => $token,
-            'signature'     => md5($token . $type . $secret)
+            'type'           => $type,
+            'project_secret' => $secret
         );
         
         $url = $endPoint . '/tracking/' . $token . '/activity';
