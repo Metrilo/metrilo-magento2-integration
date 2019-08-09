@@ -11,3 +11,16 @@ $events = $block->getEvents();
         <?php foreach($events as $event) { echo $event; } ?>
     });
 </script>
+<script type="text/x-magento-init">
+    {
+        "*": {
+            "Magento_Ui/js/core/app": {
+                "components": {
+                    "metrilo-private-data": {
+                        "component": "Metrilo_Analytics/js/private-data"
+                    }
+                }
+            }
+        }
+    }
+</script>
