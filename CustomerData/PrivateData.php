@@ -15,6 +15,6 @@ class PrivateData implements SectionSourceInterface
     public function getSectionData()
     {
         $events = $this->sessionEvents->getSessionEvents();
-        return ['metrilo_events' => $events];
+        return ['events' => $events];
     }
 }

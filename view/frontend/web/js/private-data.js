@@ -13,8 +13,8 @@ define([
 
             if (this.metrilosection) {
                 this.metrilosection.subscribe(function () {
-                    $.each(this.metrilosection().metrilo_events, function(key, val){
-                        eval(val.replace("window.", ""));
+                    $.each(this.metrilosection().events, function(key, val){
+                        eval(val);
                     });
                 }, this);
             }
