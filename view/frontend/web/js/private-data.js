@@ -1,8 +1,7 @@
 define([
     'uiComponent',
-    'Magento_Customer/js/customer-data',
-    'jquery'
-], function (Component, customerData, $) {
+    'Magento_Customer/js/customer-data'
+], function (Component, customerData) {
     'use strict';
 
     return Component.extend({
@@ -13,8 +12,8 @@ define([
 
             if (this.metrilosection) {
                 this.metrilosection.subscribe(function () {
-                    $.each(this.metrilosection().events, function(key, val){
-                        eval(val);
+                    this.metrilosection().events.forEach(function(event) {
+                        eval(event);
                     });
                 }, this);
             }
