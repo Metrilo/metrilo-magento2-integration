@@ -2,53 +2,41 @@
 
 namespace Metrilo\Analytics\Controller\Adminhtml\Import;
 use \Metrilo\Analytics\Api\Client;
-/**
- * AJAX Controller for sending chunks to Metrilo
- *
- * @author Miroslav Petrov <miro91tn@gmail.com>
- */
+
 class Ajax extends \Magento\Backend\App\Action
 {
-    /**
-     * @param \Magento\Backend\App\Action\Context              $context
-     * @param \Metrilo\Analytics\Helper\Data                   $helper
-     * @param \Metrilo\Analytics\Model\OrderData               $orderData,
-     * @param \Metrilo\Analytics\Helper\OrderSerializer        $orderSerializer,
-     * @param \Metrilo\Analytics\Helper\ApiClient              $apiClient,
-     * @param \Magento\Framework\App\Request\Http              $request
-     * @param \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory
-     */
-     # TODO: Ask Miro why \Magento\Framework|App\Action|Context won't compile
     public function __construct(
-        \Magento\Backend\App\Action\Context              $context,
-        \Metrilo\Analytics\Helper\Data                   $helper,
-        \Metrilo\Analytics\Model\CustomerData            $customerData,
-        \Metrilo\Analytics\Model\CategoryData            $categoryData,
-        \Metrilo\Analytics\Model\ProductData             $productData,
-        \Metrilo\Analytics\Model\OrderData               $orderData,
-        \Metrilo\Analytics\Helper\CustomerSerializer     $customerSerializer,
-        \Metrilo\Analytics\Helper\CategorySerializer     $categorySerializer,
-        \Metrilo\Analytics\Helper\ProductSerializer      $productSerializer,
-        \Metrilo\Analytics\Helper\OrderSerializer        $orderSerializer,
-        \Metrilo\Analytics\Helper\ApiClient              $apiClient,
-        \Metrilo\Analytics\Helper\Activity               $activityHelper,
-        \Magento\Framework\App\Request\Http              $request,
-        \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory
+        \Magento\Backend\App\Action\Context                $context,
+        \Metrilo\Analytics\Helper\Data                     $helper,
+        \Metrilo\Analytics\Model\CustomerData              $customerData,
+        \Metrilo\Analytics\Model\CategoryData              $categoryData,
+        \Metrilo\Analytics\Model\ProductData               $productData,
+        \Metrilo\Analytics\Model\OrderData                 $orderData,
+        \Metrilo\Analytics\Helper\CustomerSerializer       $customerSerializer,
+        \Metrilo\Analytics\Helper\CategorySerializer       $categorySerializer,
+        \Metrilo\Analytics\Helper\ProductSerializer        $productSerializer,
+        \Metrilo\Analytics\Helper\DeletedProductSerializer $deletedProductSerializer,
+        \Metrilo\Analytics\Helper\OrderSerializer          $orderSerializer,
+        \Metrilo\Analytics\Helper\ApiClient                $apiClient,
+        \Metrilo\Analytics\Helper\Activity                 $activityHelper,
+        \Magento\Framework\App\Request\Http                $request,
+        \Magento\Framework\Controller\Result\JsonFactory   $resultJsonFactory
     ) {
         parent::__construct($context);
-        $this->helper             = $helper;
-        $this->customerData       = $customerData;
-        $this->categoryData       = $categoryData;
-        $this->productData        = $productData;
-        $this->orderData          = $orderData;
-        $this->customerSerializer = $customerSerializer;
-        $this->categorySerializer = $categorySerializer;
-        $this->productSerializer  = $productSerializer;
-        $this->orderSerializer    = $orderSerializer;
-        $this->apiClient          = $apiClient;
-        $this->activityHelper     = $activityHelper;
-        $this->request            = $request;
-        $this->resultJsonFactory  = $resultJsonFactory;
+        $this->helper                   = $helper;
+        $this->customerData             = $customerData;
+        $this->categoryData             = $categoryData;
+        $this->productData              = $productData;
+        $this->orderData                = $orderData;
+        $this->customerSerializer       = $customerSerializer;
+        $this->categorySerializer       = $categorySerializer;
+        $this->productSerializer        = $productSerializer;
+        $this->deletedProductSerializer = $deletedProductSerializer;
+        $this->orderSerializer          = $orderSerializer;
+        $this->apiClient                = $apiClient;
+        $this->activityHelper           = $activityHelper;
+        $this->request                  = $request;
+        $this->resultJsonFactory        = $resultJsonFactory;
     }
     
     private function serializeRecords($records, $serializer) {
@@ -97,6 +85,18 @@ class Ajax extends \Magento\Backend\App\Action
                     $result['success']  = $client->productBatch($serializedProducts);
                     break;
                 case 'orders':
+                    
+                    if ($chunkId == 0) {
+                        $deletedProducts = $this->orderData->getDeletedProducts($storeId);
+                        if ($deletedProducts) {
+                            $serializedDeletedProducts = $this->deletedProductSerializer->serialize($deletedProducts);
+                            $deletedProductChunks = array_chunk($serializedDeletedProducts, $this->helper::chunkItems);
+                            foreach($deletedProductChunks as $chunk) {
+                                $client->productBatch($chunk);
+                            }
+                        }
+                    }
+
                     $serializedOrders  = $this->serializeRecords($this->orderData->getOrders($storeId, $chunkId), $this->orderSerializer);
                     $result['success'] = $client->orderBatch($serializedOrders);
                     if ($chunkId == (int)$this->request->getParam('ordersChunks') - 1) {
@@ -119,4 +119,3 @@ class Ajax extends \Magento\Backend\App\Action
         }
     }
 }
-
