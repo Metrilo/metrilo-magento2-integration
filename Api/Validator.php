@@ -131,6 +131,9 @@
         }
         
         public function validateProduct($product) {
+            foreach ($product['categories'] as $category) {
+                $this->check('categoryId')->value($category)->required()->isString();
+            }
             $this->check('id')->value($product['id'])->required()->isString();
             $this->check('name')->value($product['name'])->required()->isString();
             

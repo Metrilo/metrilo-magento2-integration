@@ -4,15 +4,6 @@ namespace Metrilo\Analytics\Helper;
 
 class DeletedProductSerializer extends \Magento\Framework\App\Helper\AbstractHelper
 {
-    private function searchForParentById($parentId, $deletedProducts) {
-        foreach ($deletedProducts as $index => $product) {
-            if ($product['item_id'] === $parentId) {
-                return $deletedProducts[$index];
-            }
-        }
-        return false;
-    }
-
     public function serialize($deletedProducts)
     {
         $productBatch = [];
@@ -51,5 +42,15 @@ class DeletedProductSerializer extends \Magento\Framework\App\Helper\AbstractHel
         }
         
         return $productBatch;
+    }
+    
+    private function searchForParentById($parentId, $deletedProducts)
+    {
+        foreach ($deletedProducts as $index => $product) {
+            if ($product['item_id'] === $parentId) {
+                return $deletedProducts[$index];
+            }
+        }
+        return false;
     }
 }

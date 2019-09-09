@@ -11,6 +11,7 @@ class Ajax extends \Magento\Backend\App\Action
         \Metrilo\Analytics\Model\CustomerData              $customerData,
         \Metrilo\Analytics\Model\CategoryData              $categoryData,
         \Metrilo\Analytics\Model\ProductData               $productData,
+        \Metrilo\Analytics\Model\DeletedProductData        $deletedProductData,
         \Metrilo\Analytics\Model\OrderData                 $orderData,
         \Metrilo\Analytics\Helper\CustomerSerializer       $customerSerializer,
         \Metrilo\Analytics\Helper\CategorySerializer       $categorySerializer,
@@ -27,6 +28,7 @@ class Ajax extends \Magento\Backend\App\Action
         $this->customerData             = $customerData;
         $this->categoryData             = $categoryData;
         $this->productData              = $productData;
+        $this->deletedProductData       = $deletedProductData;
         $this->orderData                = $orderData;
         $this->customerSerializer       = $customerSerializer;
         $this->categorySerializer       = $categorySerializer;
@@ -37,19 +39,6 @@ class Ajax extends \Magento\Backend\App\Action
         $this->activityHelper           = $activityHelper;
         $this->request                  = $request;
         $this->resultJsonFactory        = $resultJsonFactory;
-    }
-    
-    private function serializeRecords($records, $serializer) {
-        $serializedData = [];
-        
-        foreach($records as $record) {
-            $serializedRecord = $serializer->serialize($record);
-            if ($serializedRecord) {
-                $serializedData[] = $serializedRecord;
-            }
-        }
-        
-        return $serializedData;
     }
 
     /**
@@ -67,7 +56,7 @@ class Ajax extends \Magento\Backend\App\Action
             $chunkId           = (int)$this->request->getParam('chunkId');
             $importType        = (string)$this->request->getParam('importType');
             $client            = $this->apiClient->getClient($storeId);
-
+            
             switch ($importType) {
                 case 'customers':
                     if ($chunkId == 0) {
@@ -84,19 +73,17 @@ class Ajax extends \Magento\Backend\App\Action
                     $serializedProducts = $this->serializeRecords($this->productData->getProducts($storeId, $chunkId), $this->productSerializer);
                     $result['success']  = $client->productBatch($serializedProducts);
                     break;
-                case 'orders':
-                    
-                    if ($chunkId == 0) {
-                        $deletedProducts = $this->orderData->getDeletedProducts($storeId);
-                        if ($deletedProducts) {
-                            $serializedDeletedProducts = $this->deletedProductSerializer->serialize($deletedProducts);
-                            $deletedProductChunks = array_chunk($serializedDeletedProducts, $this->helper::chunkItems);
-                            foreach($deletedProductChunks as $chunk) {
-                                $client->productBatch($chunk);
-                            }
+                case 'deletedProducts':
+                    $deletedProducts = $this->deletedProductData->getDeletedProducts($storeId);
+                    if ($deletedProducts) {
+                        $serializedDeletedProducts = $this->deletedProductSerializer->serialize($deletedProducts);
+                        $deletedProductChunks = array_chunk($serializedDeletedProducts, $this->helper::chunkItems);
+                        foreach($deletedProductChunks as $chunk) {
+                            $client->productBatch($chunk);
                         }
                     }
-
+                    break;
+                case 'orders':
                     $serializedOrders  = $this->serializeRecords($this->orderData->getOrders($storeId, $chunkId), $this->orderSerializer);
                     $result['success'] = $client->orderBatch($serializedOrders);
                     if ($chunkId == (int)$this->request->getParam('ordersChunks') - 1) {
@@ -117,5 +104,18 @@ class Ajax extends \Magento\Backend\App\Action
                 'message' => $e->getMessage()
             ]);
         }
+    }
+    
+    private function serializeRecords($records, $serializer) {
+        $serializedData = [];
+        
+        foreach($records as $record) {
+            $serializedRecord = $serializer->serialize($record);
+            if ($serializedRecord) {
+                $serializedData[] = $serializedRecord;
+            }
+        }
+        
+        return $serializedData;
     }
 }
