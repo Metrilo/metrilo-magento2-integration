@@ -69,10 +69,6 @@ class Ajax extends \Magento\Backend\App\Action
                     $serializedCategories = $this->serializeRecords($this->categoryData->getCategories($storeId, $chunkId), $this->categorySerializer);
                     $result['success']    = $client->categoryBatch($serializedCategories);
                     break;
-                case 'products':
-                    $serializedProducts = $this->serializeRecords($this->productData->getProducts($storeId, $chunkId), $this->productSerializer);
-                    $result['success']  = $client->productBatch($serializedProducts);
-                    break;
                 case 'deletedProducts':
                     $deletedProductOrders = $this->deletedProductData->getDeletedProductOrders($storeId);
                     if ($deletedProductOrders) {
@@ -82,6 +78,10 @@ class Ajax extends \Magento\Backend\App\Action
                             $client->productBatch($chunk);
                         }
                     }
+                    break;
+                case 'products':
+                    $serializedProducts = $this->serializeRecords($this->productData->getProducts($storeId, $chunkId), $this->productSerializer);
+                    $result['success']  = $client->productBatch($serializedProducts);
                     break;
                 case 'orders':
                     $serializedOrders  = $this->serializeRecords($this->orderData->getOrders($storeId, $chunkId), $this->orderSerializer);
