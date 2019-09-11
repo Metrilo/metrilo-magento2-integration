@@ -6,22 +6,10 @@ class DeletedProductData
 {
     public function __construct(
         \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $orderCollection,
-        \Magento\Sales\Model\ResourceModel\Order\Item\Collection $orderItemCollection
+        \Magento\Sales\Model\ResourceModel\Order\Item\Collection   $orderItemCollection
     ) {
-        $this->orderCollection = $orderCollection;
+        $this->orderCollection     = $orderCollection;
         $this->orderItemCollection = $orderItemCollection;
-    }
-    
-    public function getDeletedProducts($storeId) {
-
-        $query = $this->orderItemCollection->getSelect()
-            ->reset(\Zend_Db_Select::COLUMNS)
-            ->columns(['item_id', 'parent_item_id', 'product_id', 'store_id', 'product_type', 'name', 'sku', 'price', 'order_id'])
-            ->joinLeft(array('catalog' => 'catalog_product_entity'), 'main_table.product_id = catalog.entity_id', array())
-            ->where('catalog.entity_id IS NULL')
-            ->where('main_table.store_id = ?', $storeId);
-
-        return $this->orderItemCollection->getConnection()->fetchAll($query);
     }
     
     public function getDeletedProductOrders($storeId)
