@@ -7,35 +7,35 @@ class DeletedProductSerializer extends \Magento\Framework\App\Helper\AbstractHel
     public function serialize($deletedProductOrders) {
         $productBatch = [];
         foreach ($deletedProductOrders as $order) {
-            $items = $order->getAllItems();
             
-            foreach ($items as $item) {
-                $parentProduct = '';
+            foreach ($order->getAllItems() as $item) {
+                $parentProduct  = '';
                 $productOptions = [];
-    
-                if ($item->getProductType() == 'configurable') {
+                
+                $parentItemId   = $item->getParentItemId();
+                $itemId         = $item->getProductId();
+                $itemSku        = $item->getSku();
+                $itemName       = $item->getname();
+                
+                if ($item->getProductType() == 'configurable' || $this->checkForProductIdIndex($itemId, $productBatch) !== false) {
                     continue;
-                } else {
-                    if ($this->checkForProductIdIndex($item->getProductId(), $productBatch) !== false) {
-                        continue;
-                    }
                 }
-    
-                if ($item->getParentItemId()) {
-                    $parentProduct = $order->getItemById($item->getParentItemId());
-    
+                
+                if ($parentItemId) {
+                    $parentProduct = $order->getItemById($parentItemId);
+                    
                     if ($parentProduct) {
                         $productOptions[] = [
-                            'id'       => $item->getProductId(),
-                            'sku'      => $item->getSku(),
-                            'name'     => $item->getName(),
+                            'id'       => $itemId,
+                            'sku'      => $itemSku,
+                            'name'     => $itemName,
                             'price'    => $parentProduct->getPrice(),
                             'imageUrl' => ''
                         ];
                         
                         $parentIndex = $this->checkForProductIdIndex($parentProduct->getProductId(), $productBatch);
-                        if ($parentIndex != false) {
-                            if ($this->checkForProductIdIndex($item->getProductId(), $productBatch[$parentIndex]['options']) !== false) {
+                        if ($parentIndex !== false) {
+                            if ($this->checkForProductIdIndex($itemId, $productBatch[$parentIndex]['options']) !== false) {
                                 continue;
                             }
                             $productBatch[$parentIndex]['options'] = array_merge($productBatch[$parentIndex]['options'], $productOptions);
@@ -46,10 +46,10 @@ class DeletedProductSerializer extends \Magento\Framework\App\Helper\AbstractHel
                 
                 $productBatch[] = [
                     'categories' => [],
-                    'id'         => ($parentProduct) ? $parentProduct->getProductId() : $item->getProductId(),
-                    'sku'        => $item->getSku(),
+                    'id'         => ($parentProduct) ? $parentProduct->getProductId() : $itemId,
+                    'sku'        => $itemSku,
                     'imageUrl'   => '',
-                    'name'       => ($parentProduct) ? $parentProduct->getName() : $item->getName(),
+                    'name'       => ($parentProduct) ? $parentProduct->getName() : $itemName,
                     'price'      => ($parentProduct) ? 0 : $item->getPrice(),
                     'url'        => '',
                     'options'    => $productOptions
