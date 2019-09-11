@@ -5,21 +5,37 @@ namespace Metrilo\Analytics\Model;
 class DeletedProductData
 {
     public function __construct(
-        \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $orderCollection
+        \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $orderCollection,
+        \Magento\Sales\Model\ResourceModel\Order\Item\Collection $orderItemCollection
     ) {
         $this->orderCollection = $orderCollection;
+        $this->orderItemCollection = $orderItemCollection;
     }
     
     public function getDeletedProducts($storeId) {
-        $query = "SELECT sales_order_item.item_id, sales_order_item.parent_item_id, sales_order_item.product_id,
-                 sales_order_item.store_id, sales_order_item.product_type, sales_order_item.name,
-                 sales_order_item.sku, sales_order_item.price, sales_order_item.order_id
-          FROM `sales_order_item`
-          LEFT OUTER JOIN `catalog_product_entity`
-          ON sales_order_item.product_id = catalog_product_entity.entity_id
-          WHERE catalog_product_entity.entity_id IS NULL
-          AND sales_order_item.store_id = '$storeId'";
+
+        $query = $this->orderItemCollection->getSelect()
+            ->reset(\Zend_Db_Select::COLUMNS)
+            ->columns(['item_id', 'parent_item_id', 'product_id', 'store_id', 'product_type', 'name', 'sku', 'price', 'order_id'])
+            ->joinLeft(array('catalog' => 'catalog_product_entity'), 'main_table.product_id = catalog.entity_id', array())
+            ->where('catalog.entity_id IS NULL')
+            ->where('main_table.store_id = ?', $storeId);
+
+        return $this->orderItemCollection->getConnection()->fetchAll($query);
+    }
+    
+    public function getDeletedProductOrders($storeId)
+    {
+        $deletedProductOrdersQuery = $this->orderItemCollection->getSelect()
+            ->distinct()
+            ->reset(\Zend_Db_Select::COLUMNS)
+            ->columns(['order_id'])
+            ->joinLeft(array('catalog' => 'catalog_product_entity'), 'main_table.product_id = catalog.entity_id', array())
+            ->where('catalog.entity_id IS NULL')
+            ->where('main_table.store_id = ?', $storeId);
         
-        return $this->orderCollection->create()->getConnection()->fetchAll($query);
+        $deletedProductOrderIds = $this->orderItemCollection->getConnection()->fetchAll($deletedProductOrdersQuery);
+        
+        return $this->orderCollection->create()->addFieldToFilter('entity_id', ['in' => $deletedProductOrderIds]);
     }
 }
