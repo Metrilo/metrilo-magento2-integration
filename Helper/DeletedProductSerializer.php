@@ -22,7 +22,7 @@ class DeletedProductSerializer extends \Magento\Framework\App\Helper\AbstractHel
                 }
                 
                 if ($parentItemId) {
-                        $parentProduct = $order->getItemById($parentItemId);
+                    $parentProduct = $order->getItemById($parentItemId);
                     
                     if ($parentProduct) {
                         $productOptions[] = [
