@@ -4,10 +4,10 @@ namespace Metrilo\Analytics\Helper;
 
 class DeletedProductSerializer extends \Magento\Framework\App\Helper\AbstractHelper
 {
-    public function serialize($deletedProductOrders) {
+    public function serialize($deletedProductOrders)
+    {
         $productBatch = [];
         foreach ($deletedProductOrders as $order) {
-            
             foreach ($order->getAllItems() as $item) {
                 $parentProduct  = '';
                 $productOptions = [];
@@ -17,12 +17,12 @@ class DeletedProductSerializer extends \Magento\Framework\App\Helper\AbstractHel
                 $itemSku        = $item->getSku();
                 $itemName       = $item->getname();
                 
-                if ($item->getProductType() == 'configurable' || $this->checkForProductIdIndex($itemId, $productBatch) !== false) {
+                if ($item->getProductType() == 'configurable' || $this->presentInBatch($itemId, $productBatch)) {
                     continue;
                 }
                 
                 if ($parentItemId) {
-                    $parentProduct = $order->getItemById($parentItemId);
+                        $parentProduct = $order->getItemById($parentItemId);
                     
                     if ($parentProduct) {
                         $productOptions[] = [
@@ -33,9 +33,9 @@ class DeletedProductSerializer extends \Magento\Framework\App\Helper\AbstractHel
                             'imageUrl' => ''
                         ];
                         
-                        $parentIndex = $this->checkForProductIdIndex($parentProduct->getProductId(), $productBatch);
+                        $parentIndex = $this->getProductBatchIndexById($parentProduct->getProductId(), $productBatch);
                         if ($parentIndex !== false) {
-                            if ($this->checkForProductIdIndex($itemId, $productBatch[$parentIndex]['options']) !== false) {
+                            if ($this->presentInBatchProductOptions($itemId, $productBatch[$parentIndex]['options'])) {
                                 continue;
                             }
                             $productBatch[$parentIndex]['options'] = array_merge($productBatch[$parentIndex]['options'], $productOptions);
@@ -56,12 +56,25 @@ class DeletedProductSerializer extends \Magento\Framework\App\Helper\AbstractHel
                 ];
             }
         }
-        
         return $productBatch;
     }
     
-    private function checkForProductIdIndex($productId, $array)
+    private function getProductBatchIndexById($productId, $productBatch)
     {
-        return array_search($productId, array_column($array, 'id'));
+        return array_search($productId, array_column($productBatch, 'id'));
+    }
+    
+    private function presentInBatch($id, $batch)
+    {
+        $productIndex = $this->getProductBatchIndexById($id, $batch);
+        
+        return ($productIndex) ? true : false;
+    }
+    
+    private function presentInBatchProductOptions($id, $batchOptions)
+    {
+        $productOptionIndex = $this->getProductBatchIndexById($id, $batchOptions);
+        
+        return ($productOptionIndex) ? true : false;
     }
 }
