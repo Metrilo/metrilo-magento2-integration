@@ -9,7 +9,7 @@ class OrderData
     public function __construct(
         \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $orderCollection
     ) {
-        $this->orderCollection  = $orderCollection;
+        $this->orderCollection = $orderCollection;
     }
 
     public function getOrders($storeId, $chunkId)

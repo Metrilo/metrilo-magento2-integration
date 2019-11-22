@@ -86,7 +86,10 @@ define([
                             self.importType(newChunkId, 'customers', 'categories');
                             break;
                         case 'categories':
-                            self.importType(newChunkId, 'categories', 'products');
+                            self.importType(newChunkId, 'categories', 'deletedProducts');
+                            break;
+                        case 'deletedProducts':
+                            self.importType(newChunkId, 'deletedProducts', 'products');
                             break;
                         case 'products':
                             self.importType(newChunkId, 'products', 'orders');
