@@ -71,9 +71,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function log($value)
     {
         $logLocation = BP . '/var/log/metrilo.log';
-        // 2mb in bytes = 2097152
-        // 100mb in bytes = 104857600
-        if (file_exists($logLocation) && filesize($logLocation) > 2000000) {
+        if (file_exists($logLocation) && filesize($logLocation) > 104857600) {
             unlink($logLocation);
         }
         
