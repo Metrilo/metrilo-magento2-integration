@@ -10,11 +10,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
     public function __construct(
         \Magento\Framework\App\Config\ScopeConfigInterface $config,
-        \Psr\Log\LoggerInterface                           $logger,
         \Magento\Store\Model\StoreManagerInterface         $storeManager
     ) {
         $this->config       = $config;
-        $this->logger       = $logger;
         $this->storeManager = $storeManager;
     }
 
@@ -70,10 +68,15 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
     public function log($value)
     {
-        $writer = new \Zend\Log\Writer\Stream(BP . '/var/log/metrilo.log');
+        $logLocation = BP . '/var/log/metrilo.log';
+        if (file_exists($logLocation) && filesize($logLocation) > 10 * 1024 * 1024) {
+            unlink($logLocation);
+        }
+        
+        $writer = new \Zend\Log\Writer\Stream($logLocation);
         $logger = new \Zend\Log\Logger();
         $logger->addWriter($writer);
-
+        
         $logger->err($value);
     }
 
