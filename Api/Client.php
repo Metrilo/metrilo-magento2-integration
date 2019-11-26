@@ -95,7 +95,7 @@
     
         public function createActivity($url, $data) {
             $connection = new Connection();
-            $result = $connection->post($url, $data);
-            return  $result['code'] == 200;
+            $result     = $connection->post($url, $data, true);
+            return $result['code'] == 200;
         }
     }

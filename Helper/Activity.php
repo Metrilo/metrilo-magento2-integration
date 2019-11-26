@@ -19,13 +19,10 @@ class Activity extends \Magento\Framework\App\Helper\AbstractHelper
         $endPoint = $this->dataHelper->getActivityEndpoint();
         $client   = $this->apiClient->getClient($storeId);
         
-        $data = array(
-            'type'           => $type,
-            'project_secret' => $secret
-        );
+        $signature = hash_hmac('sha256', $type, $secret);
         
-        $url = $endPoint . '/tracking/' . $token . '/activity';
+        $url = $endPoint . '/tracking/' . $token . '/activity'; // should be modified once the enpoint is ready
         
-        return $client->createActivity($url, $data);
+        return $client->createActivity($url, $signature);
     }
 }

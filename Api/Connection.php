@@ -10,7 +10,7 @@
          * @param Array $bodyArray
          * @return void
          */
-        public function post($url, $bodyArray = false)
+        public function post($url, $bodyArray = false, $activity = false)
         {
             $encodedBody = $bodyArray ? json_encode($bodyArray) : '';
             $parsedUrl = parse_url($url);
@@ -21,7 +21,14 @@
                 'Connection: Close',
                 'Host: '.$parsedUrl['host']
             ];
-            return $this->curlCall($url, $headers, $encodedBody);
+            
+            if ($activity) {
+                $headers[] = 'HTTP_X_DIGEST: ' . $encodedBody;
+                
+                return $this->curlCall($url, $headers, '');
+            } else {
+                return $this->curlCall($url, $headers, $encodedBody);
+            }
         }
     
         /**
@@ -46,12 +53,12 @@
             curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
             curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
             curl_setopt($curl, CURLOPT_POSTFIELDS, $body);
-    
+            
             $response = curl_exec($curl);
             $code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
             
             curl_close($curl);
-        
+            
             return array(
                 'response' => $response,
                 'code' => $code
