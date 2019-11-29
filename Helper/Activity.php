@@ -24,7 +24,7 @@ class Activity extends \Magento\Framework\App\Helper\AbstractHelper
             'secret' => $secret
         ];
         
-        $url = $endPoint . '/tracking/' . $token . '/activity'; // should be modified once the enpoint is ready
+        $url = $endPoint . '/tracking/' . $token . '/activity';
         
         return $client->createActivity($url, $data);
     }
