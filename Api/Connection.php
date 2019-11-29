@@ -10,7 +10,7 @@
          * @param Array $bodyArray
          * @return void
          */
-        public function post($url, $bodyArray = false, $activity = false)
+        public function post($url, $bodyArray = false, $hmac_auth = false)
         {
             $encodedBody = $bodyArray ? json_encode($bodyArray) : '';
             $parsedUrl = parse_url($url);
@@ -22,7 +22,7 @@
                 'Host: '.$parsedUrl['host']
             ];
             
-            if ($activity) {
+            if ($hmac_auth) {
                 $headers[] = 'HTTP_X_DIGEST: ' . $encodedBody;
                 
                 return $this->curlCall($url, $headers, '');
