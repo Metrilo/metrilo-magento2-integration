@@ -24,7 +24,7 @@
             if ($hmacAuth) {
                 $secret = $bodyArray['secret'];
                 unset($bodyArray['secret']);
-                $headers[] = 'HTTP_X_DIGEST: ' . hash_hmac('sha256', json_encode($bodyArray), $secret);
+                $headers[] = 'X-Digest: ' . hash_hmac('sha256', json_encode($bodyArray), $secret);
             }
 
             $encodedBody = $bodyArray ? json_encode($bodyArray) : '';
