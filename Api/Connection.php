@@ -10,9 +10,8 @@
          * @param Array $bodyArray
          * @return void
          */
-        public function post($url, $bodyArray = false)
+        public function post($url, $bodyArray = false, $hmacAuth = false)
         {
-            $encodedBody = $bodyArray ? json_encode($bodyArray) : '';
             $parsedUrl = parse_url($url);
             $headers = [
                 'Content-Type: application/json',
@@ -21,6 +20,14 @@
                 'Connection: Close',
                 'Host: '.$parsedUrl['host']
             ];
+            
+            if ($hmacAuth) {
+                $secret = $bodyArray['secret'];
+                unset($bodyArray['secret']);
+                $headers[] = 'X-Digest: ' . hash_hmac('sha256', json_encode($bodyArray), $secret);
+            }
+
+            $encodedBody = $bodyArray ? json_encode($bodyArray) : '';
             return $this->curlCall($url, $headers, $encodedBody);
         }
     
@@ -46,12 +53,11 @@
             curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
             curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
             curl_setopt($curl, CURLOPT_POSTFIELDS, $body);
-    
+
             $response = curl_exec($curl);
             $code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-            
             curl_close($curl);
-        
+
             return array(
                 'response' => $response,
                 'code' => $code
