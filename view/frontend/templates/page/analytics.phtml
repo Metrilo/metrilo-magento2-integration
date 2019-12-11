@@ -11,7 +11,7 @@ $events = $block->getEvents();
     window.metrilo.skelet=function(e){return function(){a=Array.prototype.slice.call(arguments);a.unshift(e);window.metrilo.queue.push(a)}};
     for(var i=0;window.metrilo.methods.length>i;i++){var mthd=window.metrilo.methods[i];window.metrilo[mthd]=window.metrilo.skelet(mthd)}
     window.metrilo.load=function(e){var t=document,n=t.getElementsByTagName("script")[0],r=t.createElement("script");
-    r.type="text/javascript";r.async=true;r.src="//<?php echo $block->helper->js_domain; ?>/j/"+e+".js";n.parentNode.insertBefore(r,n)};
+    r.type="text/javascript";r.async=true;r.src="//<?php echo str_replace('https://', '', $block->helper->js_domain); ?>/j/"+e+".js";n.parentNode.insertBefore(r,n)};
     metrilo.load("<?php echo $block->getApiToken(); ?>");
     <?php foreach ($events as $event) : ?>
         <?php if($event['method'] == 'identify') : ?>
