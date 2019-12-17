@@ -61,7 +61,8 @@ class Customer implements ObserverInterface
         
         return $customer->getEmail() != $originalCustomer->getEmail() ||
                 $customer->getFirstname() != $originalCustomer->getFirstname() ||
-                $customer->getLastname() != $originalCustomer->getLastname();
+                $customer->getLastname() != $originalCustomer->getLastname() ||
+                $customer->getGroupId() != $originalCustomer->getGroupId();
     }
     
     
@@ -69,14 +70,13 @@ class Customer implements ObserverInterface
     {
         try {
             $customer = $this->getCustomerFromEvent($observer);
-            
             if ($customer && $this->helper->isEnabled($customer->getStoreId())) {
                 if (!trim($customer->getEmail())) {
                     $this->helper->logError('Customer with id = '. $customer->getId(). '  has no email address!');
                     return;
                 }
                 
-                $client             = $this->apiClient->getClient($this->helper->getStoreId());
+                $client             = $this->apiClient->getClient($customer->getStoreId());
                 $serializedCustomer = $this->customerSerializer->serialize($customer);
                 $client->customer($serializedCustomer);
             }
