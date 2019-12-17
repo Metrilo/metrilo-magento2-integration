@@ -59,6 +59,10 @@ class Customer implements ObserverInterface
     private function hasCustomerChanged($customer) {
         $originalCustomer = $this->customerRepository->getById($customer->getId());
         
+        if ($originalCustomer->getCreatedAt() === $originalCustomer->getUpdatedAt()) {
+            return true; // if new customer is created via admin there are no differences in $customer and $originalCustomer
+        }
+        
         return $customer->getEmail() != $originalCustomer->getEmail() ||
                 $customer->getFirstname() != $originalCustomer->getFirstname() ||
                 $customer->getLastname() != $originalCustomer->getLastname() ||
