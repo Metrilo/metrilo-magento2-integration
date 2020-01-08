@@ -14,6 +14,7 @@ class OrderSerializer extends \Magento\Framework\App\Helper\AbstractHelper
             if ($itemType == 'configurable') { // exclude configurable parent product returned by getAllItems() method
                 continue;
             }
+            
             $orderProducts[] = [
                 'productId'  => $orderItem->getProductId(),
                 'quantity'   => $orderItem->getQtyOrdered()
@@ -39,7 +40,7 @@ class OrderSerializer extends \Magento\Framework\App\Helper\AbstractHelper
             'id'        => $order->getIncrementId(),
             'createdAt' => strtotime($order->getCreatedAt()) * 1000,
             'email'     => $order->getCustomerEmail(),
-            'amount'    => $order->getBaseGrandTotal(),
+            'amount'    => $order->getBaseGrandTotal() - $order->getTotalRefunded(),
             'coupons'   => $couponCode,
             'status'    => $order->getStatus(),
             'products'  => $orderProducts,
