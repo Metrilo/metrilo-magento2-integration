@@ -4,6 +4,7 @@ namespace Metrilo\Analytics\Observer;
 
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
+use Metrilo\Analytics\Helper\MetriloCustomer;
 
 class Customer implements ObserverInterface
 {
@@ -12,17 +13,23 @@ class Customer implements ObserverInterface
      * @param \Metrilo\Analytics\Helper\ApiClient               $apiClient
      * @param \Metrilo\Analytics\Helper\CustomerSerializer      $customerSerializer
      * @param \Magento\Customer\Api\CustomerRepositoryInterface $customerRepository
+     * @param \Magento\Newsletter\Model\Subscriber              $subscriberModel
+     * @param \Magento\Customer\Api\GroupRepositoryInterface    $groupRepository
      */
     public function __construct(
         \Metrilo\Analytics\Helper\Data                    $helper,
         \Metrilo\Analytics\Helper\ApiClient               $apiClient,
         \Metrilo\Analytics\Helper\CustomerSerializer      $customerSerializer,
-        \Magento\Customer\Api\CustomerRepositoryInterface $customerRepository
+        \Magento\Customer\Api\CustomerRepositoryInterface $customerRepository,
+        \Magento\Newsletter\Model\Subscriber              $subscriberModel,
+        \Magento\Customer\Api\GroupRepositoryInterface    $groupRepository
     ) {
         $this->helper             = $helper;
         $this->apiClient          = $apiClient;
         $this->customerSerializer = $customerSerializer;
         $this->customerRepository = $customerRepository;
+        $this->subscriberModel    = $subscriberModel;
+        $this->groupRepository    = $groupRepository;
     }
     
     private function getCustomerFromEvent($observer) {
@@ -30,23 +37,35 @@ class Customer implements ObserverInterface
             case 'customer_save_after':
                 $customer = $observer->getEvent()->getCustomer();
                 if ($this->hasCustomerChanged($customer)) {
-                    return $customer;
+                    return $this->metriloCustomer($customer);
                 }
                 
                 break;
             case 'newsletter_subscriber_save_after':
                 $subscriber = $observer->getEvent()->getSubscriber();
                 if ($subscriber->isStatusChanged()) {
-                    return $this->customerRepository->getById($subscriber->getCustomerId());
+                    return $this->metriloCustomer($this->customerRepository->getById($subscriber->getCustomerId()));
                 }
                 
                 break;
             case 'customer_account_edited':
-                return $this->customerRepository->get($observer->getEvent()->getEmail());
+                return $this->metriloCustomer($this->customerRepository->get($observer->getEvent()->getEmail()));
                 
                 break;
             case 'customer_register_success':
-                return $observer->getEvent()->getCustomer();
+                return $this->metriloCustomer($observer->getEvent()->getCustomer());
+                
+                break;
+            case 'sales_order_save_after':
+                return new MetriloCustomer(
+                    $observer->getEvent()->getOrder()->getStoreId(),
+                    $observer->getEvent()->getOrder()->getCustomerEmail(),
+                    strtotime($observer->getEvent()->getOrder()->getCreatedAt()) * 1000,
+                    $observer->getEvent()->getOrder()->getBillingAddress()->getData('firstname'),
+                    $observer->getEvent()->getOrder()->getBillingAddress()->getData('lastname'),
+                    true,
+                    ['guestCustomer']
+                );
                 
                 break;
             default:
@@ -69,6 +88,28 @@ class Customer implements ObserverInterface
                 $customer->getGroupId() != $originalCustomer->getGroupId();
     }
     
+    private function getCustomerSubscriberStatus($customerId) {
+        $this->subscriberModel->unsetData();
+        return $this->subscriberModel->loadByCustomerId($customerId)->isSubscribed();
+    }
+    
+    private function getCustomerGroup($groupId) {
+        $group       = $this->groupRepository->getById($groupId);
+        $groupName[] = $group->getCode();
+        return $groupName;
+    }
+    
+    private function metriloCustomer($customer) {
+        return new MetriloCustomer(
+            $customer->getStoreId(),
+            $customer->getEmail(),
+            strtotime($customer->getCreatedAt()) * 1000,
+            $customer->getFirstName(),
+            $customer->getLastName(),
+            $this->getCustomerSubscriberStatus($customer->getId()),
+            $this->getCustomerGroup($customer->getGroupId())
+        );
+    }
     
     public function execute(Observer $observer)
     {
