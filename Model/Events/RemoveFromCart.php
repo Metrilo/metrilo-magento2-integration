@@ -10,6 +10,6 @@ class RemoveFromCart
         $this->event = $event;
     }
     public function callJS() {
-        return "window.metrilo.removeFromCart('" . $this->event->getQuoteItem()->getProductId() . "', " . $this->event->getQuoteItem()->getQty() . ");";
+        return "window.metrilo.removeFromCart('" . $this->event->getQuoteItem()->getChildren()[0]->getProductId() . "', " . $this->event->getQuoteItem()->getQty() . ");";
     }
 }
