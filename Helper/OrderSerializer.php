@@ -38,10 +38,10 @@ class OrderSerializer extends \Magento\Framework\App\Helper\AbstractHelper
         ];
         
         if (empty($order->getCustomerEmail())) {
-            if (isset($orderPhone)) {
-                $customerEmail = $orderPhone . '@phone_email';
-            } else {
+            if (empty($orderPhone)) {
                 return false;
+            } else {
+                $customerEmail = $orderPhone . '@phone_email';
             }
         } else {
             $customerEmail = $order->getCustomerEmail();
