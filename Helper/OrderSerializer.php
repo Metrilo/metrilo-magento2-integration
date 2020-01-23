@@ -37,16 +37,13 @@ class OrderSerializer extends \Magento\Framework\App\Helper\AbstractHelper
             "paymentMethod" => $order->getPayment()->getMethodInstance()->getTitle()
         ];
         
-        if (empty($order->getCustomerEmail())) {
-            if (empty($orderPhone)) {
-                return false;
-            } else {
-                $customerEmail = $orderPhone . '@phone_email';
-            }
-        } else {
+        if (!empty($order->getCustomerEmail())) {
             $customerEmail = $order->getCustomerEmail();
+        } elseif (!empty($orderPhone)) {
+            $customerEmail = $orderPhone . '@phone_email';
+        } else {
+            return false;
         }
-        
         
         $serializedOrder = [
             'id'        => $order->getIncrementId(),
