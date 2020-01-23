@@ -39,14 +39,12 @@ class Order implements ObserverInterface
                 return;
             }
             
-            if (!trim($order->getCustomerEmail())) {
-                return;
-            }
-            
             $client          = $this->apiClient->getClient($storeId);
             $serializedOrder = $this->orderSerializer->serialize($order);
             
-            $client->order($serializedOrder);
+            if ($serializedOrder) {
+                $client->order($serializedOrder);
+            }
         } catch (\Exception $e) {
             $this->helper->logError($e);
         }

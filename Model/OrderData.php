@@ -22,7 +22,6 @@ class OrderData
         
         return $this->orderCollection->create()
             ->addAttributeToFilter('store_id', $storeId)
-            ->addAttributeToFilter('customer_email', array('neq' => '')) //only return orders with email
             ->addAttributeToSelect('*')
             ->setOrder('entity_id', 'asc');
     }
