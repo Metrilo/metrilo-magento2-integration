@@ -22,9 +22,10 @@ class ProductOptions extends \Magento\Framework\App\Helper\AbstractHelper
         foreach ($childrenProducts as $childProduct) {
             $imageUrl = (!empty($childProduct->getImage())) ? $this->productImageUrl->getProductImageUrl($childProduct->getImage()) : '';
             
+            $childSku = $childProduct->getSku();
             $productOptions[] = [
-                'id'       => $childProduct->getId(),
-                'sku'      => $childProduct->getSku(),
+                'id'       => ($childSku) ? $childSku : $childProduct->getId(),
+                'sku'      => $childSku,
                 'name'     => $childProduct->getName(),
                 'price'    => $childProduct->getPrice(),
                 'imageUrl' => $imageUrl
