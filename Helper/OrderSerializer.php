@@ -17,7 +17,7 @@ class OrderSerializer extends \Magento\Framework\App\Helper\AbstractHelper
             
             $orderItemSku = $orderItem->getData('sku');
             $orderProducts[] = [
-                'productId'  => ($orderItemSku) ? $orderItemSku : $orderItem->getProductId(),
+                'productId'  => $orderItemSku ? $orderItemSku : $orderItem->getProductId(),
                 'quantity'   => $orderItem->getQtyOrdered()
             ];
         }

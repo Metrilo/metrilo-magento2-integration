@@ -14,20 +14,19 @@ class RemoveFromCart
     }
     
     private function getItemIdentifier() {
-        $itemId = '';
-        $itemHaveOptions = $this->event->getQuoteItem()->getChildren();
+        $item = $this->event->getQuoteItem();
+        $itemOptions = $item->getChildren();
+    
+        if ($itemOptions) {
+            $itemSku = $itemOptions[0]->getSku();
         
-        if ($itemHaveOptions) {
-            $itemSku = $this->event->getQuoteItem()->getChildren()[0]->getSku();
             if ($itemSku) {
-                $itemId = $itemSku;
+                return $itemSku;
             } else {
-                $itemId = $this->event->getQuoteItem()->getChildren()[0]->getProductId();
+                return $itemOptions[0]->getProductId();
             }
-        } else {
-            $itemId = $this->event->getQuoteItem()->getProductId();
         }
-        
-        return $itemId;
+    
+        return $item->getProductId();
     }
 }
