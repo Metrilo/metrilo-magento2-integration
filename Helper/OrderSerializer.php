@@ -89,7 +89,7 @@ class OrderSerializer extends \Magento\Framework\App\Helper\AbstractHelper
 
         if ($quoteItem->getProductType() == 'configurable') {
             $options = (array)$quoteItem->getProductOptions();
-            $dataItem['option_id'] = $options['simple_sku'];
+            $dataItem['option_id'] = $options['simple_sku'] ? $options['simple_sku'] : $quoteItem->getProductId();
             // for legacy reasons - we have been passing the SKU as ID for the child products
             $dataItem['option_sku'] = $options['simple_sku'];
             $dataItem['option_name'] = $options['simple_name'];

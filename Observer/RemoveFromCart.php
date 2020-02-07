@@ -30,7 +30,7 @@ class RemoveFromCart implements ObserverInterface
             $item = $observer->getEvent()->getQuoteItem();
             $product = $item->getProduct();
 
-            $this->helper->addSessionEvent('track', 'remove_from_cart', ['id' => $product->getId()]);
+            $this->helper->addSessionEvent('track', 'remove_from_cart', ['id' => $product->getSku() ? $product->getSku() : $product->getId()]);
         } catch (\Exception $e) {
             $this->helper->logError($e);
         }
