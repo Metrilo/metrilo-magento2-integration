@@ -72,7 +72,7 @@ class AddToCart implements ObserverInterface
             // for legacy reasons - we have been passing the SKU as ID for the child products
             $optionSku = $childProduct->getSku();
             $data['option_id'] = $optionSku ? $optionSku : $childProduct->getId();
-            $data['option_sku'] = $childProduct->getSku();
+            $data['option_sku'] = $optionSku;
             $data['option_name'] = $childProduct->getName();
             $data['option_price'] = (float)$childProduct->getFinalPrice();
         }
