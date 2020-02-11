@@ -27,10 +27,11 @@ class RemoveFromCart implements ObserverInterface
     public function execute(Observer $observer)
     {
         try {
-            $item = $observer->getEvent()->getQuoteItem();
-            $product = $item->getProduct();
+            $item       = $observer->getEvent()->getQuoteItem();
+            $product    = $item->getProduct();
+            $productSku = $product->getSku();
 
-            $this->helper->addSessionEvent('track', 'remove_from_cart', ['id' => $product->getId()]);
+            $this->helper->addSessionEvent('track', 'remove_from_cart', ['id' => $productSku ? $productSku : $product->getId()]);
         } catch (\Exception $e) {
             $this->helper->logError($e);
         }

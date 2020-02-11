@@ -70,8 +70,9 @@ class AddToCart implements ObserverInterface
         if ($product->getId() != $childProduct->getId()) {
             $product = $this->productRepository->getById($product->getId());
             // for legacy reasons - we have been passing the SKU as ID for the child products
-            $data['option_id'] = $childProduct->getSku();
-            $data['option_sku'] = $childProduct->getSku();
+            $optionSku = $childProduct->getSku();
+            $data['option_id'] = $optionSku ? $optionSku : $childProduct->getId();
+            $data['option_sku'] = $optionSku;
             $data['option_name'] = $childProduct->getName();
             $data['option_price'] = (float)$childProduct->getFinalPrice();
         }
