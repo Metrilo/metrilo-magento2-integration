@@ -17,7 +17,7 @@ class ProductData
         return $this->productCollection
                     ->create()
                     ->addUrlRewrite()
-                    ->addAttributeToSelect(['entity_id','type_id','sku','created_at','updated_at','name','image','price','request_path', 'visibility'])
+                    ->addAttributeToSelect(['entity_id','type_id','sku','created_at','updated_at','name','image','price', 'special_price', 'request_path', 'visibility'])
                     ->addAttributeToFilter('visibility', \Magento\Catalog\Model\Product\Visibility::VISIBILITY_BOTH)
                     ->addStoreFilter($storeId);
     }
@@ -40,7 +40,7 @@ class ProductData
         $productObject = $this->productCollection
             ->create()
             ->addStoreFilter($storeId)
-            ->addAttributeToSelect(['name','price','image'])
+            ->addAttributeToSelect(['name','price','image', 'special_price'])
             ->joinTable(
                 ['url' => 'url_rewrite'],
                 'entity_id = entity_id',
