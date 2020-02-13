@@ -22,9 +22,10 @@ class ProductSerializer extends \Magento\Framework\App\Helper\AbstractHelper
             return false;
         }
         
-        $imageUrl = (!empty($product->getImage())) ? $this->productOptions->productImageUrl->getProductImageUrl($product->getImage()) : '';
-        $price    = (!empty($product->getPrice())) ? $product->getPrice() : 0; // Does not return grouped/bundled parent price
-        $url      = $this->storeManager->getStore($storeId)->getBaseUrl() . $product->getRequestPath();
+        $imageUrl     = (!empty($product->getImage())) ? $this->productOptions->productImageUrl->getProductImageUrl($product->getImage()) : '';
+        $price        = (!empty($product->getPrice())) ? $product->getPrice() : 0; // Does not return grouped/bundled parent price
+        $specialPrice = $product->getSpecialPrice();
+        $url          = $this->storeManager->getStore($storeId)->getBaseUrl() . $product->getRequestPath();
         
         if ($productType === 'configurable') {
             $productOptions = $this->productOptions->getConfigurableOptions($product);
@@ -38,7 +39,7 @@ class ProductSerializer extends \Magento\Framework\App\Helper\AbstractHelper
             'sku'        => $product->getSku(),
             'imageUrl'   => $imageUrl,
             'name'       => $product->getName(),
-            'price'      => $price,
+            'price'      => $specialPrice ? $specialPrice : $price,
             'url'        => $url,
             'options'    => $productOptions
         ];
