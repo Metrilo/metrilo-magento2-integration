@@ -43,8 +43,20 @@ class Customer implements ObserverInterface
                 break;
             case 'newsletter_subscriber_save_after':
                 $subscriber = $observer->getEvent()->getSubscriber();
-                if ($subscriber->isStatusChanged()) {
-                    return $this->metriloCustomer($this->customerRepository->getById($subscriber->getCustomerId()));
+                $customerId = $subscriber->getCustomerId();
+                if ($subscriber->isStatusChanged() && $customerId !== 0) {
+                    return $this->metriloCustomer($this->customerRepository->getById($customerId));
+                } else {
+                    $subscriberEmail = $subscriber->getEmail();
+                    return new MetriloCustomer(
+                        $subscriber->getStoreId(),
+                        $subscriberEmail,
+                        strtotime($subscriber->getData('change_status_at')) * 1000,
+                        $subscriberEmail,
+                        $subscriberEmail,
+                        true,
+                        ['guestCustomer']
+                    );
                 }
                 
                 break;
