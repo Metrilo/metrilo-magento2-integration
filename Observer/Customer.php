@@ -55,7 +55,7 @@ class Customer implements ObserverInterface
                         $subscriberEmail,
                         $subscriberEmail,
                         true,
-                        ['guestCustomer']
+                        ['guest_customer']
                     );
                 }
                 
@@ -76,7 +76,7 @@ class Customer implements ObserverInterface
                     $observer->getEvent()->getOrder()->getBillingAddress()->getData('firstname'),
                     $observer->getEvent()->getOrder()->getBillingAddress()->getData('lastname'),
                     true,
-                    ['guestCustomer']
+                    ['guest_customer']
                 );
                 
                 break;
