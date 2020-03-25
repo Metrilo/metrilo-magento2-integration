@@ -12,17 +12,6 @@ class CategoryData
         $this->categoryCollection = $categoryCollection;
     }
 
-    public function getCategoryQuery($storeId)
-    {
-        return $this->categoryCollection->create()->addAttributeToSelect('name')
-                    ->joinTable(
-                        ['url' => 'url_rewrite'],
-                        'entity_id = entity_id',
-                        ['request_path', 'store_id'],
-                        ['entity_type' => 'category', 'store_id' => $storeId]
-                    );
-    }
-
     public function getCategories($storeId, $chunkId)
     {
         return $this->getCategoryQuery($storeId)->setPageSize($this->chunkItems)->setCurPage($chunkId + 1);
@@ -34,8 +23,8 @@ class CategoryData
         return (int) ceil($totalCategories / $this->chunkItems);
     }
     
-    public function getCategoryWithRequestPath($categoryId, $storeId) {
-        
+    public function getCategoryWithRequestPath($categoryId, $storeId)
+    {
         return $this->categoryCollection
                     ->create()
                     ->addAttributeToSelect('name')
@@ -44,5 +33,16 @@ class CategoryData
                     ->addUrlRewriteToResult()
                     ->getFirstItem()
                     ->setStoreId($storeId);
+    }
+
+    private function getCategoryQuery($storeId)
+    {
+        return $this->categoryCollection->create()->addAttributeToSelect('name')
+            ->joinTable(
+                ['url' => 'url_rewrite'],
+                'entity_id = entity_id',
+                ['request_path', 'store_id'],
+                ['entity_type' => 'category', 'store_id' => $storeId]
+            );
     }
 }
