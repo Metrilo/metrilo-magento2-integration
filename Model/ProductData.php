@@ -12,16 +12,6 @@ class ProductData
         $this->productCollection = $productCollection;
     }
 
-    public function getProductQuery($storeId)
-    {
-        return $this->productCollection
-                    ->create()
-                    ->addUrlRewrite()
-                    ->addAttributeToSelect(['entity_id','type_id','sku','created_at','updated_at','name','image','price', 'special_price', 'request_path', 'visibility'])
-                    ->addAttributeToFilter('visibility', \Magento\Catalog\Model\Product\Visibility::VISIBILITY_BOTH)
-                    ->addStoreFilter($storeId);
-    }
-
     public function getProducts($storeId, $chunkId)
     {
         return $this->getProductQuery($storeId)
@@ -55,5 +45,15 @@ class ProductData
         $productObject->setStoreId($storeId);
         
         return $productObject;
+    }
+
+    private function getProductQuery($storeId)
+    {
+        return $this->productCollection
+            ->create()
+            ->addUrlRewrite()
+            ->addAttributeToSelect(['entity_id','type_id','sku','created_at','updated_at','name','image','price', 'special_price', 'request_path', 'visibility'])
+            ->addAttributeToFilter('visibility', \Magento\Catalog\Model\Product\Visibility::VISIBILITY_BOTH)
+            ->addStoreFilter($storeId);
     }
 }
