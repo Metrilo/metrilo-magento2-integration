@@ -12,11 +12,6 @@ class CustomerData
         $this->customerCollection = $customerCollection;
     }
 
-    public function getCustomerQuery($storeId)
-    {
-        return $this->customerCollection->create()->addAttributeToFilter('store_id', $storeId);
-    }
-
     public function getCustomers($storeId, $chunkId)
     {
         return $this->getCustomerQuery($storeId)->setPageSize($this->chunkItems)->setCurPage($chunkId + 1);
@@ -26,5 +21,10 @@ class CustomerData
     {
         $totalCustomers = $this->getCustomerQuery($storeId)->getSize();
         return (int) ceil($totalCustomers / $this->chunkItems);
+    }
+
+    private function getCustomerQuery($storeId)
+    {
+        return $this->customerCollection->create()->addAttributeToFilter('store_id', $storeId);
     }
 }
