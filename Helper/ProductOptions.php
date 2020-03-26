@@ -14,9 +14,7 @@ class ProductOptions extends \Magento\Framework\App\Helper\AbstractHelper
     
     public function getConfigurableOptions($product)
     {
-        $productOptions = [];
-        $productType    = $product->getTypeId();
-        
+        $productOptions   = [];
         $childrenProducts = $product->getTypeInstance()->getUsedProducts($product);
         
         foreach ($childrenProducts as $childProduct) {
