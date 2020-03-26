@@ -34,9 +34,6 @@ class ActivityTest extends \PHPUnit\Framework\TestCase
      */
     private $type = 'integrated';
     
-    /**
-     * @var \Magento\Framework\App\Request\Http->getParam('store', 0)
-     */
     private $storeId = 1;
     
     public function setUp()
