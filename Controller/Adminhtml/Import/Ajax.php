@@ -1,7 +1,6 @@
 <?php
 
 namespace Metrilo\Analytics\Controller\Adminhtml\Import;
-use \Metrilo\Analytics\Api\Client;
 
 class Ajax extends \Magento\Backend\App\Action
 {
