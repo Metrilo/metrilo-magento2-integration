@@ -15,7 +15,7 @@ class DeletedProductSerializer extends \Magento\Framework\App\Helper\AbstractHel
                 $parentItemId   = $item->getParentItemId();
                 $itemId         = $item->getProductId();
                 $itemSku        = $item->getSku();
-                $itemName       = $item->getname();
+                $itemName       = $item->getName();
                 
                 if ($item->getProductType() == 'configurable' || $this->presentInBatch($itemId, $productBatch)) {
                     continue;

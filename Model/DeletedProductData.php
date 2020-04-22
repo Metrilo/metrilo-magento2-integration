@@ -15,7 +15,7 @@ class DeletedProductData
     public function getDeletedProductOrders($storeId)
     {
         $deletedProductOrdersQuery = $this->orderItemCollection->getSelect()
-            ->distinct()
+            ->distinct(true)
             ->reset(\Zend_Db_Select::COLUMNS)
             ->columns(['order_id'])
             ->joinLeft(array('catalog' => 'catalog_product_entity'), 'main_table.product_id = catalog.entity_id', array())

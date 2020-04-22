@@ -21,14 +21,6 @@
             $this->validator                      = new Validator($logPath);
         }
     
-        public function backendCall($path, $body) {
-            $connection                  = new Connection();
-            $this->backendParams['time'] = round(microtime(true) * 1000);
-            $body                        = array_merge($body, $this->backendParams);
-        
-            return $connection->post($this->apiEndpoint.$path, $body);
-        }
-    
         public function customer($customer) {
             $validCustomer = $this->validator->validateCustomer($customer);
             
@@ -97,5 +89,13 @@
             $connection = new Connection();
             $result     = $connection->post($url, $data, true);
             return $result['code'] == 200;
+        }
+    
+        private function backendCall($path, $body) {
+            $connection                  = new Connection();
+            $this->backendParams['time'] = round(microtime(true) * 1000);
+            $body                        = array_merge($body, $this->backendParams);
+        
+            return $connection->post($this->apiEndpoint.$path, $body);
         }
     }

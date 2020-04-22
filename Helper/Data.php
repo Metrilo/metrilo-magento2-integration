@@ -66,20 +66,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         return ($activityEndpoint) ? $activityEndpoint : 'https://p.metrilo.com';
     }
 
-    public function log($value)
-    {
-        $logLocation = BP . '/var/log/metrilo.log';
-        if (file_exists($logLocation) && filesize($logLocation) > 10 * 1024 * 1024) {
-            unlink($logLocation);
-        }
-        
-        $writer = new \Zend\Log\Writer\Stream($logLocation);
-        $logger = new \Zend\Log\Logger();
-        $logger->addWriter($writer);
-        
-        $logger->err($value);
-    }
-
     public function logError($exception)
     {
         if ($exception instanceof \Exception) {
@@ -87,11 +73,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         } else {
             $this->log($exception);
         }
-    }
-    
-    public function requestLogger($loggerPath, $loggerData) {
-        file_put_contents($loggerPath, $loggerData, FILE_APPEND);
-        file_put_contents($loggerPath, PHP_EOL, FILE_APPEND);
     }
     
     public function getStoreIdsPerProject($storeIds) {
@@ -111,5 +92,19 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $storeIdConfigMap = array_unique($storeIdConfigMap);
         
         return array_keys($storeIdConfigMap);
+    }
+    
+    private function log($value)
+    {
+        $logLocation = BP . '/var/log/metrilo.log';
+        if (file_exists($logLocation) && filesize($logLocation) > 10 * 1024 * 1024) {
+            unlink($logLocation);
+        }
+        
+        $writer = new \Zend\Log\Writer\Stream($logLocation);
+        $logger = new \Zend\Log\Logger();
+        $logger->addWriter($writer);
+        
+        $logger->err($value);
     }
 }

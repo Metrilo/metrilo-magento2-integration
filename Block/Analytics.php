@@ -7,10 +7,8 @@ use Magento\Framework\View\Element\Template\Context;
 
 class Analytics extends Template
 {
-    public $helper;
-    
     public function __construct(
-        Context $context,
+        Context                                       $context,
         \Magento\Framework\App\Action\Context         $actionContext,
         \Metrilo\Analytics\Helper\Data                $helper,
         \Metrilo\Analytics\Helper\SessionEvents       $sessionEvents,
@@ -31,7 +29,6 @@ class Analytics extends Template
         $this->catalogSearchEvent = $catalogSearchEvent;
         $this->cartViewEvent      = $cartViewEvent;
         $this->checkoutViewEvent  = $checkoutViewEvent;
-        $this->fullActionName     = $this->actionContext->getRequest()->getFullActionName();
         parent::__construct($context, $data);
     }
     
@@ -49,7 +46,7 @@ class Analytics extends Template
     
     public function getEvent()
     {
-        switch($this->fullActionName) {
+        switch($this->actionContext->getRequest()->getFullActionName()) {
             // product view pages
             case 'catalog_product_view':
                 return $this->productViewEvent->callJS();
