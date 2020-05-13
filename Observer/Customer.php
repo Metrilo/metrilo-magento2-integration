@@ -37,7 +37,15 @@ class Customer implements ObserverInterface
             case 'customer_save_after':
                 $customer = $observer->getEvent()->getCustomer();
                 if ($this->hasCustomerChanged($customer)) {
-                    return $this->metriloCustomer($customer);
+                    return new MetriloCustomer(
+                        $customer->getStoreId(),
+                        $customer->getEmail(),
+                        strtotime($customer->getCreatedAt()) * 1000,
+                        $customer->getData('firstname'),
+                        $customer->getData('lastname'),
+                        $this->getCustomerSubscriberStatus($customer->getId()),
+                        $this->getCustomerGroup($customer->getGroupId())
+                    );
                 }
                 
                 break;
