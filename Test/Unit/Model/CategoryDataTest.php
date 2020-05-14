@@ -23,7 +23,7 @@ class CategoryDataTest extends \PHPUnit\Framework\TestCase
     private $categoryId = 1;
     
     /**
-     * @var \Metrilo\Analytics\Helper\Data::chunkItems
+     * @var \Metrilo\Analytics\Helper\Data::CHUNK_ITEMS
      */
     private $chunkItems = 50;
     
@@ -60,7 +60,12 @@ class CategoryDataTest extends \PHPUnit\Framework\TestCase
             ->with($this->isType('string'))
             ->will($this->returnSelf());
         $this->categoryCollection->expects($this->any())->method('joinTable')
-            ->with($this->isType('array'), $this->isType('string'), $this->isType('array'), $this->isType('array'))
+            ->with(
+                $this->isType('array'),
+                $this->isType('string'),
+                $this->isType('array'),
+                $this->isType('array')
+            )
             ->will($this->returnSelf());
         
         $this->categoryData = new CategoryData($this->categoryCollection);
@@ -75,7 +80,10 @@ class CategoryDataTest extends \PHPUnit\Framework\TestCase
             ->with($this->equalTo($this->chunkId + 1))
             ->will($this->returnSelf());
         
-        $this->assertInstanceOf(CollectionFactory::class, $this->categoryData->getCategories($this->storeId, $this->chunkId));
+        $this->assertInstanceOf(
+            CollectionFactory::class,
+            $this->categoryData->getCategories($this->storeId, $this->chunkId)
+        );
     }
     
     public function testGetCategoryChunks()
@@ -101,6 +109,9 @@ class CategoryDataTest extends \PHPUnit\Framework\TestCase
             ->with($this->equalTo($this->storeId))
             ->will($this->returnSelf());
         
-        $this->assertInstanceOf(CollectionFactory::class, $this->categoryData->getCategoryWithRequestPath($this->categoryId, $this->storeId));
+        $this->assertInstanceOf(
+            CollectionFactory::class,
+            $this->categoryData->getCategoryWithRequestPath($this->categoryId, $this->storeId)
+        );
     }
 }

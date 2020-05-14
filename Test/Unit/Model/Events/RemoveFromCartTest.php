@@ -40,16 +40,20 @@ class RemoveFromCartTest extends \PHPUnit\Framework\TestCase
             ->setMethods(['getChildren', 'getProductId', 'getQty', 'getSku'])
             ->getMock();
     
-        $this->event->expects($this->any())->method('getQuoteItem')->will($this->returnValue($this->quoteItem));
+        $this->event->expects($this->any())->method('getQuoteItem')
+            ->will($this->returnValue($this->quoteItem));
         
         $this->removeFromCartEvent = new RemoveFromCart($this->event);
     }
     
     public function testCallJsWithSimpleProduct()
     {
-        $this->quoteItem->expects($this->any())->method('getChildren')->will($this->returnValue([]));
-        $this->quoteItem->expects($this->any())->method('getProductId')->will($this->returnValue($this->simpleProductId));
-        $this->quoteItem->expects($this->any())->method('getQty')->will($this->returnValue($this->productQuantity));
+        $this->quoteItem->expects($this->any())->method('getChildren')
+            ->will($this->returnValue([]));
+        $this->quoteItem->expects($this->any())->method('getProductId')
+            ->will($this->returnValue($this->simpleProductId));
+        $this->quoteItem->expects($this->any())->method('getQty')
+            ->will($this->returnValue($this->productQuantity));
         
         $expected = "window.metrilo.removeFromCart('" . $this->simpleProductId . "', " . $this->productQuantity . ");";
         
@@ -60,10 +64,14 @@ class RemoveFromCartTest extends \PHPUnit\Framework\TestCase
     
     public function testCallJsWithConfigurableProductWithSku()
     {
-        $this->quoteItem->expects($this->any())->method('getChildren')->will($this->returnValue([$this->quoteItem]));
-        $this->quoteItem->expects($this->any())->method('getQty')->will($this->returnValue($this->productQuantity));
-        $this->quoteItem->expects($this->any())->method('getSku')->will($this->returnValue($this->productSku));
-        $this->quoteItem->expects($this->any())->method('getProductId')->will($this->returnValue($this->configurableProductId));
+        $this->quoteItem->expects($this->any())->method('getChildren')
+            ->will($this->returnValue([$this->quoteItem]));
+        $this->quoteItem->expects($this->any())->method('getQty')
+            ->will($this->returnValue($this->productQuantity));
+        $this->quoteItem->expects($this->any())->method('getSku')
+            ->will($this->returnValue($this->productSku));
+        $this->quoteItem->expects($this->any())->method('getProductId')
+            ->will($this->returnValue($this->configurableProductId));
         
         $expected = "window.metrilo.removeFromCart('" . $this->productSku . "', " . $this->productQuantity . ");";
         
@@ -74,12 +82,17 @@ class RemoveFromCartTest extends \PHPUnit\Framework\TestCase
     
     public function testCallJsWithConfigurableProductWithoutSku()
     {
-        $this->quoteItem->expects($this->any())->method('getChildren')->will($this->returnValue([$this->quoteItem]));
-        $this->quoteItem->expects($this->any())->method('getQty')->will($this->returnValue($this->productQuantity));
-        $this->quoteItem->expects($this->any())->method('getSku')->will($this->returnValue(''));
-        $this->quoteItem->expects($this->any())->method('getProductId')->will($this->returnValue($this->configurableProductId));
+        $this->quoteItem->expects($this->any())->method('getChildren')
+            ->will($this->returnValue([$this->quoteItem]));
+        $this->quoteItem->expects($this->any())->method('getQty')
+            ->will($this->returnValue($this->productQuantity));
+        $this->quoteItem->expects($this->any())->method('getSku')
+            ->will($this->returnValue(''));
+        $this->quoteItem->expects($this->any())->method('getProductId')
+            ->will($this->returnValue($this->configurableProductId));
         
-        $expected = "window.metrilo.removeFromCart('" . $this->configurableProductId . "', " . $this->productQuantity . ");";
+        $expected = "window.metrilo.removeFromCart('" .
+            $this->configurableProductId . "', " . $this->productQuantity . ");";
         
         $result = $this->removeFromCartEvent->callJS();
         

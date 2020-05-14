@@ -23,7 +23,7 @@ class ProductDataTest extends \PHPUnit\Framework\TestCase
     private $productId = 1;
 
     /**
-     * @var \Metrilo\Analytics\Helper\Data::chunkItems
+     * @var \Metrilo\Analytics\Helper\Data::CHUNK_ITEMS
      */
     private $chunkItems = 50;
 
@@ -95,7 +95,10 @@ class ProductDataTest extends \PHPUnit\Framework\TestCase
             ->with($this->isType('string'), $this->isType('int'))
             ->will($this->returnSelf());
 
-        $this->assertInstanceOf(CollectionFactory::class, $this->productData->getProducts($this->storeId, $this->chunkId));
+        $this->assertInstanceOf(
+            CollectionFactory::class,
+            $this->productData->getProducts($this->storeId, $this->chunkId)
+        );
     }
 
     public function testGetProductChunk()
@@ -126,14 +129,16 @@ class ProductDataTest extends \PHPUnit\Framework\TestCase
                 'name',
                 'price',
                 'image',
-                'special_price'])
+                'special_price'
+            ])
             ->will($this->returnSelf());
         $this->productCollection->expects($this->any())->method('joinTable')
             ->with(
-            $this->isType('array'),
-            $this->isType('string'),
-            $this->isType('array'),
-            $this->isType('array'))
+                $this->isType('array'),
+                $this->isType('string'),
+                $this->isType('array'),
+                $this->isType('array')
+            )
             ->will($this->returnSelf());
         $this->productCollection->expects($this->any())->method('getFirstItem')->will($this->returnSelf());
         $this->productCollection->expects($this->any())->method('setStoreId')

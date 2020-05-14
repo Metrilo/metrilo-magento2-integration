@@ -47,7 +47,8 @@ class PageViewTest extends \PHPUnit\Framework\TestCase
     
         $this->urlInterface->expects($this->any())->method('getCurrentUrl')->will($this->returnValue($this->pageUrl));
         
-        $expected = "window.metrilo.viewPage('" . $this->pageUrl . "', " . json_encode(array('name' => $this->pageTitle)) . ");";
+        $expected = "window.metrilo.viewPage('" . $this->pageUrl . "', " .
+                    json_encode(array('name' => $this->pageTitle)) . ");";
         
         $result = $this->pageViewEvent->callJS();
         

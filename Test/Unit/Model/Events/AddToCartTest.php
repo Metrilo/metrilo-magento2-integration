@@ -41,15 +41,18 @@ class AddToCartTest extends \PHPUnit\Framework\TestCase
             ->setMethods(['getChildren', 'getProductId', 'getData', 'getSku'])
             ->getMock();
         
-        $this->event->expects($this->any())->method('getQuoteItem')->will($this->returnValue($this->quoteItem));
+        $this->event->expects($this->any())->method('getQuoteItem')
+            ->will($this->returnValue($this->quoteItem));
         
         $this->addToCartEvent = new AddToCart($this->event);
     }
     
     public function testCallJsWithSimpleProduct()
     {
-        $this->quoteItem->expects($this->any())->method('getChildren')->will($this->returnValue([]));
-        $this->quoteItem->expects($this->any())->method('getProductId')->will($this->returnValue($this->simpleProductId));
+        $this->quoteItem->expects($this->any())->method('getChildren')
+            ->will($this->returnValue([]));
+        $this->quoteItem->expects($this->any())->method('getProductId')
+            ->will($this->returnValue($this->simpleProductId));
         $this->quoteItem->expects($this->any())->method('getData')
             ->with($this->equalTo($this->getDataParam))
             ->will($this->returnValue($this->productQuantity));
@@ -63,9 +66,12 @@ class AddToCartTest extends \PHPUnit\Framework\TestCase
     
     public function testCallJsWithConfigurableProductWithSku()
     {
-        $this->quoteItem->expects($this->any())->method('getChildren')->will($this->returnValue([$this->quoteItem]));
-        $this->quoteItem->expects($this->any())->method('getSku')->will($this->returnValue($this->productSku));
-        $this->quoteItem->expects($this->any())->method('getProductId')->will($this->returnValue($this->configurableProductId));
+        $this->quoteItem->expects($this->any())->method('getChildren')
+            ->will($this->returnValue([$this->quoteItem]));
+        $this->quoteItem->expects($this->any())->method('getSku')
+            ->will($this->returnValue($this->productSku));
+        $this->quoteItem->expects($this->any())->method('getProductId')
+            ->will($this->returnValue($this->configurableProductId));
         $this->quoteItem->expects($this->any())->method('getData')
             ->with($this->equalTo($this->getDataParam))
             ->will($this->returnValue($this->productQuantity));
@@ -79,9 +85,12 @@ class AddToCartTest extends \PHPUnit\Framework\TestCase
     
     public function testCallJsWithConfigurableProductWithoutSku()
     {
-        $this->quoteItem->expects($this->any())->method('getChildren')->will($this->returnValue([$this->quoteItem]));
-        $this->quoteItem->expects($this->any())->method('getSku')->will($this->returnValue(''));
-        $this->quoteItem->expects($this->any())->method('getProductId')->will($this->returnValue($this->configurableProductId));
+        $this->quoteItem->expects($this->any())->method('getChildren')
+            ->will($this->returnValue([$this->quoteItem]));
+        $this->quoteItem->expects($this->any())->method('getSku')
+            ->will($this->returnValue(''));
+        $this->quoteItem->expects($this->any())->method('getProductId')
+            ->will($this->returnValue($this->configurableProductId));
         $this->quoteItem->expects($this->any())->method('getData')
             ->with($this->equalTo($this->getDataParam))
             ->will($this->returnValue($this->productQuantity));
