@@ -1,6 +1,7 @@
 <?php
 
 namespace Metrilo\Analytics\Model;
+
 use Metrilo\Analytics\Helper\MetriloCustomer;
 
 class CustomerData
@@ -9,7 +10,7 @@ class CustomerData
     private $subscriberModel;
     private $groupRepository;
     
-    public $chunkItems = \Metrilo\Analytics\Helper\Data::chunkItems;
+    public $chunkItems = \Metrilo\Analytics\Helper\Data::CHUNK_ITEMS;
 
     public function __construct(
         \Magento\Customer\Model\ResourceModel\Customer\CollectionFactory $customerCollection,
@@ -18,7 +19,7 @@ class CustomerData
     ) {
         $this->customerCollection = $customerCollection;
         $this->subscriberModel    = $subscriberModel;
-        $this->groupRepository   = $groupRepository;
+        $this->groupRepository    = $groupRepository;
     }
 
     public function getCustomers($storeId, $chunkId)
@@ -52,12 +53,14 @@ class CustomerData
         return $this->customerCollection->create()->addAttributeToFilter('store_id', $storeId);
     }
 
-    private function getCustomerSubscriberStatus($customerId) {
+    private function getCustomerSubscriberStatus($customerId)
+    {
         $this->subscriberModel->unsetData();
         return $this->subscriberModel->loadByCustomerId($customerId)->isSubscribed();
     }
 
-    private function getCustomerGroup($groupId) {
+    private function getCustomerGroup($groupId)
+    {
         $group       = $this->groupRepository->getById($groupId);
         $groupName[] = $group->getCode();
         return $groupName;

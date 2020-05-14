@@ -4,7 +4,7 @@ namespace Metrilo\Analytics\Model;
 
 class CategoryData
 {
-    public $chunkItems = \Metrilo\Analytics\Helper\Data::chunkItems;
+    public $chunkItems = \Metrilo\Analytics\Helper\Data::CHUNK_ITEMS;
     
     public function __construct(
         \Magento\Catalog\Model\ResourceModel\Category\CollectionFactory $categoryCollection
