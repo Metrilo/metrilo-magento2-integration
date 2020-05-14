@@ -346,6 +346,4 @@ class ValidatorTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(2, count($result));
         $this->assertTrue(file_exists($this->logFile));
     }
-    
-    
 }
