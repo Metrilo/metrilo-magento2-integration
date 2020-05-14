@@ -139,12 +139,17 @@ class ProductTest extends \PHPUnit\Framework\TestCase
         $storeIds  = [1,2,3];
         $productId = 2;
         
-        $this->observer->expects($this->any())->method('getEvent')->will($this->returnSelf());
-        $this->observer->expects($this->any())->method('getProduct')->will($this->returnValue($this->productModel));
+        $this->observer->expects($this->any())->method('getEvent')
+            ->will($this->returnSelf());
+        $this->observer->expects($this->any())->method('getProduct')
+            ->will($this->returnValue($this->productModel));
         
-        $this->productModel->expects($this->any())->method('getStoreId')->will($this->returnValue($storeId));
-        $this->productModel->expects($this->any())->method('getStoreIds')->will($this->returnValue($storeIds));
-        $this->productModel->expects($this->any())->method('getId')->will($this->returnValue($productId));
+        $this->productModel->expects($this->any())->method('getStoreId')
+            ->will($this->returnValue($storeId));
+        $this->productModel->expects($this->any())->method('getStoreIds')
+            ->will($this->returnValue($storeIds));
+        $this->productModel->expects($this->any())->method('getId')
+            ->will($this->returnValue($productId));
     
         $this->dataHelper->expects($this->any())->method('isEnabled')
             ->with($this->isType('int'))
@@ -162,14 +167,18 @@ class ProductTest extends \PHPUnit\Framework\TestCase
         $this->client->expects($this->any())->method('product')
             ->with($this->isInstanceOf(ProductSerializer::class));
         
-        $this->productOptionsHelper->expects($this->any())->method('getParentIds')->with($this->equalTo($productId))->will($this->returnValue([]));
+        $this->productOptionsHelper->expects($this->any())->method('getParentIds')
+            ->with($this->equalTo($productId))
+            ->will($this->returnValue([]));
     
         $this->productSerializer->expects($this->any())->method('serialize')
             ->with($this->isInstanceOf(ProductSerializer::class))
             ->will($this->returnValue([]));
         $this->productSerializer->productOptions = $this->productOptionsHelper;
         
-        $this->productData->expects($this->any())->method('getProductWithRequestPath')->with($this->isType('int'), $this->equalTo($storeId))->will($this->returnValue($this->productCollection));
+        $this->productData->expects($this->any())->method('getProductWithRequestPath')
+            ->with($this->isType('int'), $this->equalTo($storeId))
+            ->will($this->returnValue($this->productCollection));
     
         $this->productObserver->execute($this->observer);
     }
