@@ -38,7 +38,10 @@ class DeletedProductSerializer extends \Magento\Framework\App\Helper\AbstractHel
                             if ($this->presentInBatchProductOptions($itemId, $productBatch[$parentIndex]['options'])) {
                                 continue;
                             }
-                            $productBatch[$parentIndex]['options'] = array_merge($productBatch[$parentIndex]['options'], $productOptions);
+                            $productBatch[$parentIndex]['options'] = array_merge(
+                                $productBatch[$parentIndex]['options'],
+                                $productOptions
+                            );
                             continue;
                         }
                     }

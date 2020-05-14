@@ -22,8 +22,12 @@ class ProductSerializer extends \Magento\Framework\App\Helper\AbstractHelper
             return false;
         }
         
-        $imageUrl     = (!empty($product->getImage())) ? $this->productOptions->productImageUrl->getProductImageUrl($product->getImage()) : '';
-        $price        = (!empty($product->getPrice())) ? $product->getPrice() : 0; // Does not return grouped/bundled parent price
+        $productImage = $product->getImage();
+        $productPrice = $product->getPrice();
+        $imageUrl     = (!empty($productImage)) ? $this->productOptions
+                                                    ->productImageUrl
+                                                    ->getProductImageUrl($productImage) : '';
+        $price        = (!empty($productPrice)) ? $productPrice : 0; // Does not return grouped/bundled parent price
         $specialPrice = $product->getSpecialPrice();
         $url          = $this->storeManager->getStore($storeId)->getBaseUrl() . $product->getRequestPath();
         
@@ -45,4 +49,3 @@ class ProductSerializer extends \Magento\Framework\App\Helper\AbstractHelper
         ];
     }
 }
-

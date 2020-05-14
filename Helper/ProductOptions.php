@@ -18,7 +18,8 @@ class ProductOptions extends \Magento\Framework\App\Helper\AbstractHelper
         $childrenProducts = $product->getTypeInstance()->getUsedProducts($product);
         
         foreach ($childrenProducts as $childProduct) {
-            $imageUrl = (!empty($childProduct->getImage())) ? $this->productImageUrl->getProductImageUrl($childProduct->getImage()) : '';
+            $childImage = $childProduct->getImage();
+            $imageUrl = (!empty($childImage)) ? $this->productImageUrl->getProductImageUrl($childImage) : '';
             
             $childProductSku          = $childProduct->getSku();
             $childProductSpecialPrice = $childProduct->getSpecialPrice();
@@ -39,4 +40,3 @@ class ProductOptions extends \Magento\Framework\App\Helper\AbstractHelper
         return $this->configurableType->getParentIdsByChild($productId);
     }
 }
-

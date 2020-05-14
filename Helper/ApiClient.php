@@ -11,8 +11,7 @@ class ApiClient extends \Magento\Framework\App\Helper\AbstractHelper
         \Magento\Framework\App\ProductMetadata        $metaData,
         \Magento\Framework\Module\ModuleListInterface $moduleList,
         \Magento\Framework\Filesystem\DirectoryList   $dirList
-    )
-    {
+    ) {
         $this->helper       = $helper;
         $this->metaData     = $metaData;
         $this->moduleList   = $moduleList;

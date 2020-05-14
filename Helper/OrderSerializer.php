@@ -4,7 +4,8 @@ namespace Metrilo\Analytics\Helper;
 
 class OrderSerializer extends \Magento\Framework\App\Helper\AbstractHelper
 {
-    public function serialize($order) {
+    public function serialize($order)
+    {
     
         $orderItems    = $order->getAllItems();
         $orderProducts = [];
