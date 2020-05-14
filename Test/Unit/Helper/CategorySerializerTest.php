@@ -51,11 +51,16 @@ class CategorySerializerTest extends \PHPUnit\Framework\TestCase
         $this->categorySerializer = new CategorySerializer($this->storeManager);
     }
     
-    public function testSerialize() {
-        $this->categoryCollection->expects($this->any())->method('getId')->will($this->returnValue(1));
-        $this->categoryCollection->expects($this->any())->method('getStoreId')->will($this->returnValue(1));
-        $this->categoryCollection->expects($this->any())->method('getName')->will($this->returnValue('name'));
-        $this->categoryCollection->expects($this->any())->method('getRequestPath')->will($this->returnValue('/url/request/path'));
+    public function testSerialize()
+    {
+        $this->categoryCollection->expects($this->any())->method('getId')
+            ->will($this->returnValue(1));
+        $this->categoryCollection->expects($this->any())->method('getStoreId')
+            ->will($this->returnValue(1));
+        $this->categoryCollection->expects($this->any())->method('getName')
+            ->will($this->returnValue('name'));
+        $this->categoryCollection->expects($this->any())->method('getRequestPath')
+            ->will($this->returnValue('/url/request/path'));
         
         $this->storeManager->expects($this->any())->method('getStore')
             ->with($this->isType('int'))

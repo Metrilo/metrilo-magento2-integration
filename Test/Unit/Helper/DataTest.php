@@ -57,7 +57,8 @@ class DataTest extends \PHPUnit\Framework\TestCase
             ->with(
                 $this->equalTo('metrilo_analytics/general/enable'),
                 $this->equalTo('store'),
-                $this->equalTo($this->storeId))
+                $this->equalTo($this->storeId)
+            )
             ->will($this->returnValue(true));
         
         $this->assertTrue($this->data->isEnabled($this->storeId));
@@ -69,7 +70,8 @@ class DataTest extends \PHPUnit\Framework\TestCase
             ->with(
                 $this->equalTo('metrilo_analytics/general/api_key'),
                 $this->equalTo('store'),
-                $this->equalTo($this->storeId))
+                $this->equalTo($this->storeId)
+            )
             ->will($this->returnValue('9b4dd74a736d9d7d'));
     
         $this->assertEquals('9b4dd74a736d9d7d', $this->data->getApiToken($this->storeId));
@@ -81,7 +83,8 @@ class DataTest extends \PHPUnit\Framework\TestCase
             ->with(
                 $this->equalTo('metrilo_analytics/general/api_secret'),
                 $this->equalTo('store'),
-                $this->equalTo($this->storeId))
+                $this->equalTo($this->storeId)
+            )
             ->will($this->returnValue('82535e6593b51afed58e0a5a'));
     
         $this->assertEquals('82535e6593b51afed58e0a5a', $this->data->getApiSecret($this->storeId));
@@ -125,17 +128,18 @@ class DataTest extends \PHPUnit\Framework\TestCase
             ->with(
                 $this->equalTo('metrilo_analytics/general/enable'),
                 $this->equalTo('store'),
-                $this->isType('int'))
+                $this->isType('int')
+            )
             ->will($this->returnValue(true));
         
         $this->config->expects($this->at(1))->method('getValue')
             ->with(
                 $this->equalTo('metrilo_analytics/general/api_key'),
                 $this->equalTo('store'),
-                $this->isType('int'))
+                $this->isType('int')
+            )
             ->will($this->returnValue('9b4dd74a736d9d7d'));
         
         $this->assertEquals([1], $this->data->getStoreIdsPerProject([1,3,4]));
     }
-
 }

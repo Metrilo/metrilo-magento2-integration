@@ -56,17 +56,22 @@ class DeletedProductSerializerTest extends \PHPUnit\Framework\TestCase
             ->setMethods(['getItemById', 'getProductId', 'getName', 'getPrice', 'getAllItems'])
             ->getMock();
     
-        $this->orderModel->expects($this->any())->method('getAllItems')->will($this->returnValue([$this->itemModel]));
+        $this->orderModel->expects($this->any())->method('getAllItems')
+            ->will($this->returnValue([$this->itemModel]));
     
         $this->itemModel = $this->getMockBuilder(Item::class)
             ->disableOriginalConstructor()
             ->setMethods(['getParentItemId', 'getProductId', 'getSku', 'getName', 'getProductType', 'getPrice'])
             ->getMock();
     
-        $this->itemModel->expects($this->any())->method('getProductId')->will($this->returnValue($this->itemId));
-        $this->itemModel->expects($this->any())->method('getSku')->will($this->returnValue($this->itemSku));
-        $this->itemModel->expects($this->any())->method('getName')->will($this->returnValue($this->itemName));
-        $this->itemModel->expects($this->any())->method('getPrice')->will($this->returnValue($this->itemPrice));
+        $this->itemModel->expects($this->any())->method('getProductId')
+            ->will($this->returnValue($this->itemId));
+        $this->itemModel->expects($this->any())->method('getSku')
+            ->will($this->returnValue($this->itemSku));
+        $this->itemModel->expects($this->any())->method('getName')
+            ->will($this->returnValue($this->itemName));
+        $this->itemModel->expects($this->any())->method('getPrice')
+            ->will($this->returnValue($this->itemPrice));
     
         $this->orderCollection = $this->getMockBuilder(CollectionFactory::class)
             ->disableOriginalConstructor()
@@ -78,13 +83,20 @@ class DeletedProductSerializerTest extends \PHPUnit\Framework\TestCase
 
     public function testSerializeParentProduct()
     {
-        $this->orderModel->expects($this->any())->method('getItemById')->with($this->equalTo($this->parentItemId))->will($this->returnValue($this->orderModel));
-        $this->orderModel->expects($this->any())->method('getPrice')->will($this->returnValue($this->parentItemPrice));
-        $this->orderModel->expects($this->any())->method('getProductId')->will($this->returnValue($this->parentItemId));
-        $this->orderModel->expects($this->any())->method('getName')->will($this->returnValue($this->parentItemName));
+        $this->orderModel->expects($this->any())->method('getItemById')
+            ->with($this->equalTo($this->parentItemId))
+            ->will($this->returnValue($this->orderModel));
+        $this->orderModel->expects($this->any())->method('getPrice')
+            ->will($this->returnValue($this->parentItemPrice));
+        $this->orderModel->expects($this->any())->method('getProductId')
+            ->will($this->returnValue($this->parentItemId));
+        $this->orderModel->expects($this->any())->method('getName')
+            ->will($this->returnValue($this->parentItemName));
     
-        $this->itemModel->expects($this->any())->method('getParentItemId')->will($this->returnValue($this->parentItemId));
-        $this->itemModel->expects($this->any())->method('getProductType')->will($this->returnValue($this->configurableItem));
+        $this->itemModel->expects($this->any())->method('getParentItemId')
+            ->will($this->returnValue($this->parentItemId));
+        $this->itemModel->expects($this->any())->method('getProductType')
+            ->will($this->returnValue($this->configurableItem));
         
         $productOptions[] = [
             'id'       => $this->itemSku,
