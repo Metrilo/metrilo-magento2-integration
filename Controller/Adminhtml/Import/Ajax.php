@@ -61,11 +61,17 @@ class Ajax extends \Magento\Backend\App\Action
                     if ($chunkId == 0) {
                         $this->activityHelper->createActivity($storeId, 'import_start');
                     }
-                    $serializedCustomers = $this->serializeRecords($this->customerData->getCustomers($storeId, $chunkId), $this->customerSerializer);
+                    $serializedCustomers = $this->serializeRecords(
+                        $this->customerData->getCustomers($storeId, $chunkId),
+                        $this->customerSerializer
+                    );
                     $result['success']   = $client->customerBatch($serializedCustomers);
                     break;
                 case 'categories':
-                    $serializedCategories = $this->serializeRecords($this->categoryData->getCategories($storeId, $chunkId), $this->categorySerializer);
+                    $serializedCategories = $this->serializeRecords(
+                        $this->categoryData->getCategories($storeId, $chunkId),
+                        $this->categorySerializer
+                    );
                     $result['success']    = $client->categoryBatch($serializedCategories);
                     break;
                 case 'deletedProducts':
@@ -73,17 +79,23 @@ class Ajax extends \Magento\Backend\App\Action
                     if ($deletedProductOrders) {
                         $serializedDeletedProducts = $this->deletedProductSerializer->serialize($deletedProductOrders);
                         $deletedProductChunks      = array_chunk($serializedDeletedProducts, $this->helper::chunkItems);
-                        foreach($deletedProductChunks as $chunk) {
+                        foreach ($deletedProductChunks as $chunk) {
                             $client->productBatch($chunk);
                         }
                     }
                     break;
                 case 'products':
-                    $serializedProducts = $this->serializeRecords($this->productData->getProducts($storeId, $chunkId), $this->productSerializer);
+                    $serializedProducts = $this->serializeRecords(
+                        $this->productData->getProducts($storeId, $chunkId),
+                        $this->productSerializer
+                    );
                     $result['success']  = $client->productBatch($serializedProducts);
                     break;
                 case 'orders':
-                    $serializedOrders  = $this->serializeRecords($this->orderData->getOrders($storeId, $chunkId), $this->orderSerializer);
+                    $serializedOrders  = $this->serializeRecords(
+                        $this->orderData->getOrders($storeId, $chunkId),
+                        $this->orderSerializer
+                    );
                     $result['success'] = $client->orderBatch($serializedOrders);
                     if ($chunkId == (int)$this->request->getParam('ordersChunks') - 1) {
                         $this->activityHelper->createActivity($storeId, 'import_end');
@@ -105,10 +117,11 @@ class Ajax extends \Magento\Backend\App\Action
         }
     }
     
-    private function serializeRecords($records, $serializer) {
+    private function serializeRecords($records, $serializer)
+    {
         $serializedData = [];
         
-        foreach($records as $record) {
+        foreach ($records as $record) {
             $serializedRecord = $serializer->serialize($record);
             if ($serializedRecord) {
                 $serializedData[] = $serializedRecord;
