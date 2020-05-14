@@ -9,11 +9,15 @@ class AddToCart
     ) {
         $this->event = $event;
     }
-    public function callJS() {
-        return "window.metrilo.addToCart('" . $this->getItemIdentifier() . "', " . $this->event->getQuoteItem()->getData('qty_to_add') . ");";
+    public function callJS()
+    {
+        return "window.metrilo.addToCart('" .
+            $this->getItemIdentifier() . "', " .
+            $this->event->getQuoteItem()->getData('qty_to_add') . ");";
     }
     
-    private function getItemIdentifier() {
+    private function getItemIdentifier()
+    {
         $item = $this->event->getQuoteItem();
         $itemOptions = $item->getChildren();
         

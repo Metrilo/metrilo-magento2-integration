@@ -11,7 +11,10 @@ class PageView
         $this->pageTitle    = $pageTitle;
         $this->urlInterface = $urlInterface;
     }
-    public function callJS() {
-        return "window.metrilo.viewPage('" . $this->urlInterface->getCurrentUrl() . "', " . json_encode(array('name' => $this->pageTitle->getShort())) . ");";
+    public function callJS()
+    {
+        return "window.metrilo.viewPage('" .
+            $this->urlInterface->getCurrentUrl() . "', " .
+            json_encode(array('name' => $this->pageTitle->getShort())) . ");";
     }
 }

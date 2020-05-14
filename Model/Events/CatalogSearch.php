@@ -11,7 +11,8 @@ class CatalogSearch
         $this->urlInterface = $urlInterface;
         $this->request      = $request;
     }
-    public function callJS() {
+    public function callJS()
+    {
         $searchQuery = $this->request->getParam('q');
         
         if (!empty($searchQuery)) {

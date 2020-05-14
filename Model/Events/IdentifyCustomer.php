@@ -9,7 +9,8 @@ class IdentifyCustomer
     ) {
         $this->email = $email;
     }
-    public function callJS() {
+    public function callJS()
+    {
         return 'window.metrilo.identify("' . $this->email . '");';
     }
 }

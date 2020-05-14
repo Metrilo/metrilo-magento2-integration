@@ -10,7 +10,8 @@ class ProductView
         $this->coreRegistry = $registry;
     }
     
-    public function callJS() {
+    public function callJS()
+    {
         return "window.metrilo.viewProduct(" . $this->coreRegistry->registry('current_product')->getId() . ");";
     }
 }

@@ -9,7 +9,9 @@ class CategoryView
     ) {
         $this->coreRegistry = $registry;
     }
-    public function callJS() {
-        return "window.metrilo.viewCategory('" . $this->coreRegistry->registry('current_category')->getId() . "');";
+    public function callJS()
+    {
+        return "window.metrilo.viewCategory('" .
+            $this->coreRegistry->registry('current_category')->getId() . "');";
     }
 }
