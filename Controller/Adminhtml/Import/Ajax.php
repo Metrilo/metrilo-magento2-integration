@@ -77,8 +77,9 @@ class Ajax extends \Magento\Backend\App\Action
                 case 'deletedProducts':
                     $deletedProductOrders = $this->deletedProductData->getDeletedProductOrders($storeId);
                     if ($deletedProductOrders) {
+                        $helperObject              = $this->helper; // for backward compatibility for php ~5.5, ~5.6
                         $serializedDeletedProducts = $this->deletedProductSerializer->serialize($deletedProductOrders);
-                        $deletedProductChunks      = array_chunk($serializedDeletedProducts, $this->helper::CHUNK_ITEMS);
+                        $deletedProductChunks      = array_chunk($serializedDeletedProducts, $helperObject::CHUNK_ITEMS);
                         foreach ($deletedProductChunks as $chunk) {
                             $client->productBatch($chunk);
                         }
