@@ -71,7 +71,7 @@ class ImportTest extends \PHPUnit\Framework\TestCase
     {
         $block = $this->createMock(Import::class);
         $block->expects($this->any())->method('getAjaxUrl')->will($this->returnValue('string_url'));
-        $getUrl   = $block->getAjaxUrl(); // returns http://magento225apiv2.test/admin/metrilo/import/ajax/key/54a8b8e5419e757c64c15f22d15dd3242d44e91b28bca5622aded72eec69c7cc/
+        $getUrl   = $block->getAjaxUrl();
         $expected = 'string_url';
         $this->assertEquals($expected, $getUrl);
         $this->assertInternalType("string", $getUrl);
@@ -143,5 +143,4 @@ class ImportTest extends \PHPUnit\Framework\TestCase
 
         $this->assertInternalType("int", $this->block->getStoreId());
     }
-
 }

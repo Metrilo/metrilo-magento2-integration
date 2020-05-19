@@ -80,13 +80,15 @@ class RemoveFromCartTest extends \PHPUnit\Framework\TestCase
     
     public function testExecute()
     {
-        $this->dataHelper->expects($this->any())->method('isEnabled')->with($this->isType('int'))
+        $this->dataHelper->expects($this->any())->method('isEnabled')
+            ->with($this->isType('int'))
             ->will($this->returnValue(true));
         
         $this->removeFromCartEvent->expects($this->any())->method('callJs')
             ->will($this->returnValue("window.metrilo.removeFromCart('', );"));
         
-        $this->sessionEvents->expects($this->any())->method('addSessionEvent')->with($this->equalTo($this->removeFromCartEvent->callJs()));
+        $this->sessionEvents->expects($this->any())->method('addSessionEvent')
+            ->with($this->equalTo($this->removeFromCartEvent->callJs()));
     
         $this->removeFromCartObserver->execute($this->observer);
     }
@@ -99,7 +101,7 @@ class RemoveFromCartTest extends \PHPUnit\Framework\TestCase
     
         $this->dataHelper->expects($this->any())->method('logError')
             ->with($this->isType('object'))
-            ->will($this->returnCallback(function($error) {
+            ->will($this->returnCallback(function ($error) {
                 $this->assertInstanceOf(ExpectationFailedException::class, $error);
             }));
         

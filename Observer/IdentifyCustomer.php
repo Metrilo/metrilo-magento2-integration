@@ -16,7 +16,8 @@ class IdentifyCustomer implements ObserverInterface
         $this->sessionEvents = $sessionEvents;
     }
     
-    private function getEventEmail($observer) {
+    private function getEventEmail($observer)
+    {
         switch ($observer->getEvent()->getName()) {
             // identify on customer login action
             case 'customer_login':

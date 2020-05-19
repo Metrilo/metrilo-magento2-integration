@@ -143,9 +143,12 @@ class AnalyticsTest extends \PHPUnit\Framework\TestCase
         $apiToken    = '9b4dd74a736d9d7d';
         $storeId     = 1;
         
-        $this->dataHelper->expects($this->any())->method('getApiEndpoint')->will($this->returnValue($apiEndpoint));
-        $this->dataHelper->expects($this->any())->method('getApiToken')->with($this->equalTo($storeId))->will($this->returnValue($apiToken));
-        $this->dataHelper->expects($this->any())->method('getStoreId')->will($this->returnValue($storeId));
+        $this->dataHelper->expects($this->any())->method('getApiEndpoint')
+            ->will($this->returnValue($apiEndpoint));
+        $this->dataHelper->expects($this->any())->method('getApiToken')
+            ->with($this->equalTo($storeId))->will($this->returnValue($apiToken));
+        $this->dataHelper->expects($this->any())->method('getStoreId')
+            ->will($this->returnValue($storeId));
     
         $expected = $apiEndpoint . '/tracking.js?token=' . $apiToken;
         $result   = $this->analyticsBlock->getLibraryUrl();
@@ -155,63 +158,77 @@ class AnalyticsTest extends \PHPUnit\Framework\TestCase
     
     public function testGetEventProductView()
     {
-        $this->actionContext->expects($this->any())->method('getFullActionName')->will($this->returnValue('catalog_product_view'));
+        $this->actionContext->expects($this->any())->method('getFullActionName')
+            ->will($this->returnValue('catalog_product_view'));
         
-        $this->productViewEvent->expects($this->any())->method('callJs')->will($this->returnSelf());
+        $this->productViewEvent->expects($this->any())->method('callJs')
+            ->will($this->returnSelf());
         
         $this->assertInstanceOf(ProductView::class, $this->analyticsBlock->getEvent());
     }
     
     public function testGetEventCategoryView()
     {
-        $this->actionContext->expects($this->any())->method('getFullActionName')->will($this->returnValue('catalog_category_view'));
+        $this->actionContext->expects($this->any())->method('getFullActionName')
+            ->will($this->returnValue('catalog_category_view'));
     
-        $this->categoryViewEvent->expects($this->any())->method('callJs')->will($this->returnSelf());
+        $this->categoryViewEvent->expects($this->any())->method('callJs')
+            ->will($this->returnSelf());
 
         $this->assertInstanceOf(CategoryView::class, $this->analyticsBlock->getEvent());
     }
 
     public function testGetEventCatalogSearchView()
     {
-        $this->actionContext->expects($this->any())->method('getFullActionName')->will($this->returnValue('catalogsearch_result_index'));
+        $this->actionContext->expects($this->any())->method('getFullActionName')
+            ->will($this->returnValue('catalogsearch_result_index'));
 
-        $this->catalogSearchEvent->expects($this->any())->method('callJs')->will($this->returnSelf());
+        $this->catalogSearchEvent->expects($this->any())->method('callJs')
+            ->will($this->returnSelf());
 
         $this->assertInstanceOf(CatalogSearch::class, $this->analyticsBlock->getEvent());
     }
 
     public function testGetEventCatalogAdvancedSearchView()
     {
-        $this->actionContext->expects($this->any())->method('getFullActionName')->will($this->returnValue('catalogsearch_advanced_result'));
+        $this->actionContext->expects($this->any())->method('getFullActionName')
+            ->will($this->returnValue('catalogsearch_advanced_result'));
 
-        $this->catalogSearchEvent->expects($this->any())->method('callJs')->will($this->returnSelf());
+        $this->catalogSearchEvent->expects($this->any())->method('callJs')
+            ->will($this->returnSelf());
 
         $this->assertInstanceOf(CatalogSearch::class, $this->analyticsBlock->getEvent());
     }
 
     public function testGetEventCartView()
     {
-        $this->actionContext->expects($this->any())->method('getFullActionName')->will($this->returnValue('checkout_cart_index'));
+        $this->actionContext->expects($this->any())->method('getFullActionName')
+            ->will($this->returnValue('checkout_cart_index'));
 
-        $this->cartViewEvent->expects($this->any())->method('callJs')->will($this->returnSelf());
+        $this->cartViewEvent->expects($this->any())->method('callJs')
+            ->will($this->returnSelf());
 
-        $this->assertInstanceOf(CartView::class,$this->analyticsBlock->getEvent());
+        $this->assertInstanceOf(CartView::class, $this->analyticsBlock->getEvent());
     }
 
     public function testGetEventCheckoutView()
     {
-        $this->actionContext->expects($this->any())->method('getFullActionName')->will($this->returnValue('checkout_index_index'));
+        $this->actionContext->expects($this->any())->method('getFullActionName')
+            ->will($this->returnValue('checkout_index_index'));
 
-        $this->checkoutViewEvent->expects($this->any())->method('callJs')->will($this->returnSelf());
+        $this->checkoutViewEvent->expects($this->any())->method('callJs')
+            ->will($this->returnSelf());
 
         $this->assertInstanceOf(CheckoutView::class, $this->analyticsBlock->getEvent());
     }
 
     public function testGetEventPageView()
     {
-        $this->actionContext->expects($this->any())->method('getFullActionName')->will($this->returnValue(''));
+        $this->actionContext->expects($this->any())->method('getFullActionName')
+            ->will($this->returnValue(''));
 
-        $this->pageViewEvent->expects($this->any())->method('callJs')->will($this->returnSelf());
+        $this->pageViewEvent->expects($this->any())->method('callJs')
+            ->will($this->returnSelf());
 
         $this->assertInstanceOf(PageView::class, $this->analyticsBlock->getEvent());
     }
@@ -220,11 +237,14 @@ class AnalyticsTest extends \PHPUnit\Framework\TestCase
     {
         $pageViewEvent = "window.metrilo.viewProduct(1);";
         
-        $this->actionContext->expects($this->any())->method('getFullActionName')->will($this->returnValue(''));
+        $this->actionContext->expects($this->any())->method('getFullActionName')
+            ->will($this->returnValue(''));
         
-        $this->pageViewEvent->expects($this->any())->method('callJs')->will($this->returnValue($pageViewEvent));
+        $this->pageViewEvent->expects($this->any())->method('callJs')
+            ->will($this->returnValue($pageViewEvent));
     
-        $this->sessionEventsHelper->expects($this->any())->method('getSessionEvents')->will($this->returnValue(['sessionEvent']));
+        $this->sessionEventsHelper->expects($this->any())->method('getSessionEvents')
+            ->will($this->returnValue(['sessionEvent']));
     
         $expected   = ['sessionEvent'];
         $expected[] = $pageViewEvent;
@@ -236,16 +256,18 @@ class AnalyticsTest extends \PHPUnit\Framework\TestCase
     {
         $pageViewEvent = "window.metrilo.viewProduct(1);";
         
-        $this->actionContext->expects($this->any())->method('getFullActionName')->will($this->returnValue(''));
+        $this->actionContext->expects($this->any())->method('getFullActionName')
+            ->will($this->returnValue(''));
         
-        $this->pageViewEvent->expects($this->any())->method('callJs')->will($this->returnValue($pageViewEvent));
+        $this->pageViewEvent->expects($this->any())->method('callJs')
+            ->will($this->returnValue($pageViewEvent));
         
-        $this->sessionEventsHelper->expects($this->any())->method('getSessionEvents')->will($this->returnValue(null));
+        $this->sessionEventsHelper->expects($this->any())->method('getSessionEvents')
+            ->will($this->returnValue(null));
         
         $expected   = null;
         $expected[] = $pageViewEvent;
         
         $this->assertSame($expected, $this->analyticsBlock->getEvents());
     }
-    
 }

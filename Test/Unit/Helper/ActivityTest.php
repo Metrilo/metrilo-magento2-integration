@@ -76,7 +76,8 @@ class ActivityTest extends \PHPUnit\Framework\TestCase
             'secret' => $this->dataHelper->getApiSecret($this->storeId)
         ];
     
-        $url = $this->dataHelper->getActivityEndpoint() . '/tracking/' . $this->dataHelper->getApiToken($this->storeId) . '/activity';
+        $url = $this->dataHelper->getActivityEndpoint() . '/tracking/' .
+            $this->dataHelper->getApiToken($this->storeId) . '/activity';
         
         $this->client->expects($this->any())->method('createActivity')
             ->with($this->equalTo($url), $this->equalTo($data))

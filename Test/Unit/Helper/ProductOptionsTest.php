@@ -61,17 +61,24 @@ class ProductOptionsTest extends \PHPUnit\Framework\TestCase
     {
         $imageUrl = '/product/image/url.jpg';
         
-        $this->productCollection->expects($this->any())->method('getTypeInstance')->will($this->returnSelf());
-        $this->productCollection->expects($this->any())->method('getUsedProducts')->will($this->returnValue([$this->productCollection]));
-        $this->productCollection->expects($this->any())->method('getImage')->will($this->returnValue($imageUrl));
-        $this->productCollection->expects($this->any())->method('getSku')->will($this->returnValue('productSku'));
-        $this->productCollection->expects($this->any())->method('getSpecialPrice')->will($this->returnValue('productSpecialPrice'));
-        $this->productCollection->expects($this->any())->method('getPrice')->will($this->returnValue('productPrice'));
-        $this->productCollection->expects($this->any())->method('getName')->will($this->returnValue('productName'));
+        $this->productCollection->expects($this->any())->method('getTypeInstance')
+            ->will($this->returnSelf());
+        $this->productCollection->expects($this->any())->method('getUsedProducts')
+            ->will($this->returnValue([$this->productCollection]));
+        $this->productCollection->expects($this->any())->method('getImage')
+            ->will($this->returnValue($imageUrl));
+        $this->productCollection->expects($this->any())->method('getSku')
+            ->will($this->returnValue('productSku'));
+        $this->productCollection->expects($this->any())->method('getSpecialPrice')
+            ->will($this->returnValue('productSpecialPrice'));
+        $this->productCollection->expects($this->any())->method('getPrice')
+            ->will($this->returnValue('productPrice'));
+        $this->productCollection->expects($this->any())->method('getName')
+            ->will($this->returnValue('productName'));
         
         $this->productImageUrlHelper->expects($this->any())->method('getProductImageUrl')
             ->with($this->equalTo($imageUrl))
-            ->will($this->returnValue( 'base/url/string/' . 'catalog/product' . $imageUrl));
+            ->will($this->returnValue('base/url/string/' . 'catalog/product' . $imageUrl));
         
         $expected[] = [
                 'id'       => 'productSku',

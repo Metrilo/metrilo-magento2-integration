@@ -12,6 +12,9 @@ class ProductImageUrl extends \Magento\Framework\App\Helper\AbstractHelper
     
     public function getProductImageUrl($imageUrlRequestPath)
     {
-        return $this->storeManager->getStore()->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_MEDIA) . 'catalog/product' . $imageUrlRequestPath;
+        return $this->storeManager
+                ->getStore()
+                ->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_MEDIA) . 'catalog/product' .
+                $imageUrlRequestPath;
     }
 }

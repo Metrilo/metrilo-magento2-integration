@@ -4,7 +4,7 @@ namespace Metrilo\Analytics\Model;
 
 class ProductData
 {
-    public $chunkItems = \Metrilo\Analytics\Helper\Data::chunkItems;
+    public $chunkItems = \Metrilo\Analytics\Helper\Data::CHUNK_ITEMS;
 
     public function __construct(
         \Magento\Catalog\Model\ResourceModel\Product\CollectionFactory $productCollection
@@ -26,7 +26,8 @@ class ProductData
         return (int) ceil($totalProducts / $this->chunkItems);
     }
     
-    public function getProductWithRequestPath($productId, $storeId) {
+    public function getProductWithRequestPath($productId, $storeId)
+    {
         $productObject = $this->productCollection
             ->create()
             ->addStoreFilter($storeId)
@@ -52,7 +53,19 @@ class ProductData
         return $this->productCollection
             ->create()
             ->addUrlRewrite()
-            ->addAttributeToSelect(['entity_id','type_id','sku','created_at','updated_at','name','image','price', 'special_price', 'request_path', 'visibility'])
+            ->addAttributeToSelect([
+                'entity_id',
+                'type_id',
+                'sku',
+                'created_at',
+                'updated_at',
+                'name',
+                'image',
+                'price',
+                'special_price',
+                'request_path',
+                'visibility'
+            ])
             ->addAttributeToFilter('visibility', \Magento\Catalog\Model\Product\Visibility::VISIBILITY_BOTH)
             ->addStoreFilter($storeId);
     }

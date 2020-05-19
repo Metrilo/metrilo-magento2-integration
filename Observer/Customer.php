@@ -32,7 +32,8 @@ class Customer implements ObserverInterface
         $this->groupRepository    = $groupRepository;
     }
     
-    private function getCustomerFromEvent($observer) {
+    private function getCustomerFromEvent($observer)
+    {
         switch ($observer->getEvent()->getName()) {
             case 'customer_save_after':
                 $customer = $observer->getEvent()->getCustomer();
@@ -95,11 +96,12 @@ class Customer implements ObserverInterface
         return false;
     }
     
-    private function hasCustomerChanged($customer) {
+    private function hasCustomerChanged($customer)
+    {
         $originalCustomer = $this->customerRepository->getById($customer->getId());
         
         if ($originalCustomer->getCreatedAt() === $originalCustomer->getUpdatedAt()) {
-            return true; // if new customer is created via admin there are no differences in $customer and $originalCustomer
+            return true; // if customer is created in admin there are no differences in $customer and $originalCustomer
         }
         
         return $customer->getEmail() != $originalCustomer->getEmail() ||
@@ -108,18 +110,21 @@ class Customer implements ObserverInterface
                 $customer->getGroupId() != $originalCustomer->getGroupId();
     }
     
-    private function getCustomerSubscriberStatus($customerId) {
+    private function getCustomerSubscriberStatus($customerId)
+    {
         $this->subscriberModel->unsetData();
         return $this->subscriberModel->loadByCustomerId($customerId)->isSubscribed();
     }
     
-    private function getCustomerGroup($groupId) {
+    private function getCustomerGroup($groupId)
+    {
         $group       = $this->groupRepository->getById($groupId);
         $groupName[] = $group->getCode();
         return $groupName;
     }
     
-    private function metriloCustomer($customer) {
+    private function metriloCustomer($customer)
+    {
         return new MetriloCustomer(
             $customer->getStoreId(),
             $customer->getEmail(),

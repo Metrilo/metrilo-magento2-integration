@@ -79,12 +79,17 @@ class IdentifyCustomerTest extends \PHPUnit\Framework\TestCase
     {
         $email = 'test@email.com';
     
-        $this->observer->expects($this->any())->method('getEvent')->will($this->returnSelf());
-        $this->observer->expects($this->at(0))->method('getName')->will($this->returnValue('customer_login'));
-        $this->observer->expects($this->at(1))->method('getName')->will($this->returnValue('customer_account_edited'));
-        $this->observer->expects($this->at(2))->method('getName')->will($this->returnValue('sales_order_save_after'));
+        $this->observer->expects($this->any())->method('getEvent')
+            ->will($this->returnSelf());
+        $this->observer->expects($this->at(0))->method('getName')
+            ->will($this->returnValue('customer_login'));
+        $this->observer->expects($this->at(1))->method('getName')
+            ->will($this->returnValue('customer_account_edited'));
+        $this->observer->expects($this->at(2))->method('getName')
+            ->will($this->returnValue('sales_order_save_after'));
     
-        $this->dataHelper->expects($this->any())->method('isEnabled')->with($this->isType('int'))
+        $this->dataHelper->expects($this->any())->method('isEnabled')
+            ->with($this->isType('int'))
             ->will($this->returnValue(true));
         
         $this->identifyCustomerObserver->execute($this->observer);

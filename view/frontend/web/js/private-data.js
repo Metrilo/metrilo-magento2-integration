@@ -12,7 +12,7 @@ define([
 
             if (this.metrilosection) {
                 this.metrilosection.subscribe(function () {
-                    this.metrilosection().events.forEach(function(event) {
+                    this.metrilosection().events.forEach(function (event) {
                         eval(event);
                     });
                 }, this);

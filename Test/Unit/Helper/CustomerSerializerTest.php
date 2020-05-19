@@ -50,19 +50,31 @@ class CustomerSerializerTest extends \PHPUnit\Framework\TestCase
     
     public function testSerialize()
     {
-        $this->customerCollection->expects($this->any())->method('getEmail')->will($this->returnValue('customer@email.com'));
-        $this->customerCollection->expects($this->any())->method('getCreatedAt')->will($this->returnValue('date: 02.25.20'));
-        $this->customerCollection->expects($this->any())->method('getFirstName')->will($this->returnValue('firstName'));
-        $this->customerCollection->expects($this->any())->method('getLastName')->will($this->returnValue('lastName'));
-        $this->customerCollection->expects($this->any())->method('getSubscriberStatus')->will($this->returnValue(true));
-        $this->customerCollection->expects($this->any())->method('getTags')->will($this->returnValue('customerGroup'));
+        $this->customerCollection->expects($this->any())->method('getEmail')
+            ->will($this->returnValue('customer@email.com'));
+        $this->customerCollection->expects($this->any())->method('getCreatedAt')
+            ->will($this->returnValue('date: 02.25.20'));
+        $this->customerCollection->expects($this->any())->method('getFirstName')
+            ->will($this->returnValue('firstName'));
+        $this->customerCollection->expects($this->any())->method('getLastName')
+            ->will($this->returnValue('lastName'));
+        $this->customerCollection->expects($this->any())->method('getSubscriberStatus')
+            ->will($this->returnValue(true));
+        $this->customerCollection->expects($this->any())->method('getTags')
+            ->will($this->returnValue('customerGroup'));
     
-        $this->metriloCustomer->expects($this->any())->method('getEmail')->will($this->returnValue('metriloCustomer@email.com'));
-        $this->metriloCustomer->expects($this->any())->method('getCreatedAt')->will($this->returnValue('metriloDate: 02.25.20'));
-        $this->metriloCustomer->expects($this->any())->method('getFirstName')->will($this->returnValue('metriloFirstName'));
-        $this->metriloCustomer->expects($this->any())->method('getLastName')->will($this->returnValue('metriloLastName'));
-        $this->metriloCustomer->expects($this->any())->method('getSubscriberStatus')->will($this->returnValue(false));
-        $this->metriloCustomer->expects($this->any())->method('getTags')->will($this->returnValue('metriloCustomerGroup'));
+        $this->metriloCustomer->expects($this->any())->method('getEmail')
+            ->will($this->returnValue('metriloCustomer@email.com'));
+        $this->metriloCustomer->expects($this->any())->method('getCreatedAt')
+            ->will($this->returnValue('metriloDate: 02.25.20'));
+        $this->metriloCustomer->expects($this->any())->method('getFirstName')
+            ->will($this->returnValue('metriloFirstName'));
+        $this->metriloCustomer->expects($this->any())->method('getLastName')
+            ->will($this->returnValue('metriloLastName'));
+        $this->metriloCustomer->expects($this->any())->method('getSubscriberStatus')
+            ->will($this->returnValue(false));
+        $this->metriloCustomer->expects($this->any())->method('getTags')
+            ->will($this->returnValue('metriloCustomerGroup'));
     
         $expectedCustomerCollection = [
             'email'       => 'customer@email.com',
@@ -82,7 +94,13 @@ class CustomerSerializerTest extends \PHPUnit\Framework\TestCase
             'tags'        => 'metriloCustomerGroup'
         ];
     
-        $this->assertEquals($expectedCustomerCollection, $this->customerSerializer->serialize($this->customerCollection));
-        $this->assertEquals($expectedMetriloCustomer, $this->customerSerializer->serialize($this->metriloCustomer));
+        $this->assertEquals(
+            $expectedCustomerCollection,
+            $this->customerSerializer->serialize($this->customerCollection)
+        );
+        $this->assertEquals(
+            $expectedMetriloCustomer,
+            $this->customerSerializer->serialize($this->metriloCustomer)
+        );
     }
 }

@@ -59,7 +59,7 @@ class ProductSerializerTest extends \PHPUnit\Framework\TestCase
     
         $this->storeManager = $this->getMockBuilder(StoreManagerInterface::class)
             ->disableOriginalConstructor()
-            ->setMethods(array_merge(get_class_methods(StoreManagerInterface::class) ,['getBaseUrl']))
+            ->setMethods(array_merge(get_class_methods(StoreManagerInterface::class), ['getBaseUrl']))
             ->getMock();
     
         $this->configurableType = $this->getMockBuilder(Configurable::class)
@@ -92,17 +92,28 @@ class ProductSerializerTest extends \PHPUnit\Framework\TestCase
         $imageUrl       = '/product/image/url.jpg';
         $requestPath    = 'product/request/path.html';
     
-        $this->productCollection->expects($this->any())->method('getStoreId')->will($this->returnValue($storeId));
-        $this->productCollection->expects($this->any())->method('getId')->will($this->returnValue($productId));
-        $this->productCollection->expects($this->at(0))->method('getTypeId')->will($this->returnValue('simple'));
-        $this->productCollection->expects($this->at(1))->method('getTypeId')->will($this->returnValue('configurable'));
-        $this->productCollection->expects($this->any())->method('getImage')->will($this->returnValue($imageUrl));
-        $this->productCollection->expects($this->any())->method('getPrice')->will($this->returnValue('productPrice'));
-        $this->productCollection->expects($this->any())->method('getSpecialPrice')->will($this->returnValue('productSpecialPrice'));
-        $this->productCollection->expects($this->any())->method('getRequestPath')->will($this->returnValue($requestPath));
-        $this->productCollection->expects($this->any())->method('getCategoryIds')->will($this->returnValue([1,3,4]));
-        $this->productCollection->expects($this->any())->method('getSku')->will($this->returnValue($productSku));
-        $this->productCollection->expects($this->any())->method('getName')->will($this->returnValue($productName));
+        $this->productCollection->expects($this->any())->method('getStoreId')
+            ->will($this->returnValue($storeId));
+        $this->productCollection->expects($this->any())->method('getId')
+            ->will($this->returnValue($productId));
+        $this->productCollection->expects($this->at(0))->method('getTypeId')
+            ->will($this->returnValue('simple'));
+        $this->productCollection->expects($this->at(1))->method('getTypeId')
+            ->will($this->returnValue('configurable'));
+        $this->productCollection->expects($this->any())->method('getImage')
+            ->will($this->returnValue($imageUrl));
+        $this->productCollection->expects($this->any())->method('getPrice')
+            ->will($this->returnValue('productPrice'));
+        $this->productCollection->expects($this->any())->method('getSpecialPrice')
+            ->will($this->returnValue('productSpecialPrice'));
+        $this->productCollection->expects($this->any())->method('getRequestPath')
+            ->will($this->returnValue($requestPath));
+        $this->productCollection->expects($this->any())->method('getCategoryIds')
+            ->will($this->returnValue([1,3,4]));
+        $this->productCollection->expects($this->any())->method('getSku')
+            ->will($this->returnValue($productSku));
+        $this->productCollection->expects($this->any())->method('getName')
+            ->will($this->returnValue($productName));
     
         $this->productOptions->expects($this->any())->method('getConfigurableOptions')
             ->with($this->isInstanceOf(Collection::class))
@@ -114,10 +125,13 @@ class ProductSerializerTest extends \PHPUnit\Framework\TestCase
         
         $this->productImageUrlHelper->expects($this->any())->method('getProductImageUrl')
             ->with($this->equalTo($imageUrl))
-            ->will($this->returnValue( $baseUrl . 'catalog/product' . $imageUrl));
+            ->will($this->returnValue($baseUrl . 'catalog/product' . $imageUrl));
         
-        $this->storeManager->expects($this->any())->method('getStore')->with($this->equalTo($storeId))->will($this->returnSelf());
-        $this->storeManager->expects($this->any())->method('getBaseUrl')->will($this->returnValue($baseUrl));
+        $this->storeManager->expects($this->any())->method('getStore')
+            ->with($this->equalTo($storeId))
+            ->will($this->returnSelf());
+        $this->storeManager->expects($this->any())->method('getBaseUrl')
+            ->will($this->returnValue($baseUrl));
         
         $expected = [
             'categories' => [1,3,4],

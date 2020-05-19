@@ -80,7 +80,12 @@ class CategoryTest extends \PHPUnit\Framework\TestCase
             ->setMethods(['getCategoryWithRequestPath'])
             ->getMock();
         
-        $this->categoryObserver = new Category($this->dataHelper, $this->apiClientHelper, $this->categorySerializer, $this->categoryModel);
+        $this->categoryObserver = new Category(
+            $this->dataHelper,
+            $this->apiClientHelper,
+            $this->categorySerializer,
+            $this->categoryModel
+        );
     }
     
     public function testImplementsTheObserverInterface()

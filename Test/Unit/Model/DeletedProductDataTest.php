@@ -65,7 +65,10 @@ class DeletedProductDataTest extends \PHPUnit\Framework\TestCase
             ->with($this->isType('array'), $this->isType('string'), $this->isType('array'))
             ->will($this->returnSelf());
         $this->orderItemCollection->expects($this->any())->method('where')
-            ->withConsecutive([$this->isType('string')],[$this->isType('string'), $this->isType('int')])
+            ->withConsecutive(
+                [$this->isType('string')],
+                [$this->isType('string'), $this->isType('int')]
+            )
             ->will($this->returnSelf());
         $this->orderItemCollection->expects($this->any())->method('getConnection')
             ->will($this->returnSelf());
@@ -82,6 +85,9 @@ class DeletedProductDataTest extends \PHPUnit\Framework\TestCase
             ->with($this->isType('string'), $this->isType('array'))
             ->will($this->returnSelf());
         
-        $this->assertInstanceOf(OrderCollection::class, $this->deletedProductData->getDeletedProductOrders($this->storeId));
+        $this->assertInstanceOf(
+            OrderCollection::class,
+            $this->deletedProductData->getDeletedProductOrders($this->storeId)
+        );
     }
 }

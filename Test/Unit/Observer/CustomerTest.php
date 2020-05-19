@@ -149,13 +149,18 @@ class CustomerTest extends \PHPUnit\Framework\TestCase
     {
         $storeId = 1;
         
-        $this->observer->expects($this->any())->method('getEvent')->will($this->returnSelf());
-        $this->observer->expects($this->any())->method('getSubscriber')->will($this->returnValue($this->subscriberModel));
-        $this->observer->expects($this->at(0))->method('getName')->will($this->returnValue('customer_save_after'));
-        $this->observer->expects($this->at(1))->method('getName')->will($this->returnValue('newsletter_subscriber_save_after'));
-        $this->observer->expects($this->at(2))->method('getName')->will($this->returnValue('customer_account_edited'));
-        $this->observer->expects($this->at(3))->method('getName')->will($this->returnValue('customer_register_success'));
-//        $this->observer->expects($this->at(4))->method('getName')->will($this->returnValue('sales_order_save_after')); // not working on index 4, no idea why
+        $this->observer->expects($this->any())->method('getEvent')
+            ->will($this->returnSelf());
+        $this->observer->expects($this->any())->method('getSubscriber')
+            ->will($this->returnValue($this->subscriberModel));
+        $this->observer->expects($this->at(0))->method('getName')
+            ->will($this->returnValue('customer_save_after'));
+        $this->observer->expects($this->at(1))->method('getName')
+            ->will($this->returnValue('newsletter_subscriber_save_after'));
+        $this->observer->expects($this->at(2))->method('getName')
+            ->will($this->returnValue('customer_account_edited'));
+        $this->observer->expects($this->at(3))->method('getName')
+            ->will($this->returnValue('customer_register_success'));
         
         $this->dataHelper->expects($this->any())->method('isEnabled')->with($this->isType('int'))
             ->will($this->returnValue(true));

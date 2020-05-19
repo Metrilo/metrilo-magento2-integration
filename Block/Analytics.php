@@ -32,8 +32,10 @@ class Analytics extends Template
         parent::__construct($context, $data);
     }
     
-    public function getLibraryUrl() {
-        return $this->helper->getApiEndpoint() . '/tracking.js?token=' . $this->helper->getApiToken($this->helper->getStoreId());
+    public function getLibraryUrl()
+    {
+        return $this->helper->getApiEndpoint() . '/tracking.js?token=' .
+               $this->helper->getApiToken($this->helper->getStoreId());
     }
     
     protected function _toHtml()
@@ -46,7 +48,7 @@ class Analytics extends Template
     
     public function getEvent()
     {
-        switch($this->actionContext->getRequest()->getFullActionName()) {
+        switch ($this->actionContext->getRequest()->getFullActionName()) {
             // product view pages
             case 'catalog_product_view':
                 return $this->productViewEvent->callJS();
@@ -71,7 +73,8 @@ class Analytics extends Template
         }
     }
     
-    public function getEvents() {
+    public function getEvents()
+    {
         $sessionEvents   = $this->sessionEvents->getSessionEvents();
         $sessionEvents[] = $this->getEvent();
         return $sessionEvents;

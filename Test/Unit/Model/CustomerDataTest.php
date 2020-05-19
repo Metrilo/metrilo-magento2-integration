@@ -36,7 +36,7 @@ class CustomerDataTest extends \PHPUnit\Framework\TestCase
     private $metriloCustomer;
     
     /**
-     * @var \Metrilo\Analytics\Helper\Data::chunkItems
+     * @var \Metrilo\Analytics\Helper\Data::CHUNK_ITEMS
      */
     private $chunkItems = 50;
     
@@ -79,7 +79,11 @@ class CustomerDataTest extends \PHPUnit\Framework\TestCase
             ->disableOriginalConstructor()
             ->getMock();
         
-        $this->customerData = new CustomerData($this->customerCollection, $this->subscriberModel, $this->groupRepositoryInterface);
+        $this->customerData = new CustomerData(
+            $this->customerCollection,
+            $this->subscriberModel,
+            $this->groupRepositoryInterface
+        );
     }
     
     public function testGetCustomers()

@@ -88,8 +88,10 @@ class OrderSerializerTest extends \PHPUnit\Framework\TestCase
             ->setMethods(['create', 'getTitle'])
             ->getMock();
     
-        $this->cashOnDeliveryModel->expects($this->any())->method('create')->will($this->returnSelf());
-        $this->cashOnDeliveryModel->expects($this->any())->method('getTitle')->will($this->returnValue('Payment Method Name'));
+        $this->cashOnDeliveryModel->expects($this->any())->method('create')
+            ->will($this->returnSelf());
+        $this->cashOnDeliveryModel->expects($this->any())->method('getTitle')
+            ->will($this->returnValue('Payment Method Name'));
         
         $this->orderPaymentModelCollection = $this->getMockBuilder(PaymentCollection::class)
             ->disableOriginalConstructor()
@@ -98,7 +100,16 @@ class OrderSerializerTest extends \PHPUnit\Framework\TestCase
     
         $this->orderAddressModelCollection = $this->getMockBuilder(PaymentCollection::class)
             ->disableOriginalConstructor()
-            ->setMethods(['create', 'getTelephone', 'getStreet', 'getFirstName', 'getLastname', 'getCity', 'getCountryId', 'getPostcode'])
+            ->setMethods([
+                'create',
+                'getTelephone',
+                'getStreet',
+                'getFirstName',
+                'getLastname',
+                'getCity',
+                'getCountryId',
+                'getPostcode'
+            ])
             ->getMock();
     
         $this->orderSerializer = new OrderSerializer($this->context);
@@ -106,38 +117,68 @@ class OrderSerializerTest extends \PHPUnit\Framework\TestCase
     
     public function testSerialize()
     {
-        $this->orderModel->expects($this->any())->method('getAllItems')->will($this->returnValue([]));
-        $this->orderModel->expects($this->any())->method('getMethodInstance')->will($this->returnValue($this->cashOnDeliveryModel));
-        $this->orderModel->expects($this->any())->method('getBillingAddress')->will($this->returnValue($this->orderAddressModelCollection));
-        $this->orderModel->expects($this->any())->method('getPayment')->will($this->returnSelf());
-        $this->orderModel->expects($this->any())->method('getBillingAddress')->will($this->returnSelf());
-        $this->orderModel->expects($this->any())->method('getCustomerEmail')->will($this->returnValue($this->customerEmail));
-        $this->orderModel->expects($this->any())->method('getIncrementId')->will($this->returnValue($this->incrementId));
-        $this->orderModel->expects($this->any())->method('getCreatedAt')->will($this->returnValue($this->createdAt));
-        $this->orderModel->expects($this->any())->method('getCouponCode')->will($this->returnValue($this->couponCode));
-        $this->orderModel->expects($this->any())->method('getBaseGrandTotal')->will($this->returnValue($this->baseGrandTotal));
-        $this->orderModel->expects($this->any())->method('getTotalRefunded')->will($this->returnValue($this->totalRefunded));
-        $this->orderModel->expects($this->any())->method('getStatus')->will($this->returnValue($this->orderStatus));
+        $this->orderModel->expects($this->any())->method('getAllItems')
+            ->will($this->returnValue([]));
+        $this->orderModel->expects($this->any())->method('getMethodInstance')
+            ->will($this->returnValue($this->cashOnDeliveryModel));
+        $this->orderModel->expects($this->any())->method('getBillingAddress')
+            ->will($this->returnValue($this->orderAddressModelCollection));
+        $this->orderModel->expects($this->any())->method('getPayment')
+            ->will($this->returnSelf());
+        $this->orderModel->expects($this->any())->method('getBillingAddress')
+            ->will($this->returnSelf());
+        $this->orderModel->expects($this->any())->method('getCustomerEmail')
+            ->will($this->returnValue($this->customerEmail));
+        $this->orderModel->expects($this->any())->method('getIncrementId')
+            ->will($this->returnValue($this->incrementId));
+        $this->orderModel->expects($this->any())->method('getCreatedAt')
+            ->will($this->returnValue($this->createdAt));
+        $this->orderModel->expects($this->any())->method('getCouponCode')
+            ->will($this->returnValue($this->couponCode));
+        $this->orderModel->expects($this->any())->method('getBaseGrandTotal')
+            ->will($this->returnValue($this->baseGrandTotal));
+        $this->orderModel->expects($this->any())->method('getTotalRefunded')
+            ->will($this->returnValue($this->totalRefunded));
+        $this->orderModel->expects($this->any())->method('getStatus')
+            ->will($this->returnValue($this->orderStatus));
         
-        $this->orderCollection->expects($this->any())->method('getAllItems')->will($this->returnValue([]));
-        $this->orderCollection->expects($this->any())->method('getMethodInstance')->will($this->returnValue($this->cashOnDeliveryModel));
-        $this->orderCollection->expects($this->any())->method('getBillingAddress')->will($this->returnValue($this->orderAddressModelCollection));
-        $this->orderCollection->expects($this->any())->method('getPayment')->will($this->returnSelf());
-        $this->orderCollection->expects($this->any())->method('getCustomerEmail')->will($this->returnValue($this->customerEmail));
-        $this->orderCollection->expects($this->any())->method('getIncrementId')->will($this->returnValue($this->incrementId));
-        $this->orderCollection->expects($this->any())->method('getCreatedAt')->will($this->returnValue($this->createdAt));
-        $this->orderCollection->expects($this->any())->method('getCouponCode')->will($this->returnValue($this->couponCode));
-        $this->orderCollection->expects($this->any())->method('getBaseGrandTotal')->will($this->returnValue($this->baseGrandTotal));
-        $this->orderCollection->expects($this->any())->method('getTotalRefunded')->will($this->returnValue($this->totalRefunded));
-        $this->orderCollection->expects($this->any())->method('getStatus')->will($this->returnValue($this->orderStatus));
+        $this->orderCollection->expects($this->any())->method('getAllItems')
+            ->will($this->returnValue([]));
+        $this->orderCollection->expects($this->any())->method('getMethodInstance')
+            ->will($this->returnValue($this->cashOnDeliveryModel));
+        $this->orderCollection->expects($this->any())->method('getBillingAddress')
+            ->will($this->returnValue($this->orderAddressModelCollection));
+        $this->orderCollection->expects($this->any())->method('getPayment')
+            ->will($this->returnSelf());
+        $this->orderCollection->expects($this->any())->method('getCustomerEmail')
+            ->will($this->returnValue($this->customerEmail));
+        $this->orderCollection->expects($this->any())->method('getIncrementId')
+            ->will($this->returnValue($this->incrementId));
+        $this->orderCollection->expects($this->any())->method('getCreatedAt')
+            ->will($this->returnValue($this->createdAt));
+        $this->orderCollection->expects($this->any())->method('getCouponCode')
+            ->will($this->returnValue($this->couponCode));
+        $this->orderCollection->expects($this->any())->method('getBaseGrandTotal')
+            ->will($this->returnValue($this->baseGrandTotal));
+        $this->orderCollection->expects($this->any())->method('getTotalRefunded')
+            ->will($this->returnValue($this->totalRefunded));
+        $this->orderCollection->expects($this->any())->method('getStatus')
+            ->will($this->returnValue($this->orderStatus));
     
-        $this->orderAddressModelCollection->expects($this->any())->method('getTelephone')->will($this->returnValue('0883123456'));
-        $this->orderAddressModelCollection->expects($this->any())->method('getStreet')->will($this->returnValue('streetAddress'));
-        $this->orderAddressModelCollection->expects($this->any())->method('getFirstName')->will($this->returnValue('firstName'));
-        $this->orderAddressModelCollection->expects($this->any())->method('getLastname')->will($this->returnValue('lastName'));
-        $this->orderAddressModelCollection->expects($this->any())->method('getCity')->will($this->returnValue('city'));
-        $this->orderAddressModelCollection->expects($this->any())->method('getCountryId')->will($this->returnValue('countryId'));
-        $this->orderAddressModelCollection->expects($this->any())->method('getPostcode')->will($this->returnValue('postCode'));
+        $this->orderAddressModelCollection->expects($this->any())->method('getTelephone')
+            ->will($this->returnValue('0883123456'));
+        $this->orderAddressModelCollection->expects($this->any())->method('getStreet')
+            ->will($this->returnValue('streetAddress'));
+        $this->orderAddressModelCollection->expects($this->any())->method('getFirstName')
+            ->will($this->returnValue('firstName'));
+        $this->orderAddressModelCollection->expects($this->any())->method('getLastname')
+            ->will($this->returnValue('lastName'));
+        $this->orderAddressModelCollection->expects($this->any())->method('getCity')
+            ->will($this->returnValue('city'));
+        $this->orderAddressModelCollection->expects($this->any())->method('getCountryId')
+            ->will($this->returnValue('countryId'));
+        $this->orderAddressModelCollection->expects($this->any())->method('getPostcode')
+            ->will($this->returnValue('postCode'));
     
         $dataModelTest = $this->orderSerializer->serialize($this->orderCollection);
         $observerTest  = $this->orderSerializer->serialize($this->orderModel);

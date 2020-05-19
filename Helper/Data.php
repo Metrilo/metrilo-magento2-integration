@@ -4,7 +4,7 @@ namespace Metrilo\Analytics\Helper;
 
 class Data extends \Magento\Framework\App\Helper\AbstractHelper
 {
-    const chunkItems = 50;
+    const CHUNK_ITEMS = 50;
 
     const MODULE_NAME = 'Metrilo_Analytics';
 
@@ -75,7 +75,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         }
     }
     
-    public function getStoreIdsPerProject($storeIds) {
+    public function getStoreIdsPerProject($storeIds)
+    {
         $storeIdConfigMap = [];
         foreach ($storeIds as $storeId) {
             if ($storeId == 0 || !$this->isEnabled($storeId)) { // store 0 is always admin

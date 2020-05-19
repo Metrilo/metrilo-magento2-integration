@@ -4,7 +4,8 @@ namespace Metrilo\Analytics\Helper;
 
 class CustomerSerializer extends \Magento\Framework\App\Helper\AbstractHelper
 {
-    public function serialize($customer) {
+    public function serialize($customer)
+    {
         $serializedCustomer = [
             'email'       => $customer->getEmail(),
             'createdAt'   => $customer->getCreatedAt(),

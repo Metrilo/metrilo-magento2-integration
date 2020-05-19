@@ -9,11 +9,15 @@ class RemoveFromCart
     ) {
         $this->event = $event;
     }
-    public function callJS() {
-        return "window.metrilo.removeFromCart('" . $this->getItemIdentifier() . "', " . $this->event->getQuoteItem()->getQty() . ");";
+    public function callJS()
+    {
+        return "window.metrilo.removeFromCart('" .
+            $this->getItemIdentifier() . "', " .
+            $this->event->getQuoteItem()->getQty() . ");";
     }
     
-    private function getItemIdentifier() {
+    private function getItemIdentifier()
+    {
         $item = $this->event->getQuoteItem();
         $itemOptions = $item->getChildren();
     

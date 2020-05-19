@@ -50,4 +50,3 @@ class Order implements ObserverInterface
         }
     }
 }
-

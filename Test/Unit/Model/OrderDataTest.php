@@ -18,7 +18,7 @@ class OrderDataTest extends \PHPUnit\Framework\TestCase
     private $orderData;
 
     /**
-     * @var \Metrilo\Analytics\Helper\Data::chunkItems
+     * @var \Metrilo\Analytics\Helper\Data::CHUNK_ITEMS
      */
     private $chunkItems = 50;
 

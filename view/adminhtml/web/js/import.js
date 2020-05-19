@@ -1,13 +1,9 @@
 /**
  * Import orders widget
- *
- * @author Miroslav Petrov <miro91tn@gmail.com>
  */
-define([
-    'jquery',
-    'mage/translate',
-    'jquery/ui'
-    ], function($, $t, $ui) {
+define(
+    ['jquery', 'mage/translate', 'jquery/ui'],
+    function ($, $t, $ui) {
         "use strict";
         $.widget('metrilo.import', {
 
@@ -32,7 +28,7 @@ define([
              *
              * @return {this}
              */
-            _create: function() {
+            _create: function () {
                 this._bindSubmit();
                 return this;
             },
@@ -42,9 +38,9 @@ define([
              *
              * @return {void}
              */
-            _bindSubmit: function() {
+            _bindSubmit: function () {
                 var self = this;
-                self.element.on('click', function(e) {
+                self.element.on('click', function (e) {
                     // Disable the button during the import
                     $(this).addClass('disabled').attr('disabled', 'disabled').text('Importing Customers');
 
@@ -59,7 +55,7 @@ define([
              * @param  {integer} chunkId
              * @return {void}
              */
-            chunkSync: function(chunkId, importType, retryStatus) {
+            chunkSync: function (chunkId, importType, retryStatus) {
                 var self = this;
                 var progress = Math.round(chunkId * self.options.percentage);
                 self.updateImportingMessage($t('Please wait... ' + progress + '% done'), true);
@@ -75,9 +71,9 @@ define([
                     'form_key': window.FORM_KEY
                 };
 
-                self.ajaxPostWithRetry(self.options.submitUrl, data, 3, function() {
+                self.ajaxPostWithRetry(self.options.submitUrl, data, 3, function () {
                     var newChunkId = chunkId + 1;
-                    if(retryStatus){
+                    if (retryStatus) {
                         newChunkId++;
                     }
                     console.log('response.success: newChunkId = ', newChunkId, ' importType = ', importType, ' retryStatus = ', retryStatus);
@@ -103,7 +99,7 @@ define([
                 });
             },
 
-            importType: function(newChunkId, current, next) {
+            importType: function (newChunkId, current, next) {
                 var self = this;
                 if (self.options[`${current}Chunks`] > 0) {
                     self.options.percentage = (100 / self.options[`${current}Chunks`]);
@@ -111,10 +107,10 @@ define([
 
                 var hasMoreChunks = newChunkId < self.options[`${current}Chunks`];
 
-                if(hasMoreChunks) {
+                if (hasMoreChunks) {
                     self.chunkSync(newChunkId, self.options.importType, false);
                 } else {
-                    if(current == 'orders') {
+                    if (current == 'orders') {
                         self.updateImportingMessage("<span style='color: green;'>" + $t('Done! Please expect up to 30 minutes for your historical data to appear in Metrilo.') + "</span>");
                         self.element.removeClass('disabled').addClass('success').text($t('Finished Import.'));
                     } else {
@@ -125,14 +121,14 @@ define([
                 }
             },
 
-            ajaxPostWithRetry: function(url, data, retryCount, callback) {
+            ajaxPostWithRetry: function (url, data, retryCount, callback) {
                 self = this;
-                if(retryCount) {
-                    $.post(url, data, function(response) {
+                if (retryCount) {
+                    $.post(url, data, function (response) {
                         callback();
                     }).fail(function () {
                         console.log('fail!', data, retryCount);
-                        setTimeout(function() {
+                        setTimeout(function () {
                             self.ajaxPostWithRetry(url, data, retryCount - 1 , callback);
                         }, 5000);
                     })
@@ -147,7 +143,7 @@ define([
              * @param  {string} message
              * @return {void}
              */
-            updateImportingMessage: function(message) {
+            updateImportingMessage: function (message) {
                 $(this.options.messageSelector).html(message);
             },
 
