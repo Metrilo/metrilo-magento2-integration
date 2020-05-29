@@ -15,12 +15,10 @@ class OrderSerializer extends \Magento\Framework\App\Helper\AbstractHelper
             if ($itemType == 'configurable') { // exclude configurable parent product returned by getAllItems() method
                 continue;
             }
-            
-            $orderItemSku = $orderItem->getData('sku');
-            $orderProducts[] = [
-                'productId'  => $orderItemSku ? $orderItemSku : $orderItem->getProductId(),
-                'quantity'   => $orderItem->getQtyOrdered()
-            ];
+    
+            $parentItem      = $orderItem->getParentItem();
+            $orderItemSku    = $parentItem ? $orderItem->getData('sku') : $orderItem->getProductId();
+            $orderProducts[] = ['productId'  => $orderItemSku, 'quantity'   => $orderItem->getQtyOrdered()];
         }
     
         $orderBillingData = $order->getBillingAddress();
