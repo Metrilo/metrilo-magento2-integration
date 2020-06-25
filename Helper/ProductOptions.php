@@ -21,11 +21,10 @@ class ProductOptions extends \Magento\Framework\App\Helper\AbstractHelper
             $childImage = $childProduct->getImage();
             $imageUrl = (!empty($childImage)) ? $this->productImageUrl->getProductImageUrl($childImage) : '';
             
-            $childProductSku          = $childProduct->getSku();
             $childProductSpecialPrice = $childProduct->getSpecialPrice();
             $productOptions[] = [
-                'id'       => $childProductSku ? $childProductSku : $childProduct->getId(),
-                'sku'      => $childProductSku,
+                'id'       => $childProduct->getId(),
+                'sku'      => $childProduct->getSku(),
                 'name'     => $childProduct->getName(),
                 'price'    => $childProductSpecialPrice ? $childProductSpecialPrice : $childProduct->getPrice(),
                 'imageUrl' => $imageUrl
