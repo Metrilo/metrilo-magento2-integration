@@ -10,7 +10,7 @@ class CustomerData
     private $subscriberModel;
     private $groupRepository;
     
-    public $chunkItems = \Metrilo\Analytics\Helper\Data::CHUNK_ITEMS;
+    private $chunkItems = \Metrilo\Analytics\Helper\Data::CHUNK_ITEMS;
 
     public function __construct(
         \Magento\Customer\Model\ResourceModel\Customer\CollectionFactory $customerCollection,

@@ -26,7 +26,7 @@ class DeletedProductSerializer extends \Magento\Framework\App\Helper\AbstractHel
                     
                     if ($parentProduct) {
                         $productOptions[] = [
-                            'id'       => $itemSku ? $itemSku : $itemId,
+                            'id'       => $itemId,
                             'sku'      => $itemSku,
                             'name'     => $itemName,
                             'price'    => $parentProduct->getPrice(),

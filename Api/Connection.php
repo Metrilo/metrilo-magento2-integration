@@ -59,9 +59,9 @@ class Connection
         $code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
         curl_close($curl);
 
-        return array(
+        return [
             'response' => $response,
             'code' => $code
-        );
+        ];
     }
 }

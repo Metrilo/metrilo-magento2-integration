@@ -4,7 +4,7 @@ namespace Metrilo\Analytics\Model;
 
 class ProductData
 {
-    public $chunkItems = \Metrilo\Analytics\Helper\Data::CHUNK_ITEMS;
+    private $chunkItems = \Metrilo\Analytics\Helper\Data::CHUNK_ITEMS;
 
     public function __construct(
         \Magento\Catalog\Model\ResourceModel\Product\CollectionFactory $productCollection
@@ -66,7 +66,6 @@ class ProductData
                 'request_path',
                 'visibility'
             ])
-            ->addAttributeToFilter('visibility', \Magento\Catalog\Model\Product\Visibility::VISIBILITY_BOTH)
             ->addStoreFilter($storeId);
     }
 }
