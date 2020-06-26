@@ -4,7 +4,7 @@ namespace Metrilo\Analytics\Model;
 
 class OrderData
 {
-    public $chunkItems = \Metrilo\Analytics\Helper\Data::CHUNK_ITEMS;
+    private $chunkItems = \Metrilo\Analytics\Helper\Data::CHUNK_ITEMS;
 
     public function __construct(
         \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $orderCollection

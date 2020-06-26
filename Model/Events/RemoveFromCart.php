@@ -11,26 +11,10 @@ class RemoveFromCart
     }
     public function callJS()
     {
-        return "window.metrilo.removeFromCart('" .
-            $this->getItemIdentifier() . "', " .
-            $this->event->getQuoteItem()->getQty() . ");";
-    }
-    
-    private function getItemIdentifier()
-    {
         $item = $this->event->getQuoteItem();
-        $itemOptions = $item->getChildren();
-    
-        if ($itemOptions) {
-            $itemSku = $itemOptions[0]->getSku();
         
-            if ($itemSku) {
-                return $itemSku;
-            } else {
-                return $itemOptions[0]->getProductId();
-            }
-        }
-    
-        return $item->getProductId();
+        return "window.metrilo.removeFromCart('" .
+            $item->getProductId() . "', " .
+            (int)$item->getQty() . ");";
     }
 }

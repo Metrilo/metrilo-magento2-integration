@@ -39,6 +39,7 @@ class ProductOptionsTest extends \PHPUnit\Framework\TestCase
         $this->productCollection = $this->getMockBuilder(Collection::class)
             ->disableOriginalConstructor()
             ->setMethods(array_merge(get_class_methods(Collection::class), [
+                'getId',
                 'getTypeId',
                 'getTypeInstance',
                 'getUsedProducts',
@@ -65,6 +66,8 @@ class ProductOptionsTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnSelf());
         $this->productCollection->expects($this->any())->method('getUsedProducts')
             ->will($this->returnValue([$this->productCollection]));
+        $this->productCollection->expects($this->any())->method('getId')
+            ->will($this->returnValue((int)'1'));
         $this->productCollection->expects($this->any())->method('getImage')
             ->will($this->returnValue($imageUrl));
         $this->productCollection->expects($this->any())->method('getSku')
@@ -81,7 +84,7 @@ class ProductOptionsTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue('base/url/string/' . 'catalog/product' . $imageUrl));
         
         $expected[] = [
-                'id'       => 'productSku',
+                'id'       => 1,
                 'sku'      => 'productSku',
                 'name'     => 'productName',
                 'price'    => 'productSpecialPrice',
