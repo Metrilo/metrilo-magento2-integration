@@ -150,7 +150,7 @@ class CustomerTest extends \PHPUnit\Framework\TestCase
     
         $this->sessionEvents = $this->getMockBuilder(SessionEvents::class)
             ->disableOriginalConstructor()
-            ->setMethods(['addSessionEvents'])
+            ->setMethods(['addSessionEvent'])
             ->getMock();
         
         $this->customerObserver = new Customer(
@@ -197,7 +197,7 @@ class CustomerTest extends \PHPUnit\Framework\TestCase
         $this->observer->expects($this->at(3))->method('getName')
             ->will($this->returnValue('customer_register_success'));
     
-        $this->sessionEvents->expects($this->any())->method('addSessionEvents')
+        $this->sessionEvents->expects($this->any())->method('addSessionEvent')
             ->with(
                 self::logicalOr(
                     $this->isInstanceOf(IdentifyCustomer::class),
