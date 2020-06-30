@@ -5,6 +5,8 @@ namespace Metrilo\Analytics\Observer;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Metrilo\Analytics\Helper\MetriloCustomer;
+use Metrilo\Analytics\Model\Events\IdentifyCustomer;
+use Metrilo\Analytics\Model\Events\CustomEvent;
 
 class Customer implements ObserverInterface
 {
@@ -15,6 +17,7 @@ class Customer implements ObserverInterface
      * @param \Magento\Customer\Api\CustomerRepositoryInterface $customerRepository
      * @param \Magento\Newsletter\Model\Subscriber              $subscriberModel
      * @param \Magento\Customer\Api\GroupRepositoryInterface    $groupRepository
+     * @param \Metrilo\Analytics\Helper\SessionEvents           $sessionEvents
      */
     public function __construct(
         \Metrilo\Analytics\Helper\Data                    $helper,
@@ -22,7 +25,8 @@ class Customer implements ObserverInterface
         \Metrilo\Analytics\Helper\CustomerSerializer      $customerSerializer,
         \Magento\Customer\Api\CustomerRepositoryInterface $customerRepository,
         \Magento\Newsletter\Model\Subscriber              $subscriberModel,
-        \Magento\Customer\Api\GroupRepositoryInterface    $groupRepository
+        \Magento\Customer\Api\GroupRepositoryInterface    $groupRepository,
+        \Metrilo\Analytics\Helper\SessionEvents           $sessionEvents
     ) {
         $this->helper             = $helper;
         $this->apiClient          = $apiClient;
@@ -30,6 +34,7 @@ class Customer implements ObserverInterface
         $this->customerRepository = $customerRepository;
         $this->subscriberModel    = $subscriberModel;
         $this->groupRepository    = $groupRepository;
+        $this->sessionEvents      = $sessionEvents;
     }
     
     private function getCustomerFromEvent($observer)
@@ -56,7 +61,13 @@ class Customer implements ObserverInterface
                 if ($subscriber->isStatusChanged() && $customerId !== 0) {
                     return $this->metriloCustomer($this->customerRepository->getById($customerId));
                 } else {
-                    $subscriberEmail = $subscriber->getEmail();
+                    $subscriberEmail  = $subscriber->getEmail();
+                    $identifyCustomer = new IdentifyCustomer($subscriberEmail);
+                    $customEvent      = new CustomEvent('Subscribed');
+                    
+                    $this->sessionEvents->addSessionEvent($identifyCustomer->callJs());
+                    $this->sessionEvents->addSessionEvent($customEvent->callJs());
+                    
                     return new MetriloCustomer(
                         $subscriber->getStoreId(),
                         $subscriberEmail,
@@ -64,7 +75,7 @@ class Customer implements ObserverInterface
                         $subscriberEmail,
                         $subscriberEmail,
                         true,
-                        ['guest_customer']
+                        ['Newsletter']
                     );
                 }
                 
