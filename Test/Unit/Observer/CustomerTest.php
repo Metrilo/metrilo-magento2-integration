@@ -13,6 +13,9 @@ use Metrilo\Analytics\Helper\ApiClient;
 use Metrilo\Analytics\Helper\CustomerSerializer;
 use Metrilo\Analytics\Helper\MetriloCustomer;
 use Metrilo\Analytics\Observer\Customer;
+use Metrilo\Analytics\Helper\SessionEvents;
+use Metrilo\Analytics\Model\Events\CustomEvent;
+use Metrilo\Analytics\Model\IdentifyCustomer;
 
 class CustomerTest extends \PHPUnit\Framework\TestCase
 {
@@ -65,6 +68,21 @@ class CustomerTest extends \PHPUnit\Framework\TestCase
      * @var \Metrilo\Analytics\Observer\Customer
      */
     private $customerObserver;
+    
+    /**
+     * @var \Metrilo\Analytics\Model\Events\IdentifyCustomer
+     */
+    private $identifyEvent;
+    
+    /**
+     * @var \Metrilo\Analytics\Model\Events\CustomEvent
+     */
+    private $customEvent;
+    
+    /**
+     * @var \Metrilo\Analytics\Helper\SessionEvents
+     */
+    private $sessionEvents;
     
     public function setUp()
     {
@@ -119,6 +137,21 @@ class CustomerTest extends \PHPUnit\Framework\TestCase
                 'getSubscriberStatus',
                 'getTags'])
             ->getMock();
+    
+        $this->identifyEvent = $this->getMockBuilder(IdentifyCustomer::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['callJs'])
+            ->getMock();
+    
+        $this->customEvent = $this->getMockBuilder(CustomEvent::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['callJs'])
+            ->getMock();
+    
+        $this->sessionEvents = $this->getMockBuilder(SessionEvents::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['addSessionEvents'])
+            ->getMock();
         
         $this->customerObserver = new Customer(
             $this->dataHelper,
@@ -126,7 +159,8 @@ class CustomerTest extends \PHPUnit\Framework\TestCase
             $this->customerSerializerHelper,
             $this->customerRepositoryInterface,
             $this->subscriberModel,
-            $this->groupRepositoryInterface
+            $this->groupRepositoryInterface,
+            $this->sessionEvents
         );
     }
     
@@ -140,7 +174,8 @@ class CustomerTest extends \PHPUnit\Framework\TestCase
                 $this->customerSerializerHelper,
                 $this->customerRepositoryInterface,
                 $this->subscriberModel,
-                $this->groupRepositoryInterface
+                $this->groupRepositoryInterface,
+                $this->sessionEvents
             )
         );
     }
@@ -161,6 +196,14 @@ class CustomerTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue('customer_account_edited'));
         $this->observer->expects($this->at(3))->method('getName')
             ->will($this->returnValue('customer_register_success'));
+    
+        $this->sessionEvents->expects($this->any())->method('addSessionEvents')
+            ->with(
+                self::logicalOr(
+                    $this->isInstanceOf(IdentifyCustomer::class),
+                    $this->isInstanceOf(CustomEvent::class)
+                )
+            );
         
         $this->dataHelper->expects($this->any())->method('isEnabled')->with($this->isType('int'))
             ->will($this->returnValue(true));
