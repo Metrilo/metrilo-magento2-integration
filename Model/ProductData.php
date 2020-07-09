@@ -66,6 +66,7 @@ class ProductData
                 'request_path',
                 'visibility'
             ])
+            ->addAttributeToFilter('visibility', \Magento\Catalog\Model\Product\Visibility::VISIBILITY_BOTH)
             ->addStoreFilter($storeId);
     }
 }

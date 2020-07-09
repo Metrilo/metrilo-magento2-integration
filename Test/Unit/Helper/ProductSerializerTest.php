@@ -54,27 +54,27 @@ class ProductSerializerTest extends \PHPUnit\Framework\TestCase
                 'getCategoryIds',
                 'getSku',
                 'getName'
-                ]))
+            ]))
             ->getMock();
-    
+        
         $this->storeManager = $this->getMockBuilder(StoreManagerInterface::class)
             ->disableOriginalConstructor()
             ->setMethods(array_merge(get_class_methods(StoreManagerInterface::class), ['getBaseUrl']))
             ->getMock();
-    
+        
         $this->configurableType = $this->getMockBuilder(Configurable::class)
             ->disableOriginalConstructor()
             ->setMethods(['getParentIdsByChild'])
             ->getMock();
-    
+        
         $this->productImageUrlHelper = $this->getMockBuilder(ProductImageUrl::class)
             ->disableOriginalConstructor()
-            ->setMethods(['getConfigurableOptions', 'getProductImageUrl'])
+            ->setMethods(['getParentOptions', 'getProductImageUrl'])
             ->getMock();
         
         $this->productOptions = $this->getMockBuilder(ProductOptions::class)
             ->disableOriginalConstructor()
-            ->setMethods(['getParentIds', 'getConfigurableOptions'])
+            ->setMethods(['getParentIds', 'getParentOptions'])
             ->getMock();
         
         $this->productSerializer = new ProductSerializer($this->storeManager, $this->productOptions);
@@ -91,7 +91,7 @@ class ProductSerializerTest extends \PHPUnit\Framework\TestCase
         $baseUrl        = 'base/url/string/';
         $imageUrl       = '/product/image/url.jpg';
         $requestPath    = 'product/request/path.html';
-    
+        
         $this->productCollection->expects($this->any())->method('getStoreId')
             ->will($this->returnValue($storeId));
         $this->productCollection->expects($this->any())->method('getId')
@@ -114,8 +114,8 @@ class ProductSerializerTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue($productSku));
         $this->productCollection->expects($this->any())->method('getName')
             ->will($this->returnValue($productName));
-    
-        $this->productOptions->expects($this->any())->method('getConfigurableOptions')
+        
+        $this->productOptions->expects($this->any())->method('getParentOptions')
             ->with($this->isInstanceOf(Collection::class))
             ->will($this->returnValue($productOptions));
         $this->productOptions->expects($this->any())->method('getParentIds')

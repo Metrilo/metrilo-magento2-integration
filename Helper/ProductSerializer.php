@@ -31,8 +31,8 @@ class ProductSerializer extends \Magento\Framework\App\Helper\AbstractHelper
         $specialPrice = $product->getSpecialPrice();
         $url          = $this->storeManager->getStore($storeId)->getBaseUrl() . $product->getRequestPath();
         
-        if ($productType === 'configurable') {
-            $productOptions = $this->productOptions->getConfigurableOptions($product);
+        if ($productType === 'configurable' || $productType === 'bundle' || $productType === 'grouped') {
+            $productOptions = $this->productOptions->getParentOptions($product);
         } else {
             $productOptions = [];
         }

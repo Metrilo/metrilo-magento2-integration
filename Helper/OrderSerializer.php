@@ -6,14 +6,14 @@ class OrderSerializer extends \Magento\Framework\App\Helper\AbstractHelper
 {
     public function serialize($order)
     {
-    
+
         $orderItems    = $order->getAllItems();
         $orderProducts = [];
-    
+
         foreach ($orderItems as $orderItem) {
             $itemType = $orderItem->getProductType();
-            if ($itemType == 'configurable') { // exclude configurable parent product returned by getAllItems() method
-                continue;
+            if ($itemType === 'configurable' || $itemType === 'bundle') {
+                continue; // exclude configurable/bundle parent product returned by getAllItems() method
             }
             
             $orderProducts[] = [
@@ -21,12 +21,12 @@ class OrderSerializer extends \Magento\Framework\App\Helper\AbstractHelper
                 'quantity'   => (int)$orderItem->getQtyOrdered()
             ];
         }
-    
+
         $orderBillingData = $order->getBillingAddress();
         $orderPhone       = $orderBillingData->getTelephone();
         $street           = $orderBillingData->getStreet();
         $couponCode       = $order->getCouponCode() ? [$order->getCouponCode()] : [];
-    
+
         $orderBilling = [
             "firstName"     => $orderBillingData->getFirstname(),
             "lastName"      => $orderBillingData->getLastname(),
@@ -56,7 +56,7 @@ class OrderSerializer extends \Magento\Framework\App\Helper\AbstractHelper
             'products'  => $orderProducts,
             'billing'   => $orderBilling
         ];
-    
+
         return $serializedOrder;
     }
 }
