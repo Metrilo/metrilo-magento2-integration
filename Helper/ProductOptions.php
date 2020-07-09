@@ -18,8 +18,9 @@ class ProductOptions extends \Magento\Framework\App\Helper\AbstractHelper
     
     public function getParentOptions($product)
     {
-        $productOptions = [];
-        $productType    = $product->getTypeId();
+        $productOptions   = [];
+        $productType      = $product->getTypeId();
+        $childrenProducts = [];
         
         if ($productType == 'configurable') {
             $childrenProducts = $product->getTypeInstance()
@@ -53,10 +54,18 @@ class ProductOptions extends \Magento\Framework\App\Helper\AbstractHelper
         return $productOptions;
     }
     
-    public function getParentIds($productId)
+    public function getParentIds($productId, $productType)
     {
-        return $this->configurableType->getParentIdsByChild($productId)
-            || $this->bundleType->getParentIdsByChild($productId)
-            || $this->groupedType->getParentIdsByChild($productId);
+        $parentIds = [];
+        
+        if ($productType === 'configurable') {
+            $parentIds = $this->configurableType->getParentIdsByChild($productId);
+        } elseif ($productType === 'bundle') {
+            $parentIds = $this->bundleType->getParentIdsByChild($productId);
+        } elseif ($productType === 'grouped') {
+            $parentIds = $this->groupedType->getParentIdsByChild($productId);
+        }
+        
+        return $parentIds;
     }
 }

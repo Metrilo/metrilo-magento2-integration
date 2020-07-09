@@ -3,6 +3,8 @@
 namespace Metrilo\Analytics\Test\Unit\Helper;
 
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable;
+use Magento\Bundle\Model\Product\Type as Bundle;
+use Magento\GroupedProduct\Model\Product\Type\Grouped as Grouped;
 use Magento\Catalog\Model\ResourceModel\Product\Collection;
 use Metrilo\Analytics\Helper\ProductImageUrl;
 use Metrilo\Analytics\Helper\ProductOptions;
@@ -13,6 +15,16 @@ class ProductOptionsTest extends \PHPUnit\Framework\TestCase
      * @var \Magento\ConfigurableProduct\Model\Product\Type\Configurable
      */
     private $configurableType;
+    
+    /**
+     * @var \Magento\Bundle\Model\Product\Type
+     */
+    private $bundleType;
+    
+    /**
+     * @var \Magento\GroupedProduct\Model\Product\Type\Grouped
+     */
+    private $groupedType;
     
     /**
      * @var \Metrilo\Analytics\Helper\ProductImageUrl
@@ -36,6 +48,16 @@ class ProductOptionsTest extends \PHPUnit\Framework\TestCase
             ->setMethods(['getParentIdsByChild'])
             ->getMock();
     
+        $this->bundleType = $this->getMockBuilder(Bundle::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['getParentIdsByChild'])
+            ->getMock();
+    
+        $this->groupedType = $this->getMockBuilder(Grouped::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['getParentIdsByChild'])
+            ->getMock();
+    
         $this->productCollection = $this->getMockBuilder(Collection::class)
             ->disableOriginalConstructor()
             ->setMethods(array_merge(get_class_methods(Collection::class), [
@@ -55,7 +77,12 @@ class ProductOptionsTest extends \PHPUnit\Framework\TestCase
             ->setMethods(['getConfigurableOptions', 'getProductImageUrl'])
             ->getMock();
         
-        $this->productOptions = new ProductOptions($this->configurableType, $this->productImageUrlHelper);
+        $this->productOptions = new ProductOptions(
+            $this->configurableType,
+            $this->bundleType,
+            $this->groupedType,
+            $this->productImageUrlHelper
+        );
     }
     
     public function testGetConfigurableOptions()
@@ -101,6 +128,14 @@ class ProductOptionsTest extends \PHPUnit\Framework\TestCase
         $productId = 1;
         
         $this->configurableType->expects($this->any())->method('getParentIdsByChild')
+            ->with($this->equalTo($productId))
+            ->will($this->returnValue([1,3,4]));
+    
+        $this->bundleType->expects($this->any())->method('getParentIdsByChild')
+            ->with($this->equalTo($productId))
+            ->will($this->returnValue([1,3,4]));
+    
+        $this->groupedType->expects($this->any())->method('getParentIdsByChild')
             ->with($this->equalTo($productId))
             ->will($this->returnValue([1,3,4]));
         
