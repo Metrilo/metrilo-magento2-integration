@@ -3,6 +3,8 @@
 namespace Metrilo\Analytics\Test\Unit\Helper;
 
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable;
+use Magento\Bundle\Model\Product\Type as Bundle;
+use Magento\GroupedProduct\Model\Product\Type\Grouped as Grouped;
 use Magento\Catalog\Model\ResourceModel\Product\Collection;
 use Metrilo\Analytics\Helper\ProductImageUrl;
 use Metrilo\Analytics\Helper\ProductOptions;
@@ -13,6 +15,16 @@ class ProductOptionsTest extends \PHPUnit\Framework\TestCase
      * @var \Magento\ConfigurableProduct\Model\Product\Type\Configurable
      */
     private $configurableType;
+    
+    /**
+     * @var \Magento\Bundle\Model\Product\Type
+     */
+    private $bundleType;
+    
+    /**
+     * @var \Magento\GroupedProduct\Model\Product\Type\Grouped
+     */
+    private $groupedType;
     
     /**
      * @var \Metrilo\Analytics\Helper\ProductImageUrl
@@ -35,7 +47,17 @@ class ProductOptionsTest extends \PHPUnit\Framework\TestCase
             ->disableOriginalConstructor()
             ->setMethods(['getParentIdsByChild'])
             ->getMock();
-    
+        
+        $this->bundleType = $this->getMockBuilder(Bundle::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['getParentIdsByChild'])
+            ->getMock();
+        
+        $this->groupedType = $this->getMockBuilder(Grouped::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['getParentIdsByChild'])
+            ->getMock();
+        
         $this->productCollection = $this->getMockBuilder(Collection::class)
             ->disableOriginalConstructor()
             ->setMethods(array_merge(get_class_methods(Collection::class), [
@@ -49,16 +71,21 @@ class ProductOptionsTest extends \PHPUnit\Framework\TestCase
                 'getPrice',
                 'getName']))
             ->getMock();
-    
+        
         $this->productImageUrlHelper = $this->getMockBuilder(ProductImageUrl::class)
             ->disableOriginalConstructor()
-            ->setMethods(['getConfigurableOptions', 'getProductImageUrl'])
+            ->setMethods(['getParentOptions', 'getProductImageUrl'])
             ->getMock();
         
-        $this->productOptions = new ProductOptions($this->configurableType, $this->productImageUrlHelper);
+        $this->productOptions = new ProductOptions(
+            $this->configurableType,
+            $this->bundleType,
+            $this->groupedType,
+            $this->productImageUrlHelper
+        );
     }
     
-    public function testGetConfigurableOptions()
+    public function testGetParentOptions()
     {
         $imageUrl = '/product/image/url.jpg';
         
@@ -68,6 +95,8 @@ class ProductOptionsTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue([$this->productCollection]));
         $this->productCollection->expects($this->any())->method('getId')
             ->will($this->returnValue((int)'1'));
+        $this->productCollection->expects($this->any())->method('getTypeId')
+            ->will($this->returnValue('configurable'));
         $this->productCollection->expects($this->any())->method('getImage')
             ->will($this->returnValue($imageUrl));
         $this->productCollection->expects($this->any())->method('getSku')
@@ -84,26 +113,35 @@ class ProductOptionsTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue('base/url/string/' . 'catalog/product' . $imageUrl));
         
         $expected[] = [
-                'id'       => 1,
-                'sku'      => 'productSku',
-                'name'     => 'productName',
-                'price'    => 'productSpecialPrice',
-                'imageUrl' => 'base/url/string/catalog/product/product/image/url.jpg'
-            ];
+            'id'       => 1,
+            'sku'      => 'productSku',
+            'name'     => 'productName',
+            'price'    => 'productSpecialPrice',
+            'imageUrl' => 'base/url/string/catalog/product/product/image/url.jpg'
+        ];
         
-        $result = $this->productOptions->getConfigurableOptions($this->productCollection);
+        $result = $this->productOptions->getParentOptions($this->productCollection);
         
-        $this->assertEquals($expected, $result);
+        $this->assertSame($expected, $result);
     }
     
     public function testGetParentIds()
     {
-        $productId = 1;
+        $productId   = 1;
+        $productType = 'configurable';
         
         $this->configurableType->expects($this->any())->method('getParentIdsByChild')
             ->with($this->equalTo($productId))
             ->will($this->returnValue([1,3,4]));
         
-        $this->assertEquals([1,3,4], $this->productOptions->getParentIds($productId));
+        $this->bundleType->expects($this->any())->method('getParentIdsByChild')
+            ->with($this->equalTo($productId))
+            ->will($this->returnValue([1,3,4]));
+        
+        $this->groupedType->expects($this->any())->method('getParentIdsByChild')
+            ->with($this->equalTo($productId))
+            ->will($this->returnValue([1,3,4]));
+        
+        $this->assertEquals([1,3,4], $this->productOptions->getParentIds($productId, $productType));
     }
 }

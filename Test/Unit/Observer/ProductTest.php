@@ -80,7 +80,7 @@ class ProductTest extends \PHPUnit\Framework\TestCase
         
         $this->productModel = $this->getMockBuilder(OrderModel::class)
             ->disableOriginalConstructor()
-            ->setMethods(['getStoreId', 'getStoreIds', 'getId'])
+            ->setMethods(['getStoreId', 'getStoreIds', 'getId', 'getTypeId'])
             ->getMock();
         
         $this->dataHelper = $this->getMockBuilder(Data::class)
@@ -97,17 +97,17 @@ class ProductTest extends \PHPUnit\Framework\TestCase
             ->disableOriginalConstructor()
             ->setMethods(['serialize'])
             ->getMock();
-    
+        
         $this->productOptionsHelper = $this->getMockBuilder(ProductOptions::class)
             ->disableOriginalConstructor()
-            ->setMethods(['getParentIds'])
+            ->setMethods(['getParentIds', 'getTypeId'])
             ->getMock();
-    
+        
         $this->productData = $this->getMockBuilder(ProductData::class)
             ->disableOriginalConstructor()
             ->setMethods(['getProductWithRequestPath'])
             ->getMock();
-    
+        
         $this->productCollection = $this->getMockBuilder(Collection::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -135,9 +135,10 @@ class ProductTest extends \PHPUnit\Framework\TestCase
     
     public function testExecute()
     {
-        $storeId   = 1;
-        $storeIds  = [1,2,3];
-        $productId = 2;
+        $storeId     = 1;
+        $storeIds    = [1,2,3];
+        $productId   = 2;
+        $productType = 'configurable';
         
         $this->observer->expects($this->any())->method('getEvent')
             ->will($this->returnSelf());
@@ -150,7 +151,9 @@ class ProductTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue($storeIds));
         $this->productModel->expects($this->any())->method('getId')
             ->will($this->returnValue($productId));
-    
+        $this->productModel->expects($this->any())->method('getTypeId')
+            ->will($this->returnValue($productType));
+        
         $this->dataHelper->expects($this->any())->method('isEnabled')
             ->with($this->isType('int'))
             ->will($this->returnValue(true));
@@ -159,18 +162,18 @@ class ProductTest extends \PHPUnit\Framework\TestCase
         $this->dataHelper->expects($this->any())->method('getStoreIdsPerProject')
             ->with($this->isType('array'))
             ->will($this->returnValue($storeIds));
-    
+        
         $this->apiClientHelper->expects($this->any())->method('getClient')
             ->with($this->equalTo($storeId))
             ->will($this->returnValue($this->client));
-    
+        
         $this->client->expects($this->any())->method('product')
             ->with($this->isInstanceOf(ProductSerializer::class));
         
         $this->productOptionsHelper->expects($this->any())->method('getParentIds')
-            ->with($this->equalTo($productId))
+            ->with($this->equalTo($productId), $this->equalTo($productType))
             ->will($this->returnValue([]));
-    
+        
         $this->productSerializer->expects($this->any())->method('serialize')
             ->with($this->isInstanceOf(ProductSerializer::class))
             ->will($this->returnValue([]));
@@ -179,7 +182,7 @@ class ProductTest extends \PHPUnit\Framework\TestCase
         $this->productData->expects($this->any())->method('getProductWithRequestPath')
             ->with($this->isType('int'), $this->equalTo($storeId))
             ->will($this->returnValue($this->productCollection));
-    
+        
         $this->productObserver->execute($this->observer);
     }
 }
