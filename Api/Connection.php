@@ -22,11 +22,9 @@ class Connection
             'Host: '.$parsedUrl['host']
         ];
         
-        if ($hmacAuth) {
-            $secret = $bodyArray['secret'];
-            unset($bodyArray['secret']);
-            $headers[] = 'X-Digest: ' . hash_hmac('sha256', json_encode($bodyArray), $secret);
-        }
+        $secret = $bodyArray['secret'];
+        unset($bodyArray['secret']);
+        $headers[] = 'X-Digest: ' . hash_hmac('sha256', json_encode($bodyArray), $secret);
 
         $encodedBody = $bodyArray ? json_encode($bodyArray) : '';
         return $this->curlCall($url, $headers, $encodedBody);

@@ -10,12 +10,14 @@ class Client
 
     public function __construct(
         $token,
+        $secret,
         $platform,
         $pluginVersion,
         $apiEndpoint,
         $logPath
     ) {
         $this->backendParams['token']         = $token;
+        $this->backendParams['secret']        = $secret;
         $this->backendParams['platform']      = $platform;
         $this->backendParams['pluginVersion'] = $pluginVersion;
         $this->apiEndpoint                    = $apiEndpoint;
@@ -27,7 +29,7 @@ class Client
         $validCustomer = $this->validator->validateCustomer($customer);
         
         if ($validCustomer) {
-            return $this->backendCall('/customer', ['params' => $customer]);
+            return $this->backendCall('/v2/customer', ['params' => $customer]);
         }
     }
  
@@ -36,7 +38,7 @@ class Client
         $validCustomers = $this->validator->validateCustomers($customers);
         
         if (!empty($validCustomers)) {
-            return $this->backendCall('/customer/batch', ['batch' => $validCustomers]);
+            return $this->backendCall('/v2/customer/batch', ['batch' => $validCustomers]);
         }
     }
 
@@ -45,7 +47,7 @@ class Client
         $validCategory = $this->validator->validateCategory($category);
         
         if ($validCategory) {
-            return $this->backendCall('/category', ['params' => $category]);
+            return $this->backendCall('/v2/category', ['params' => $category]);
         }
     }
 
@@ -54,7 +56,7 @@ class Client
         $validCategories = $this->validator->validateCategories($categories);
         
         if (!empty($validCategories)) {
-            return $this->backendCall('/category/batch', ['batch' => $validCategories]);
+            return $this->backendCall('/v2/category/batch', ['batch' => $validCategories]);
         }
     }
 
@@ -63,7 +65,7 @@ class Client
         $validProduct = $this->validator->validateProduct($product);
         
         if ($validProduct) {
-            return $this->backendCall('/product', ['params' => $product]);
+            return $this->backendCall('/v2/product', ['params' => $product]);
         }
     }
 
@@ -72,7 +74,7 @@ class Client
         $validProducts = $this->validator->validateProducts($products);
         
         if (!empty($validProducts)) {
-            return $this->backendCall('/product/batch', ['batch' => $validProducts]);
+            return $this->backendCall('/v2/product/batch', ['batch' => $validProducts]);
         }
     }
 
@@ -81,7 +83,7 @@ class Client
         $validOrder = $this->validator->validateOrder($order);
         
         if ($validOrder) {
-            return $this->backendCall('/order', ['params' => $order]);
+            return $this->backendCall('/v2/order', ['params' => $order]);
         }
     }
 
@@ -90,7 +92,7 @@ class Client
         $validOrders = $this->validator->validateOrders($orders);
         
         if (!empty($validOrders)) {
-            return $this->backendCall('/order/batch', ['batch' => $validOrders]);
+            return $this->backendCall('/v2/order/batch', ['batch' => $validOrders]);
         }
     }
 
