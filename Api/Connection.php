@@ -11,7 +11,7 @@ class Connection
      * @param Array $bodyArray
      * @return void
      */
-    public function post($url, $bodyArray = false, $hmacAuth = false)
+    public function post($url, $bodyArray = false, $secret)
     {
         $parsedUrl = parse_url($url);
         $headers = [
@@ -22,8 +22,6 @@ class Connection
             'Host: '.$parsedUrl['host']
         ];
         
-        $secret = $bodyArray['secret'];
-        unset($bodyArray['secret']);
         $headers[] = 'X-Digest: ' . hash_hmac('sha256', json_encode($bodyArray), $secret);
 
         $encodedBody = $bodyArray ? json_encode($bodyArray) : '';
