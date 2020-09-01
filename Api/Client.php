@@ -103,7 +103,7 @@ class Client
     public function createActivity($url, $data)
     {
         $connection = new Connection();
-        $result     = $connection->post($url, $data, true);
+        $result     = $connection->post($url, $data, $this->secret);
         return $result['code'] == 200;
     }
 
