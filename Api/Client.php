@@ -7,15 +7,21 @@ use \Metrilo\Analytics\Api\Connector;
 
 class Client
 {
-
+    private $customerPath = '/v2/customer';
+    private $categoryPath = '/v2/category';
+    private $productPath  = '/v2/product';
+    private $orderPath    = '/v2/order';
+    
     public function __construct(
         $token,
+        $secret,
         $platform,
         $pluginVersion,
         $apiEndpoint,
         $logPath
     ) {
         $this->backendParams['token']         = $token;
+        $this->secret                         = $secret;
         $this->backendParams['platform']      = $platform;
         $this->backendParams['pluginVersion'] = $pluginVersion;
         $this->apiEndpoint                    = $apiEndpoint;
@@ -27,7 +33,7 @@ class Client
         $validCustomer = $this->validator->validateCustomer($customer);
         
         if ($validCustomer) {
-            return $this->backendCall('/customer', ['params' => $customer]);
+            return $this->backendCall($this->customerPath, ['params' => $customer]);
         }
     }
  
@@ -36,7 +42,7 @@ class Client
         $validCustomers = $this->validator->validateCustomers($customers);
         
         if (!empty($validCustomers)) {
-            return $this->backendCall('/customer/batch', ['batch' => $validCustomers]);
+            return $this->backendCall($this->customerPath . '/batch', ['batch' => $validCustomers]);
         }
     }
 
@@ -45,7 +51,7 @@ class Client
         $validCategory = $this->validator->validateCategory($category);
         
         if ($validCategory) {
-            return $this->backendCall('/category', ['params' => $category]);
+            return $this->backendCall($this->categoryPath, ['params' => $category]);
         }
     }
 
@@ -54,7 +60,7 @@ class Client
         $validCategories = $this->validator->validateCategories($categories);
         
         if (!empty($validCategories)) {
-            return $this->backendCall('/category/batch', ['batch' => $validCategories]);
+            return $this->backendCall($this->categoryPath . '/batch', ['batch' => $validCategories]);
         }
     }
 
@@ -63,7 +69,7 @@ class Client
         $validProduct = $this->validator->validateProduct($product);
         
         if ($validProduct) {
-            return $this->backendCall('/product', ['params' => $product]);
+            return $this->backendCall($this->productPath, ['params' => $product]);
         }
     }
 
@@ -72,7 +78,7 @@ class Client
         $validProducts = $this->validator->validateProducts($products);
         
         if (!empty($validProducts)) {
-            return $this->backendCall('/product/batch', ['batch' => $validProducts]);
+            return $this->backendCall($this->productPath . '/batch', ['batch' => $validProducts]);
         }
     }
 
@@ -81,7 +87,7 @@ class Client
         $validOrder = $this->validator->validateOrder($order);
         
         if ($validOrder) {
-            return $this->backendCall('/order', ['params' => $order]);
+            return $this->backendCall($this->orderPath, ['params' => $order]);
         }
     }
 
@@ -90,14 +96,14 @@ class Client
         $validOrders = $this->validator->validateOrders($orders);
         
         if (!empty($validOrders)) {
-            return $this->backendCall('/order/batch', ['batch' => $validOrders]);
+            return $this->backendCall($this->orderPath . '/batch', ['batch' => $validOrders]);
         }
     }
 
     public function createActivity($url, $data)
     {
         $connection = new Connection();
-        $result     = $connection->post($url, $data, true);
+        $result     = $connection->post($url, $data, $this->secret);
         return $result['code'] == 200;
     }
 
@@ -107,6 +113,6 @@ class Client
         $this->backendParams['time'] = round(microtime(true) * 1000);
         $body                        = array_merge($body, $this->backendParams);
     
-        return $connection->post($this->apiEndpoint.$path, $body);
+        return $connection->post($this->apiEndpoint.$path, $body, $this->secret);
     }
 }

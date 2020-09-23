@@ -22,9 +22,10 @@ class ApiClient extends \Magento\Framework\App\Helper\AbstractHelper
     {
         $helperObject  = $this->helper; // for backward compatibility for php ~5.5, ~5.6
         $token         = $this->helper->getApiToken($storeId);
+        $secret        = $this->helper->getApiSecret($storeId);
         $platform      = 'Magento ' . $this->metaData->getEdition() . ' ' . $this->metaData->getVersion();
         $pluginVersion = $this->moduleList->getOne($helperObject::MODULE_NAME)['setup_version'];
         $apiEndpoint   = $this->helper->getApiEndpoint();
-        return new Client($token, $platform, $pluginVersion, $apiEndpoint, $this->dirList->getPath('log'));
+        return new Client($token, $secret, $platform, $pluginVersion, $apiEndpoint, $this->dirList->getPath('log'));
     }
 }
