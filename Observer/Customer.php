@@ -72,8 +72,8 @@ class Customer implements ObserverInterface
                         $subscriber->getStoreId(),
                         $subscriberEmail,
                         strtotime($subscriber->getData('change_status_at')) * 1000,
-                        $subscriberEmail,
-                        $subscriberEmail,
+                        '',
+                        '',
                         true,
                         ['Newsletter']
                     );
