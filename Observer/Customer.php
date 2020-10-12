@@ -71,7 +71,7 @@ class Customer implements ObserverInterface
                     return new MetriloCustomer(
                         $subscriber->getStoreId(),
                         $subscriberEmail,
-                        strtotime($subscriber->getData('change_status_at')) * 1000,
+                        time() * 1000,
                         '',
                         '',
                         true,
