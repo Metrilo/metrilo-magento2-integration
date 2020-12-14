@@ -22,7 +22,7 @@ class Config implements ObserverInterface
         try {
             $storeId = $observer->getStore();
             if (!$this->activityHelper->createActivity($storeId, 'integrated')) {
-                if ($storeId === 0) {
+                if ((int)$storeId === 0) {
                     $this->messageManager->addError(
                         'You\'ve just entered the API token and API Secret to the default configuration scope.
                         This means that the Metrilo module will be added to all your store views.
