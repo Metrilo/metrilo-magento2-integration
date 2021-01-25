@@ -6,7 +6,7 @@
 $url   = $block->getLibraryUrl();
 $events = $block->getEvents();
 ?>
-<script type="text/javascript">
+<script type="text/javascript" async="true">
     require(['<?php echo $url; ?>'], function(){
         <?php foreach($events as $event) { echo $event; } ?>
     });
