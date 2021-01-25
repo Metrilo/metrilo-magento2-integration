@@ -3,26 +3,12 @@
  * @see Metrilo\Analytics\Block\Analytics
  */
 
-$url   = $block->getLibraryUrl();
+$url    = $block->getLibraryUrl();
 $events = $block->getEvents();
 ?>
 <script type="text/javascript">
     require(['<?php echo $url; ?>'], function(){
-        (function() {
-            const f = function () {
-                <?php
-                foreach($events as $event) {
-                    echo html_entity_decode($event);
-                }
-                ?>
-            };
-            if (typeof window.metrilo !== 'undefined') {
-                f();
-            } else {
-                window.metriloQueue = window.metriloQueue || [];
-                window.metriloQueue.push(f);
-            }
-        })();
+        <?php foreach($events as $event) { echo $event; } ?>
     });
 </script>
 <script type="text/x-magento-init">
