@@ -72,7 +72,7 @@ class AnalyticsTest extends \PHPUnit\Framework\TestCase
      */
     private $analyticsBlock;
     
-    public function setUp()
+    public function setUp(): void
     {
         $this->context = $this->getMockBuilder(Context::class)
             ->disableOriginalConstructor()
