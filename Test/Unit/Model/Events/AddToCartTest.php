@@ -28,7 +28,7 @@ class AddToCartTest extends \PHPUnit\Framework\TestCase
     private $productQuantity       = 3;
     private $getDataParam          = 'qty_to_add';
     
-    public function setUp()
+    public function setUp(): void
     {
         $this->event = $this->getMockBuilder(Event::class)
             ->disableOriginalConstructor()

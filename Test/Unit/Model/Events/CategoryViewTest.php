@@ -26,7 +26,7 @@ class CategoryViewTest extends \PHPUnit\Framework\TestCase
     private $categoryKey = 'current_category';
     private $categoryId  = 444;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->registry = $this->getMockBuilder(Registry::class)
             ->disableOriginalConstructor()

@@ -26,7 +26,7 @@ class ProductViewTest extends \PHPUnit\Framework\TestCase
     private $productId   = 11;
     private $registryKey = 'current_product';
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->registry = $this->getMockBuilder(Registry::class)
             ->disableOriginalConstructor()
