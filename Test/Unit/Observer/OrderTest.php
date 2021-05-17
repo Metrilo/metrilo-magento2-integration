@@ -48,7 +48,7 @@ class OrderTest extends \PHPUnit\Framework\TestCase
      */
     private $orderObserver;
     
-    public function setUp()
+    public function setUp(): void
     {
         $this->observer = $this->getMockBuilder(Observer::class)
             ->disableOriginalConstructor()

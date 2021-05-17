@@ -41,7 +41,7 @@ class RemoveFromCartTest extends \PHPUnit\Framework\TestCase
     private $storeId   = 1;
     private $productId = 2;
     
-    public function setUp()
+    public function setUp(): void
     {
         $this->observer = $this->getMockBuilder(Observer::class)
             ->disableOriginalConstructor()

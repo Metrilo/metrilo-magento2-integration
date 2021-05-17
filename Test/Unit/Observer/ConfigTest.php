@@ -36,7 +36,7 @@ class ConfigTest extends \PHPUnit\Framework\TestCase
      */
     private $configObserver;
     
-    public function setUp()
+    public function setUp(): void
     {
         $this->observer = $this->getMockBuilder(Observer::class)
             ->disableOriginalConstructor()

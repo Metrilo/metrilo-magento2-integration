@@ -42,7 +42,7 @@ class AddToCartTest extends \PHPUnit\Framework\TestCase
      */
     private $addToCartObserver;
     
-    public function setUp()
+    public function setUp(): void
     {
         
         $this->observer = $this->getMockBuilder(Observer::class)
