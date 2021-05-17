@@ -45,7 +45,7 @@ class DeletedProductSerializerTest extends \PHPUnit\Framework\TestCase
     private $simpleItem       = 'simple';
     private $configurableItem = 'configurable';
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->context = $this->getMockBuilder(Context::class)
             ->disableOriginalConstructor()

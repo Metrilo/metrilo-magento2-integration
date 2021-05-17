@@ -41,7 +41,7 @@ class ProductOptionsTest extends \PHPUnit\Framework\TestCase
      */
     private $productOptions;
     
-    public function setUp()
+    public function setUp(): void
     {
         $this->configurableType = $this->getMockBuilder(Configurable::class)
             ->disableOriginalConstructor()

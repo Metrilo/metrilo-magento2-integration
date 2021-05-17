@@ -19,7 +19,7 @@ class SessionEventsTest extends \PHPUnit\Framework\TestCase
     
     private $metriloSessionEvents = 'metrilo_session_key';
     
-    public function setUp()
+    public function setUp(): void
     {
         
         $this->session = $this->getMockBuilder(Session::class)

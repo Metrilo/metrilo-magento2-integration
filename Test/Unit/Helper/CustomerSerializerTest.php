@@ -29,7 +29,7 @@ class CustomerSerializerTest extends \PHPUnit\Framework\TestCase
      */
     private $customerSerializer;
     
-    public function setUp()
+    public function setUp(): void
     {
         $this->context = $this->getMockBuilder(Context::class)
             ->disableOriginalConstructor()

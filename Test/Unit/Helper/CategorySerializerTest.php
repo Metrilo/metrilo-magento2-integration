@@ -23,7 +23,7 @@ class CategorySerializerTest extends \PHPUnit\Framework\TestCase
      */
     private $categorySerializer;
     
-    public function setUp()
+    public function setUp(): void
     {
         $this->categoryCollection = $this->getMockBuilder(Collection::class)
             ->disableOriginalConstructor()

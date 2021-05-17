@@ -46,7 +46,7 @@ class ApiClientTest extends \PHPUnit\Framework\TestCase
      */
     private $storeId = 1;
     
-    public function setUp()
+    public function setUp(): void
     {
         $this->metaData = $this->getMockBuilder(ProductMetadata::class)
             ->disableOriginalConstructor()
@@ -65,7 +65,7 @@ class ApiClientTest extends \PHPUnit\Framework\TestCase
     
         $this->dataHelper = $this->getMockBuilder(Data::class)
             ->disableOriginalConstructor()
-            ->setMethods(['getApiToken', 'getApiEndpoint'])
+            ->setMethods(['getApiToken', 'getApiSecret', 'getApiEndpoint'])
             ->getMock();
         
         $this->apiClient = new ApiClient($this->dataHelper, $this->metaData, $this->moduleList, $this->directoryList);

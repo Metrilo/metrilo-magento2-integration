@@ -17,7 +17,7 @@ class ProductImageUrlTest extends \PHPUnit\Framework\TestCase
      */
     private $storeManagerInterface;
     
-    public function setUp()
+    public function setUp(): void
     {
         $this->storeManagerInterface = $this->getMockBuilder(StoreManagerInterface::class)
             ->disableOriginalConstructor()
