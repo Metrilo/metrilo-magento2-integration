@@ -10,7 +10,7 @@ class ValidatorTest extends \PHPUnit\Framework\TestCase
     private $logFile = BP . '/var/log/MetriloApiValidationErrors.log';
     private $validator;
     
-    public function setUp()
+    public function setUp(): void
     {
         $this->validator = new Validator($this->logPath);
     }
