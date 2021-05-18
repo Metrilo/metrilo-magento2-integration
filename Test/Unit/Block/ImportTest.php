@@ -32,7 +32,7 @@ class ImportTest extends \PHPUnit\Framework\TestCase
      */
     private $productCollection;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->context = $this->createMock(\Magento\Backend\Block\Template\Context::class);
 
@@ -74,7 +74,7 @@ class ImportTest extends \PHPUnit\Framework\TestCase
         $getUrl   = $block->getAjaxUrl();
         $expected = 'string_url';
         $this->assertEquals($expected, $getUrl);
-        $this->assertInternalType("string", $getUrl);
+        $this->assertIsString($getUrl);
     }
 
     public function testGetOrderChunks()
@@ -83,8 +83,8 @@ class ImportTest extends \PHPUnit\Framework\TestCase
         $orderCh      = $this->orderData->getOrderChunks($this->block->getStoreId());
         $blockOrderCh = $this->block->getOrderChunks();
 
-        $this->assertInternalType("int", $orderCh);
-        $this->assertInternalType("int", $blockOrderCh);
+        $this->assertIsInt($orderCh);
+        $this->assertIsInt($blockOrderCh);
 
         $this->assertEquals(7, $orderCh);
         $this->assertEquals(7, $blockOrderCh);
@@ -96,8 +96,8 @@ class ImportTest extends \PHPUnit\Framework\TestCase
         $custCh      = $this->customerData->getCustomerChunks($this->block->getStoreId());
         $blockCustCh = $this->block->getCustomerChunks();
 
-        $this->assertInternalType("int", $custCh);
-        $this->assertInternalType("int", $blockCustCh);
+        $this->assertIsInt($custCh);
+        $this->assertIsInt($blockCustCh);
 
         $this->assertEquals(8, $custCh);
         $this->assertEquals(8, $blockCustCh);
@@ -109,8 +109,8 @@ class ImportTest extends \PHPUnit\Framework\TestCase
         $catCh      = $this->categoryData->getCategoryChunks($this->block->getStoreId());
         $blockCatCh = $this->block->getCategoryChunks();
 
-        $this->assertInternalType("int", $catCh);
-        $this->assertInternalType("int", $blockCatCh);
+        $this->assertIsInt($catCh);
+        $this->assertIsInt($blockCatCh);
 
         $this->assertEquals(9, $catCh);
         $this->assertEquals(9, $blockCatCh);
@@ -122,8 +122,8 @@ class ImportTest extends \PHPUnit\Framework\TestCase
         $prodCh      = $this->productData->getProductChunks($this->block->getStoreId());
         $blockProdCh = $this->block->getProductChunks();
 
-        $this->assertInternalType("int", $prodCh);
-        $this->assertInternalType("int", $blockProdCh);
+        $this->assertIsInt($prodCh);
+        $this->assertIsInt($blockProdCh);
 
         $this->assertEquals(10, $prodCh);
         $this->assertEquals(10, $blockProdCh);
@@ -141,6 +141,6 @@ class ImportTest extends \PHPUnit\Framework\TestCase
 
         $this->assertEquals($this->request->getParam('store', 0), $this->block->getStoreId());
 
-        $this->assertInternalType("int", $this->block->getStoreId());
+        $this->assertIsInt($this->block->getStoreId());
     }
 }

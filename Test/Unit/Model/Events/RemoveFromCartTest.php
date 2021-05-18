@@ -27,7 +27,7 @@ class RemoveFromCartTest extends \PHPUnit\Framework\TestCase
     private $configurableProductId = 321;
     private $productQuantity       = 2;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->event = $this->getMockBuilder(Event::class)
             ->disableOriginalConstructor()

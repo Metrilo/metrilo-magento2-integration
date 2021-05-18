@@ -67,7 +67,7 @@ class OrderSerializerTest extends \PHPUnit\Framework\TestCase
     private $totalRefunded     = 30;
     private $orderStatus       = 'orderStatus';
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->context = $this->getMockBuilder(Context::class)
             ->disableOriginalConstructor()

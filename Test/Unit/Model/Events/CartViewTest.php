@@ -11,7 +11,7 @@ class CartViewTest extends \PHPUnit\Framework\TestCase
      */
     private $cartViewEvent;
     
-    public function setUp()
+    public function setUp(): void
     {
         $this->cartViewEvent = new CartView();
     }

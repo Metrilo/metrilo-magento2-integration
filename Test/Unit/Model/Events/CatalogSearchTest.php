@@ -26,7 +26,7 @@ class CatalogSearchTest extends \PHPUnit\Framework\TestCase
     private $pageUrl     = 'http://website.domain/product.html';
     private $searchQuery = 'search_query';
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->urlInterface = $this->getMockBuilder(UrlInterface::class)
             ->disableOriginalConstructor()

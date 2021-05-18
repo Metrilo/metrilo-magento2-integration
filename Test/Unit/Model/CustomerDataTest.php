@@ -50,7 +50,7 @@ class CustomerDataTest extends \PHPUnit\Framework\TestCase
      */
     private $chunkId = 1;
     
-    public function setUp()
+    public function setUp(): void
     {
         $this->customerCollection = $this->getMockBuilder(CollectionFactory::class)
             ->disableOriginalConstructor()

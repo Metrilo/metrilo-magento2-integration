@@ -11,7 +11,7 @@ class CheckoutViewTest extends \PHPUnit\Framework\TestCase
      */
     private $checkoutViewEvent;
     
-    public function setUp()
+    public function setUp(): void
     {
         $this->checkoutViewEvent = new CheckoutView();
     }

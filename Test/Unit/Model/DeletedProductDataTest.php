@@ -28,7 +28,7 @@ class DeletedProductDataTest extends \PHPUnit\Framework\TestCase
      */
     private $storeId = 1;
     
-    public function setUp()
+    public function setUp(): void
     {
         $this->orderCollection = $this->getMockBuilder(OrderCollection::class)
             ->disableOriginalConstructor()

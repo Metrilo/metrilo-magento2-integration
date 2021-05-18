@@ -2,7 +2,7 @@
 
 namespace Metrilo\Analytics\Test\Unit\Api;
 
-use Metrilo\Analytics\Api\Validator;
+use \Metrilo\Analytics\Api\Validator;
 use \Metrilo\Analytics\Api\Connection;
 use \Metrilo\Analytics\Api\Client;
 
@@ -13,7 +13,7 @@ class ClientTest extends \PHPUnit\Framework\TestCase
     private $connection;
     private $client;
     
-    public function setup()
+    public function setup(): void
     {
         $this->validator = $this->getMockBuilder(Validator::class)
             ->disableOriginalConstructor()
@@ -35,7 +35,8 @@ class ClientTest extends \PHPUnit\Framework\TestCase
             ->getMock();
         
         $this->client = new Client(
-            '9b4dd74a736d9d7d',
+            'project_token',
+            'project_secret',
             'Magento 2.3.0',
             '2.0.0',
             'https://trk.mtrl.me',
@@ -60,7 +61,7 @@ class ClientTest extends \PHPUnit\Framework\TestCase
         
         $expected = [
             'response' => '',
-            'code'     => 204
+            'code'     => 401
         ];
         
         $result = $this->client->customer($serializedCustomer);
@@ -93,8 +94,8 @@ class ClientTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue($serializedCustomers));
         
         $expected = [
-            'response' => '',
-            'code'     => 204
+            'response' => 'Invalid token!',
+            'code'     => 401
         ];
         
         $result = $this->client->customerBatch($serializedCustomers);
@@ -115,8 +116,8 @@ class ClientTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue(true));
     
         $expected = [
-            'response' => '',
-            'code'     => 204
+            'response' => 'Invalid token!',
+            'code'     => 401
         ];
     
         $result = $this->client->category($category);
@@ -143,8 +144,8 @@ class ClientTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue($categories));
         
         $expected = [
-            'response' => '',
-            'code'     => 204
+            'response' => 'Invalid token!',
+            'code'     => 401
         ];
         
         $result = $this->client->categoryBatch($categories);
@@ -178,8 +179,8 @@ class ClientTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue(true));
     
         $expected = [
-            'response' => '',
-            'code'     => 204
+            'response' => 'Invalid token!',
+            'code'     => 401
         ];
     
         $result = $this->client->product($product);
@@ -224,8 +225,8 @@ class ClientTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue($products));
         
         $expected = [
-            'response' => '',
-            'code'     => 204
+            'response' => 'Invalid token!',
+            'code'     => 401
         ];
         
         $result = $this->client->productBatch($products);
@@ -267,8 +268,8 @@ class ClientTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue(true));
     
         $expected = [
-            'response' => '',
-            'code'     => 204
+            'response' => 'Invalid token!',
+            'code'     => 401
         ];
     
         $result = $this->client->order($order);
@@ -321,8 +322,8 @@ class ClientTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue($orders));
         
         $expected = [
-            'response' => '',
-            'code'     => 204
+            'response' => 'Invalid token!',
+            'code'     => 401
         ];
         
         $result = $this->client->orderBatch($orders);
@@ -332,18 +333,19 @@ class ClientTest extends \PHPUnit\Framework\TestCase
     
     public function testActivity()
     {
-        $token    = '9b4dd74a736d9d7d';
+        $token    = 'project_token';
+        $secret   = 'project_secret';
         $endPoint = 'https://p.metrilo.com';
         
         $data = [
             'type'   => 'activity_type',
-            'secret' => '82535e6593b51afed58e0a5a'
+            'secret' => 'project_secret'
         ];
         
         $url = $endPoint . '/tracking/' . $token . '/activity';
         
-        $result = $this->client->createActivity($url, $data);
+        $result = $this->client->createActivity($url, $data, $secret);
         
-        $this->assertTrue($result);
+        $this->assertFalse($result);
     }
 }

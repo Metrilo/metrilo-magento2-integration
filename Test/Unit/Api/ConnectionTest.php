@@ -18,7 +18,7 @@ class ConnectionTest extends \PHPUnit\Framework\TestCase
     private $url = 'https://trk.mtrl.me';
     private $bodyArray = ['data' => 'value', 'secret' => '82535e6593b51afed58e0a5a'];
     
-    public function setUp()
+    public function setUp(): void
     {
         $this->connection = new Connection();
     }

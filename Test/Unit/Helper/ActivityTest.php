@@ -36,7 +36,7 @@ class ActivityTest extends \PHPUnit\Framework\TestCase
     
     private $storeId = 1;
     
-    public function setUp()
+    public function setUp(): void
     {
         $this->dataHelper = $this->getMockBuilder(Data::class)
             ->disableOriginalConstructor()

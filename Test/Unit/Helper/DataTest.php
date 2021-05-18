@@ -28,7 +28,7 @@ class DataTest extends \PHPUnit\Framework\TestCase
      */
     private $storeId = 1;
     
-    public function setUp()
+    public function setUp(): void
     {
         $this->config = $this->getMockBuilder(ScopeConfigInterface::class)
             ->disableOriginalConstructor()

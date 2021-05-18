@@ -152,7 +152,7 @@ class AjaxTest extends \PHPUnit\Framework\TestCase
         'code' => 'responseCode'
     ];
     
-    public function setUp()
+    public function setUp(): void
     {
         $this->context = $this->getMockBuilder(Context::class)
             ->disableOriginalConstructor()
@@ -374,7 +374,7 @@ class AjaxTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue($customerGroup));
     
         $this->customerSerializer->expects($this->any())->method('serialize')
-            ->with($this->isInstanceOf($this->customerCollection))
+            ->with($this->assertInstanceOf(CustomerCollection::class, $this->customerCollection))
             ->will($this->returnValue($expected));
         
         $this->apiClient->expects($this->any())->method('customerBatch')
@@ -422,7 +422,7 @@ class AjaxTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue($categoryUrl));
     
         $this->categorySerializer->expects($this->any())->method('serialize')
-            ->with($this->isInstanceOf($this->categoryCollection))
+            ->with($this->assertInstanceOf(CategoryCollection::class, $this->categoryCollection))
             ->will($this->returnValue($expected));
     
         $this->apiClient->expects($this->any())->method('categoryBatch')
@@ -481,7 +481,7 @@ class AjaxTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue($this->orderCollection));
     
         $this->deletedProductSerializer->expects($this->any())->method('serialize')
-            ->with($this->isInstanceOf($this->orderCollection))
+            ->with($this->assertInstanceOf(OrderCollection::class, $this->orderCollection))
             ->will($this->returnValue($expected));
     
         $this->apiClient->expects($this->any())->method('productBatch')
@@ -559,7 +559,7 @@ class AjaxTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue($productName));
     
         $this->productSerializer->expects($this->any())->method('serialize')
-            ->with($this->isInstanceOf($this->productCollection))
+            ->with($this->assertInstanceOf(ProductCollection::class, $this->productCollection))
             ->will($this->returnValue($expected));
     
         $this->apiClient->expects($this->any())->method('productBatch')
@@ -623,7 +623,7 @@ class AjaxTest extends \PHPUnit\Framework\TestCase
             ->with($this->equalTo($this->chunkId));
     
         $this->orderSerializer->expects($this->any())->method('serialize')
-            ->with($this->isInstanceOf($this->orderCollection))
+            ->with($this->assertInstanceOf(OrderCollection::class, $this->orderCollection))
             ->will($this->returnValue($expected));
     
         $this->apiClient->expects($this->any())->method('orderBatch')

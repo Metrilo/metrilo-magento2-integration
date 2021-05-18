@@ -26,7 +26,7 @@ class PageViewTest extends \PHPUnit\Framework\TestCase
     private $pageTitle = 'pageTitle';
     private $pageUrl   = 'http://website.domain/product.html';
     
-    public function setUp()
+    public function setUp(): void
     {
         $this->pageTitleView = $this->getMockBuilder(Title::class)
             ->disableOriginalConstructor()

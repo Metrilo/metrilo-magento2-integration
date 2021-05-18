@@ -18,7 +18,7 @@ class PrivateDataTest extends \PHPUnit\Framework\TestCase
      */
     private $privateData;
     
-    public function setUp()
+    public function setUp(): void
     {
         $this->sessionEventsHelper = $this->getMockBuilder(SessionEvents::class)
             ->disableOriginalConstructor()

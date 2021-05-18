@@ -37,7 +37,7 @@ class CategoryDataTest extends \PHPUnit\Framework\TestCase
      */
     private $chunkId = 1;
     
-    public function setUp()
+    public function setUp(): void
     {
         $this->categoryCollection = $this->getMockBuilder(CollectionFactory::class)
             ->disableOriginalConstructor()

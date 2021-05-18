@@ -66,7 +66,7 @@ class ProductTest extends \PHPUnit\Framework\TestCase
      */
     private $productObserver;
     
-    public function setUp()
+    public function setUp(): void
     {
         $this->observer = $this->getMockBuilder(Observer::class)
             ->disableOriginalConstructor()

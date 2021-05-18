@@ -13,7 +13,7 @@ class IdentifyCustomerTest extends \PHPUnit\Framework\TestCase
     
     private $email = 'test@test.com';
     
-    public function setUp()
+    public function setUp(): void
     {
         $this->identifyCustomerEvent = new IdentifyCustomer($this->email);
     }

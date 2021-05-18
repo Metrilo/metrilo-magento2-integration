@@ -84,7 +84,7 @@ class CustomerTest extends \PHPUnit\Framework\TestCase
      */
     private $sessionEvents;
     
-    public function setUp()
+    public function setUp(): void
     {
         $this->observer = $this->getMockBuilder(Observer::class)
             ->disableOriginalConstructor()

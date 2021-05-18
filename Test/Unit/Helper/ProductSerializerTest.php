@@ -40,7 +40,7 @@ class ProductSerializerTest extends \PHPUnit\Framework\TestCase
      */
     private $productSerializer;
     
-    public function setUp()
+    public function setUp(): void
     {
         $this->productCollection = $this->getMockBuilder(Collection::class)
             ->disableOriginalConstructor()
