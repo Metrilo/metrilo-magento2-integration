@@ -40,7 +40,7 @@ class ActivityTest extends \PHPUnit\Framework\TestCase
     {
         $this->dataHelper = $this->getMockBuilder(Data::class)
             ->disableOriginalConstructor()
-            ->setMethods(['getApiToken', 'getApiSecret', 'getActivityEndpoint'])
+            ->setMethods(['getApiToken', 'getActivityEndpoint'])
             ->getMock();
     
         $this->apiClientHelper = $this->getMockBuilder(ApiClient::class)
@@ -61,9 +61,6 @@ class ActivityTest extends \PHPUnit\Framework\TestCase
         $this->dataHelper->expects($this->any())->method('getApiToken')
             ->with($this->equalTo($this->storeId))
             ->willReturn('9b4dd74a736d9d7d');
-        $this->dataHelper->expects($this->any())->method('getApiSecret')
-            ->with($this->equalTo($this->storeId))
-            ->willReturn('82535e6593b51afed58e0a5a');
         $this->dataHelper->expects($this->any())->method('getActivityEndpoint')
             ->willReturn('https://p.metrilo.com');
         
@@ -72,8 +69,7 @@ class ActivityTest extends \PHPUnit\Framework\TestCase
             ->willReturn($this->client);
     
         $data = [
-            'type'   => $this->type,
-            'secret' => $this->dataHelper->getApiSecret($this->storeId)
+            'type'   => $this->type
         ];
     
         $url = $this->dataHelper->getActivityEndpoint() . '/tracking/' .
