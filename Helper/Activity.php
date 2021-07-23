@@ -15,13 +15,11 @@ class Activity extends \Magento\Framework\App\Helper\AbstractHelper
     public function createActivity($storeId, $type)
     {
         $token    = $this->dataHelper->getApiToken($storeId);
-        $secret   = $this->dataHelper->getApiSecret($storeId);
         $endPoint = $this->dataHelper->getActivityEndpoint();
         $client   = $this->apiClient->getClient($storeId);
         
         $data = [
-            'type'   => $type,
-            'secret' => $secret
+            'type'   => $type
         ];
         
         $url = $endPoint . '/tracking/' . $token . '/activity';
