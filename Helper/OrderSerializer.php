@@ -32,6 +32,7 @@ class OrderSerializer extends \Magento\Framework\App\Helper\AbstractHelper
             "lastName"      => $orderBillingData->getLastname(),
             "address"       => is_array($street) ? implode(PHP_EOL, $street) : $street,
             "city"          => $orderBillingData->getCity(),
+            "region"        => $orderBillingData->getRegion(),
             "countryCode"   => $orderBillingData->getCountryId(),
             "phone"         => $orderPhone,
             "postcode"      => $orderBillingData->getPostcode(),

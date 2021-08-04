@@ -107,6 +107,7 @@ class OrderSerializerTest extends \PHPUnit\Framework\TestCase
                 'getFirstName',
                 'getLastname',
                 'getCity',
+                'getRegion',
                 'getCountryId',
                 'getPostcode'
             ])
@@ -175,6 +176,8 @@ class OrderSerializerTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue('lastName'));
         $this->orderAddressModelCollection->expects($this->any())->method('getCity')
             ->will($this->returnValue('city'));
+        $this->orderAddressModelCollection->expects($this->any())->method('getRegion')
+            ->will($this->returnValue('region'));
         $this->orderAddressModelCollection->expects($this->any())->method('getCountryId')
             ->will($this->returnValue('countryId'));
         $this->orderAddressModelCollection->expects($this->any())->method('getPostcode')
