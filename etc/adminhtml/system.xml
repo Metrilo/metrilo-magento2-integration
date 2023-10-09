@@ -1,11 +1,4 @@
 <?xml version="1.0"?>
-<!--
-/**
- * Store configurations for Metrilo extension
- *
- * @author Miroslav Petrov <miro91tn@gmail.com>
- */
--->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
     <system>
         <!-- Add new Tab -->
@@ -45,14 +38,24 @@
                     <label>API Secret</label>
                     <backend_model>Metrilo\Analytics\Model\Trimmed</backend_model>
                 </field>
-                <field id="import" sortOrder="40" type="button" translate="label" showInDefault="0" showInWebsite="0" showInStore="1">
-                    <label>Import orders</label>
-                    <button_label><![CDATA[Import orders]]></button_label>
+                <field id="api_endpoint" sortOrder="40" type="text" translate="label" showInDefault="0" showInWebsite="0" showInStore="0">
+                    <depends><field id="enable">1</field></depends>
+                    <label>API Url</label>
+                    <backend_model>Metrilo\Analytics\Model\Trimmed</backend_model>
+                </field>
+                <field id="activity_endpoint" sortOrder="40" type="text" translate="label" showInDefault="0" showInWebsite="0" showInStore="0">
+                    <depends><field id="enable">1</field></depends>
+                    <label>ACTIVITY Url</label>
+                    <backend_model>Metrilo\Analytics\Model\Trimmed</backend_model>
+                </field>
+                <field id="import" sortOrder="50" type="button" translate="label" showInDefault="0" showInWebsite="0" showInStore="1">
+                    <label>Import</label>
+                    <button_label><![CDATA[Import]]></button_label>
                     <button_url>
                         <![CDATA[metrilo/analytics/import]]>
                     </button_url>
                     <frontend_model>Metrilo\Analytics\Block\System\Config\Button\Import</frontend_model>
-                    <comment>First set API token and secret before import orders</comment>
+                    <comment>First set API token and secret before import.</comment>
                 </field>
             </group>
         </section>

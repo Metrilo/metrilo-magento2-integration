@@ -3,29 +3,24 @@
  * @see Metrilo\Analytics\Block\Analytics
  */
 
-/** @var Metrilo\Analytics\Block\Analytics $events */
+$url    = $block->getLibraryUrl();
 $events = $block->getEvents();
 ?>
 <script type="text/javascript">
-    window.metrilo||(window.metrilo=[]),window.metrilo.queue=[],window.metrilo.methods=["identify","track","event","pageview","purchase","debug","atr"],
-    window.metrilo.skelet=function(e){return function(){a=Array.prototype.slice.call(arguments);a.unshift(e);window.metrilo.queue.push(a)}};
-    for(var i=0;window.metrilo.methods.length>i;i++){var mthd=window.metrilo.methods[i];window.metrilo[mthd]=window.metrilo.skelet(mthd)}
-    window.metrilo.load=function(e){var t=document,n=t.getElementsByTagName("script")[0],r=t.createElement("script");
-    r.type="text/javascript";r.async=true;r.src="//<?php echo $block->helper->js_domain; ?>/j/"+e+".js";n.parentNode.insertBefore(r,n)};
-    metrilo.load("<?php echo $block->getApiToken(); ?>");
-    <?php foreach ($events as $event) : ?>
-        <?php if($event['method'] == 'identify') : ?>
-        metrilo.identify("<?php echo $event['data']['id']; ?>", <?php echo json_encode($event['data']['params']); ?>);
-        <?php elseif($event['method'] == 'track') : ?>
-            <?php if(is_array($event['data'])): ?>
-                metrilo.event("<?php echo $event['type']; ?>", <?php echo json_encode($event['data']); ?>);
-            <?php else : ?>
-                <?php if(array_key_exists('metaData', $event)) : ?>
-                    metrilo.event("<?php echo $event['type']; ?>", "<?php echo $event['data']; ?>", <?php echo json_encode($event['metaData']); ?>);
-                <?php else : ?>
-                    metrilo.event("<?php echo $event['type']; ?>", "<?php echo $event['data']; ?>");
-                <?php endif; ?>
-            <?php endif; ?>
-        <?php endif; ?>
-    <?php endforeach; ?>
+    require(['<?php echo $url; ?>'], function(){
+        <?php foreach($events as $event) { echo $event; } ?>
+    });
+</script>
+<script type="text/x-magento-init">
+    {
+        "*": {
+            "Magento_Ui/js/core/app": {
+                "components": {
+                    "metrilo-private-data": {
+                        "component": "Metrilo_Analytics/js/private-data"
+                    }
+                }
+            }
+        }
+    }
 </script>

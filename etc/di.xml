@@ -1,0 +1,22 @@
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <type name="Metrilo\Analytics\Block\Analytics">
+        <arguments>
+            <argument name="productViewEvent" xsi:type="object">Metrilo\Analytics\Model\Events\ProductView\Proxy</argument>
+        </arguments>
+    </type>
+    <type name="Metrilo\Analytics\Block\Analytics">
+        <arguments>
+            <argument name="pageViewEvent" xsi:type="object">Metrilo\Analytics\Model\Events\PageView\Proxy</argument>
+        </arguments>
+    </type>
+    <type name="Metrilo\Analytics\Block\Analytics">
+        <arguments>
+            <argument name="categoryViewEvent" xsi:type="object">Metrilo\Analytics\Model\Events\CategoryView\Proxy</argument>
+        </arguments>
+    </type>
+    <type name="Metrilo\Analytics\Block\Analytics">
+        <arguments>
+            <argument name="catalogSearchEvent" xsi:type="object">Metrilo\Analytics\Model\Events\CatalogSearch\Proxy</argument>
+        </arguments>
+    </type>
+</config>

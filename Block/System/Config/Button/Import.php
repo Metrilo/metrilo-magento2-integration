@@ -26,12 +26,20 @@ class Import extends \Magento\Config\Block\System\Config\Form\Field
      */
     public function __construct(
         \Magento\Backend\Block\Template\Context $context,
-        \Metrilo\Analytics\Helper\Data $helper,
-        \Metrilo\Analytics\Model\Import $import,
+        \Metrilo\Analytics\Helper\Data          $helper,
+        \Metrilo\Analytics\Model\CustomerData   $customerData,
+        \Metrilo\Analytics\Model\CategoryData   $categoryData,
+        \Metrilo\Analytics\Model\ProductData    $productData,
+        \Metrilo\Analytics\Model\OrderData      $orderData,
+        \Magento\Framework\App\Request\Http     $request,
         array $data = []
     ) {
-        $this->helper = $helper;
-        $this->import = $import;
+        $this->helper       = $helper;
+        $this->customerData = $customerData;
+        $this->categoryData = $categoryData;
+        $this->productData  = $productData;
+        $this->orderData    = $orderData;
+        $this->request      = $request;
         parent::__construct($context, $data);
     }
 
@@ -86,7 +94,7 @@ class Import extends \Magento\Config\Block\System\Config\Form\Field
      */
     public function buttonEnabled()
     {
-        $storeId = $this->import->getStoreId();
+        $storeId = $this->getStoreId();
          return $this->helper->isEnabled($storeId)
              && $this->helper->getApiToken($storeId)
              && $this->helper->getApiSecret($storeId);
@@ -102,13 +110,33 @@ class Import extends \Magento\Config\Block\System\Config\Form\Field
         return $this->getUrl('metrilo/import/ajax');
     }
 
-    /**
-     * Import model
-     *
-     * @return \Metrilo\Analytics\Model\Import
-     */
-    public function getImport()
+    public function getOrderChunks()
     {
-        return $this->import;
+        return $this->orderData->getOrderChunks($this->getStoreId());
+    }
+    
+    public function getCustomerChunks()
+    {
+        return $this->customerData->getCustomerChunks($this->getStoreId());
+    }
+    
+    public function getCategoryChunks()
+    {
+        return $this->categoryData->getCategoryChunks($this->getStoreId());
+    }
+    
+    public function getProductChunks()
+    {
+        return $this->productData->getProductChunks($this->getStoreId());
+    }
+
+    /**
+     * Get contextual store id
+     *
+     * @return int
+     */
+    public function getStoreId()
+    {
+        return (int)$this->request->getParam('store', 0);
     }
 }
