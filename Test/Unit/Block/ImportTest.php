@@ -2,51 +2,48 @@
 
 namespace Metrilo\Analytics\Test\Unit\Block;
 
+use Magento\Backend\Block\Template\Context;
+use Magento\Framework\App\Request\Http;
 use Metrilo\Analytics\Block\System\Config\Button\Import;
+use Metrilo\Analytics\Helper\Data;
+use Metrilo\Analytics\Model\CategoryData;
+use Metrilo\Analytics\Model\CustomerData;
+use Metrilo\Analytics\Model\OrderData;
+use Metrilo\Analytics\Model\ProductData;
+use PHPUnit\Framework\TestCase;
 
-class ImportTest extends \PHPUnit\Framework\TestCase
+class ImportTest extends TestCase
 {
-    /**
-     * @var Metrilo\Analytics\Block\Sysetm\Config\Button\Import
-     */
-    private $block;
+    private Import $block;
+    private Context $context;
 
-    /**
-     * @var ObjectManager
-     */
-    private $objectManager;
+    private Data $helper;
 
-    /**
-     * @var \PHPUnit_Framework_MockObject_MockObject|\Magento\Catalog\Model\ProductFactory
-     */
+    private CustomerData $customerData;
+    private CategoryData $categoryData;
 
-    private $productFactory;
+    private ProductData $productData;
 
-    /**
-     * @var \PHPUnit_Framework_MockObject_MockObject|\Magento\Catalog\Model\Product
-     */
-    private $product;
+    private OrderData $orderData;
 
-    /**
-     * @var \Rbj\ProductUnitTest\Model\ProductCollection
-     */
-    private $productCollection;
+    private Http $request;
 
     public function setUp(): void
     {
-        $this->context = $this->createMock(\Magento\Backend\Block\Template\Context::class);
+        $this->context = $this->createMock(Context::class);
 
-        $this->helper = $this->createMock(\Metrilo\Analytics\Helper\Data::class);
+        $this->helper = $this->createMock(Data::class);
 
-        $this->customerData = $this->createMock(\Metrilo\Analytics\Model\CustomerData::class);
+        $this->customerData = $this->createMock(CustomerData::class);
 
-        $this->categoryData = $this->createMock(\Metrilo\Analytics\Model\CategoryData::class);
+        $this->categoryData = $this->createMock(CategoryData::class);
 
-        $this->productData = $this->createMock(\Metrilo\Analytics\Model\ProductData::class);
+        $this->productData = $this->createMock(ProductData::class);
 
-        $this->orderData = $this->createMock(\Metrilo\Analytics\Model\OrderData::class);
+        $this->orderData = $this->createMock(OrderData::class);
 
-        $this->request = $this->createMock(\Magento\Framework\App\Request\Http::class);
+        $this->request = $this->createMock(Http::class);
+        $this->context->expects($this->once())->method('getRequest')->will($this->returnValue($this->request));
 
         $this->block = new Import(
             $this->context,
@@ -54,8 +51,7 @@ class ImportTest extends \PHPUnit\Framework\TestCase
             $this->customerData,
             $this->categoryData,
             $this->productData,
-            $this->orderData,
-            $this->request
+            $this->orderData
         );
     }
 
@@ -137,7 +133,6 @@ class ImportTest extends \PHPUnit\Framework\TestCase
         );
 
         $this->request->setParam('store', 1001);
-        $this->block->request->setParam('store', 1001);
 
         $this->assertEquals($this->request->getParam('store', 0), $this->block->getStoreId());
 

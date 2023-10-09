@@ -3,26 +3,27 @@
 namespace Metrilo\Analytics\Test\Unit\Api;
 
 use Metrilo\Analytics\Api\Connection;
+use PHPUnit\Framework\TestCase;
 
-class ConnectionTest extends \PHPUnit\Framework\TestCase
+class ConnectionTest extends TestCase
 {
     /**
      * @var \Magento\Backend\App\Action\Context
      */
     private $connection;
-    
+
     private $response = [
             'response' => 'responseObject',
             'code'     => 'responseCode'
         ];
     private $url = 'https://trk.mtrl.me';
     private $bodyArray = ['data' => 'value', 'secret' => '82535e6593b51afed58e0a5a'];
-    
+
     public function setUp(): void
     {
         $this->connection = new Connection();
     }
-    
+
     public function testPostWithHmacAuth()
     {
         $this->response = [
@@ -30,32 +31,32 @@ class ConnectionTest extends \PHPUnit\Framework\TestCase
             'code'     => 404
         ];
 
-        $result = $this->connection->post($this->url, $this->bodyArray, true);
+        $result = $this->connection->post($this->url, $this->bodyArray, '');
 
         $this->assertEquals($this->response, $result);
     }
-    
+
     public function testPostWithoutHmacAuth()
     {
         $this->response = [
             'response' => '',
             'code'     => 404
         ];
-        
-        $result = $this->connection->post($this->url, $this->bodyArray, false);
-        
+
+        $result = $this->connection->post($this->url, $this->bodyArray, '');
+
         $this->assertEquals($this->response, $result);
     }
-    
+
     public function testPostWithBodyArray()
     {
         $this->response = [
             'response' => '',
             'code'     => 404
         ];
-    
-        $result = $this->connection->post($this->url, false, false);
-    
+
+        $result = $this->connection->post($this->url, false, '');
+
         $this->assertEquals($this->response, $result);
     }
 }

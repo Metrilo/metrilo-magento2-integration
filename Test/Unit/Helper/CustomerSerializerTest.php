@@ -4,7 +4,7 @@ namespace Metrilo\Analytics\Test\Unit\Helper;
 
 use Magento\Framework\App\Helper\Context;
 use Magento\Customer\Model\ResourceModel\Customer\Collection;
-use Metrilo\Analytics\Helper\MetriloCustomer;
+use Metrilo\Analytics\Model\MetriloCustomer;
 use Metrilo\Analytics\Helper\CustomerSerializer;
 
 class CustomerSerializerTest extends \PHPUnit\Framework\TestCase
@@ -13,41 +13,41 @@ class CustomerSerializerTest extends \PHPUnit\Framework\TestCase
      * @var \Magento\Framework\App\Helper\Context
      */
     private $context;
-    
+
     /**
      * @var \Magento\Customer\Model\ResourceModel\Customer\Collection
      */
     private $customerCollection;
-    
+
     /**
-     * @var \Metrilo\Analytics\Helper\MetriloCustomer
+     * @var \Metrilo\Analytics\Model\MetriloCustomer
      */
     private $metriloCustomer;
-    
+
     /**
      * @var \Metrilo\Analytics\Helper\CustomerSerializer
      */
     private $customerSerializer;
-    
+
     public function setUp(): void
     {
         $this->context = $this->getMockBuilder(Context::class)
             ->disableOriginalConstructor()
             ->getMock();
-        
+
         $this->customerCollection = $this->getMockBuilder(Collection::class)
             ->disableOriginalConstructor()
             ->setMethods(['getEmail', 'getCreatedAt', 'getFirstName', 'getLastName', 'getSubscriberStatus', 'getTags'])
             ->getMock();
-        
+
         $this->metriloCustomer = $this->getMockBuilder(MetriloCustomer::class)
             ->disableOriginalConstructor()
             ->setMethods(['getEmail', 'getCreatedAt', 'getFirstName', 'getLastName', 'getSubscriberStatus', 'getTags'])
             ->getMock();
-        
+
         $this->customerSerializer = new CustomerSerializer($this->context);
     }
-    
+
     public function testSerialize()
     {
         $this->customerCollection->expects($this->any())->method('getEmail')
@@ -62,7 +62,7 @@ class CustomerSerializerTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue(true));
         $this->customerCollection->expects($this->any())->method('getTags')
             ->will($this->returnValue('customerGroup'));
-    
+
         $this->metriloCustomer->expects($this->any())->method('getEmail')
             ->will($this->returnValue('metriloCustomer@email.com'));
         $this->metriloCustomer->expects($this->any())->method('getCreatedAt')
@@ -75,7 +75,7 @@ class CustomerSerializerTest extends \PHPUnit\Framework\TestCase
             ->will($this->returnValue(false));
         $this->metriloCustomer->expects($this->any())->method('getTags')
             ->will($this->returnValue('metriloCustomerGroup'));
-    
+
         $expectedCustomerCollection = [
             'email'       => 'customer@email.com',
             'createdAt'   => 'date: 02.25.20',
@@ -84,7 +84,7 @@ class CustomerSerializerTest extends \PHPUnit\Framework\TestCase
             'subscribed'  => true,
             'tags'        => 'customerGroup'
         ];
-    
+
         $expectedMetriloCustomer = [
             'email'       => 'metriloCustomer@email.com',
             'createdAt'   => 'metriloDate: 02.25.20',
@@ -93,7 +93,7 @@ class CustomerSerializerTest extends \PHPUnit\Framework\TestCase
             'subscribed'  => false,
             'tags'        => 'metriloCustomerGroup'
         ];
-    
+
         $this->assertEquals(
             $expectedCustomerCollection,
             $this->customerSerializer->serialize($this->customerCollection)
