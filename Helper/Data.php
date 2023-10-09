@@ -2,79 +2,87 @@
 
 namespace Metrilo\Analytics\Helper;
 
-class Data extends \Magento\Framework\App\Helper\AbstractHelper
+use Magento\Framework\App\Helper\AbstractHelper;
+use Magento\Framework\App\Helper\Context;
+use Magento\Store\Model\ScopeInterface;
+use Magento\Store\Model\StoreManagerInterface;
+use Psr\Log\LoggerInterface;
+
+class Data extends AbstractHelper
 {
     const CHUNK_ITEMS = 50;
 
     const MODULE_NAME = 'Metrilo_Analytics';
 
+    private StoreManagerInterface $storeManager;
+
+    private LoggerInterface $logger;
+
     public function __construct(
-        \Magento\Framework\App\Config\ScopeConfigInterface $config,
-        \Magento\Store\Model\StoreManagerInterface         $storeManager
+        StoreManagerInterface $storeManager,
+        LoggerInterface $logger,
+        Context $context
     ) {
-        $this->config       = $config;
+        parent::__construct($context);
         $this->storeManager = $storeManager;
+        $this->logger = $logger;
     }
 
-    public function getStoreId()
+    public function getStoreId(): int
     {
         return (int)$this->storeManager->getStore()->getId();
     }
 
-    public function isEnabled($storeId)
+    public function isEnabled($storeId): bool
     {
-        return $this->config->getValue(
+        return $this->scopeConfig->isSetFlag(
             'metrilo_analytics/general/enable',
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+            ScopeInterface::SCOPE_STORE,
             $storeId
         );
     }
 
     public function getApiToken($storeId)
     {
-        return $this->config->getValue(
+        return $this->scopeConfig->getValue(
             'metrilo_analytics/general/api_key',
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+            ScopeInterface::SCOPE_STORE,
             $storeId
         );
     }
 
     public function getApiSecret($storeId)
     {
-        return $this->config->getValue(
+        return $this->scopeConfig->getValue(
             'metrilo_analytics/general/api_secret',
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+            ScopeInterface::SCOPE_STORE,
             $storeId
         );
     }
 
     public function getApiEndpoint()
     {
-        $apiEndpoint = $this->config->getValue(
+        $apiEndpoint = $this->scopeConfig->getValue(
             'metrilo_analytics/general/api_endpoint'
         );
-        
-        return ($apiEndpoint) ? $apiEndpoint : 'https://trk.mtrl.me';
+
+        return $apiEndpoint ?? 'https://trk.mtrl.me';
     }
 
     public function getActivityEndpoint()
     {
-        $activityEndpoint = $this->config->getValue(
+        $activityEndpoint = $this->scopeConfig->getValue(
             'metrilo_analytics/general/activity_endpoint'
         );
-        
-        return ($activityEndpoint) ? $activityEndpoint : 'https://p.metrilo.com';
+
+        return $activityEndpoint ?? 'https://p.metrilo.com';
     }
 
     public function logError($exception)
     {
-        if ($exception instanceof \Exception) {
-            $this->log($exception->getMessage());
-        } else {
-            $this->log($exception);
-        }
+        $this->logger->error($exception);
     }
-    
+
     public function getStoreIdsPerProject($storeIds)
     {
         $storeIdConfigMap = [];
@@ -82,30 +90,16 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             if ($storeId == 0 || !$this->isEnabled($storeId)) { // store 0 is always admin
                 continue;
             }
-            
-            $storeIdConfigMap[$storeId] = $this->config
+
+            $storeIdConfigMap[$storeId] = $this->scopeConfig
                 ->getValue(
                     'metrilo_analytics/general/api_key',
-                    \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+                    ScopeInterface::SCOPE_STORE,
                     $storeId
                 );
         }
         $storeIdConfigMap = array_unique($storeIdConfigMap);
-        
+
         return array_keys($storeIdConfigMap);
-    }
-    
-    private function log($value)
-    {
-        $logLocation = BP . '/var/log/metrilo.log';
-        if (file_exists($logLocation) && filesize($logLocation) > 10 * 1024 * 1024) {
-            unlink($logLocation);
-        }
-        
-        $writer = new \Zend\Log\Writer\Stream($logLocation);
-        $logger = new \Zend\Log\Logger();
-        $logger->addWriter($writer);
-        
-        $logger->err($value);
     }
 }

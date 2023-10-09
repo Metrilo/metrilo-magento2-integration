@@ -2,14 +2,18 @@
 
 namespace Metrilo\Analytics\Model\Events;
 
+use Magento\Framework\Registry;
+
 class CategoryView
 {
+    private Registry $coreRegistry;
+
     public function __construct(
-        \Magento\Framework\Registry $registry
+        Registry $registry
     ) {
         $this->coreRegistry = $registry;
     }
-    public function callJS()
+    public function callJS(): string
     {
         return "window.metrilo.viewCategory('" .
             $this->coreRegistry->registry('current_category')->getId() . "');";

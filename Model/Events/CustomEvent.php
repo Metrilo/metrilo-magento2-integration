@@ -4,12 +4,14 @@ namespace Metrilo\Analytics\Model\Events;
 
 class CustomEvent
 {
+    private string $customEvent;
+
     public function __construct(
-        $customEvent
+        string $customEvent
     ) {
         $this->customEvent = $customEvent;
     }
-    public function callJS()
+    public function callJS(): string
     {
         return 'window.metrilo.customEvent("' . $this->customEvent . '");';
     }

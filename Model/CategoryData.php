@@ -2,12 +2,17 @@
 
 namespace Metrilo\Analytics\Model;
 
+use Magento\Catalog\Model\ResourceModel\Category\CollectionFactory;
+use Metrilo\Analytics\Helper\Data;
+
 class CategoryData
 {
-    private $chunkItems = \Metrilo\Analytics\Helper\Data::CHUNK_ITEMS;
-    
+    private $chunkItems = Data::CHUNK_ITEMS;
+
+    private CollectionFactory $categoryCollection;
+
     public function __construct(
-        \Magento\Catalog\Model\ResourceModel\Category\CollectionFactory $categoryCollection
+        CollectionFactory $categoryCollection
     ) {
         $this->categoryCollection = $categoryCollection;
     }
@@ -16,13 +21,13 @@ class CategoryData
     {
         return $this->getCategoryQuery($storeId)->setPageSize($this->chunkItems)->setCurPage($chunkId + 1);
     }
-    
+
     public function getCategoryChunks($storeId)
     {
         $totalCategories = $this->getCategoryQuery($storeId)->getSize();
         return (int) ceil($totalCategories / $this->chunkItems);
     }
-    
+
     public function getCategoryWithRequestPath($categoryId, $storeId)
     {
         return $this->categoryCollection

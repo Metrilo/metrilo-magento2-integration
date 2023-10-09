@@ -2,58 +2,94 @@
 
 namespace Metrilo\Analytics\Observer;
 
+use Exception;
+use Magento\Customer\Api\CustomerRepositoryInterface;
+use Magento\Customer\Api\GroupRepositoryInterface;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
-use Metrilo\Analytics\Helper\MetriloCustomer;
-use Metrilo\Analytics\Model\Events\IdentifyCustomer;
-use Metrilo\Analytics\Model\Events\CustomEvent;
+use Magento\Newsletter\Model\Subscriber;
+use Metrilo\Analytics\Helper\ApiClient;
+use Metrilo\Analytics\Helper\CustomerSerializer;
+use Metrilo\Analytics\Helper\Data;
+use Metrilo\Analytics\Helper\SessionEvents;
+use Metrilo\Analytics\Model\Events\CustomEventFactory;
+use Metrilo\Analytics\Model\Events\IdentifyCustomerFactory;
+use Metrilo\Analytics\Model\MetriloCustomerFactory;
 
 class Customer implements ObserverInterface
 {
+    private Data $helper;
+
+    private ApiClient $apiClient;
+
+    private CustomerSerializer $customerSerializer;
+
+    private CustomerRepositoryInterface $customerRepository;
+
+    private Subscriber $subscriberModel;
+
+    private SessionEvents $sessionEvents;
+
+    private GroupRepositoryInterface $groupRepository;
+
+    private MetriloCustomerFactory $customerFactory;
+
+    private IdentifyCustomerFactory $identifyCustomerFactory;
+
+    private CustomEventFactory $customEventFactory;
+
     /**
-     * @param \Metrilo\Analytics\Helper\Data                    $helper
-     * @param \Metrilo\Analytics\Helper\ApiClient               $apiClient
-     * @param \Metrilo\Analytics\Helper\CustomerSerializer      $customerSerializer
-     * @param \Magento\Customer\Api\CustomerRepositoryInterface $customerRepository
-     * @param \Magento\Newsletter\Model\Subscriber              $subscriberModel
-     * @param \Magento\Customer\Api\GroupRepositoryInterface    $groupRepository
-     * @param \Metrilo\Analytics\Helper\SessionEvents           $sessionEvents
+     * @param Data $helper
+     * @param ApiClient $apiClient
+     * @param CustomerSerializer $customerSerializer
+     * @param CustomerRepositoryInterface $customerRepository
+     * @param Subscriber $subscriberModel
+     * @param GroupRepositoryInterface $groupRepository
+     * @param SessionEvents $sessionEvents
+     * @param MetriloCustomerFactory $customerFactory
      */
     public function __construct(
-        \Metrilo\Analytics\Helper\Data                    $helper,
-        \Metrilo\Analytics\Helper\ApiClient               $apiClient,
-        \Metrilo\Analytics\Helper\CustomerSerializer      $customerSerializer,
-        \Magento\Customer\Api\CustomerRepositoryInterface $customerRepository,
-        \Magento\Newsletter\Model\Subscriber              $subscriberModel,
-        \Magento\Customer\Api\GroupRepositoryInterface    $groupRepository,
-        \Metrilo\Analytics\Helper\SessionEvents           $sessionEvents
+        Data $helper,
+        ApiClient $apiClient,
+        CustomerSerializer $customerSerializer,
+        CustomerRepositoryInterface $customerRepository,
+        Subscriber $subscriberModel,
+        GroupRepositoryInterface $groupRepository,
+        SessionEvents $sessionEvents,
+        MetriloCustomerFactory $customerFactory,
+        IdentifyCustomerFactory $identifyCustomerFactory,
+        CustomEventFactory $customEventFactory
     ) {
-        $this->helper             = $helper;
-        $this->apiClient          = $apiClient;
+        $this->helper = $helper;
+        $this->apiClient = $apiClient;
         $this->customerSerializer = $customerSerializer;
         $this->customerRepository = $customerRepository;
-        $this->subscriberModel    = $subscriberModel;
-        $this->groupRepository    = $groupRepository;
-        $this->sessionEvents      = $sessionEvents;
+        $this->subscriberModel = $subscriberModel;
+        $this->groupRepository = $groupRepository;
+        $this->sessionEvents = $sessionEvents;
+        $this->customerFactory = $customerFactory;
+        $this->identifyCustomerFactory = $identifyCustomerFactory;
+        $this->customEventFactory = $customEventFactory;
     }
-    
+
     private function getCustomerFromEvent($observer)
     {
         switch ($observer->getEvent()->getName()) {
             case 'customer_save_after':
                 $customer = $observer->getEvent()->getCustomer();
                 if ($this->hasCustomerChanged($customer)) {
-                    return new MetriloCustomer(
-                        $customer->getStoreId(),
-                        $customer->getEmail(),
-                        strtotime($customer->getCreatedAt()) * 1000,
-                        $customer->getData('firstname'),
-                        $customer->getData('lastname'),
-                        $this->getCustomerSubscriberStatus($customer->getId()),
-                        $this->getCustomerGroup($customer->getGroupId())
+                    return $this->customerFactory->create(
+                        [
+                            'storeId' => $customer->getStoreId(),
+                            'email' => $customer->getEmail(),
+                            'createAt' => strtotime($customer->getCreatedAt()) * 1000,
+                            'firstname' => $customer->getData('firstname'),
+                            'lastname' => $customer->getData('lastname'),
+                            'subscribed' => $this->getCustomerSubscriberStatus($customer->getId()),
+                            'tags' => $this->getCustomerGroup($customer->getGroupId())
+                        ]
                     );
                 }
-                
                 break;
             case 'newsletter_subscriber_save_after':
                 $subscriber = $observer->getEvent()->getSubscriber();
@@ -61,107 +97,108 @@ class Customer implements ObserverInterface
                 if ($subscriber->isStatusChanged() && $customerId !== 0) {
                     return $this->metriloCustomer($this->customerRepository->getById($customerId));
                 } else {
-                    $subscriberEmail  = $subscriber->getEmail();
-                    $identifyCustomer = new IdentifyCustomer($subscriberEmail);
-                    $customEvent      = new CustomEvent('Subscribed');
-                    
+                    $subscriberEmail = $subscriber->getEmail();
+                    $identifyCustomer = $this->identifyCustomerFactory->create(['email' => $subscriberEmail]);
+                    $customEvent = $this->customEventFactory->create(['customEvent' => 'Subscribed']);
+
                     $this->sessionEvents->addSessionEvent($identifyCustomer->callJs());
                     $this->sessionEvents->addSessionEvent($customEvent->callJs());
-                    
-                    return new MetriloCustomer(
-                        $subscriber->getStoreId(),
-                        $subscriberEmail,
-                        time() * 1000,
-                        '',
-                        '',
-                        true,
-                        ['Newsletter']
+
+                    return $this->customerFactory->create(
+                        [
+                            'storeId' => $subscriber->getStoreId(),
+                            'email' => $subscriberEmail,
+                            'createdAt' => time() * 1000,
+                            'firstName' => '',
+                            'lastName' => '',
+                            'subscribed' => true,
+                            'tags' => ['Newsletter']
+                        ]
                     );
                 }
-                
-                break;
             case 'customer_account_edited':
                 return $this->metriloCustomer($this->customerRepository->get($observer->getEvent()->getEmail()));
-                
-                break;
             case 'customer_register_success':
                 return $this->metriloCustomer($observer->getEvent()->getCustomer());
-                
-                break;
             case 'sales_order_save_after':
-                return new MetriloCustomer(
-                    $observer->getEvent()->getOrder()->getStoreId(),
-                    $observer->getEvent()->getOrder()->getCustomerEmail(),
-                    strtotime($observer->getEvent()->getOrder()->getCreatedAt()) * 1000,
-                    $observer->getEvent()->getOrder()->getBillingAddress()->getData('firstname'),
-                    $observer->getEvent()->getOrder()->getBillingAddress()->getData('lastname'),
-                    true,
-                    ['guest_customer']
+                return $this->customerFactory->create(
+                    [
+                        'storeId' => $observer->getEvent()->getOrder()->getStoreId(),
+                        'email' => $observer->getEvent()->getOrder()->getCustomerEmail(),
+                        'createdAt' => strtotime($observer->getEvent()->getOrder()->getCreatedAt()) * 1000,
+                        'firstName' => $observer->getEvent()->getOrder()->getBillingAddress()->getData('firstname'),
+                        'lastName' => $observer->getEvent()->getOrder()->getBillingAddress()->getData('lastname'),
+                        'subscribed' => true,
+                        'tags' => ['guest_customer']
+                    ]
                 );
-                
-                break;
             default:
                 break;
         }
-        
+
         return false;
     }
-    
+
     private function hasCustomerChanged($customer)
     {
         $originalCustomer = $this->customerRepository->getById($customer->getId());
-        
+
         if ($originalCustomer->getCreatedAt() === $originalCustomer->getUpdatedAt()) {
             return true; // if customer is created in admin there are no differences in $customer and $originalCustomer
         }
-        
+
         return $customer->getEmail() != $originalCustomer->getEmail() ||
-                $customer->getFirstname() != $originalCustomer->getFirstname() ||
-                $customer->getLastname() != $originalCustomer->getLastname() ||
-                $customer->getGroupId() != $originalCustomer->getGroupId();
+            $customer->getFirstname() != $originalCustomer->getFirstname() ||
+            $customer->getLastname() != $originalCustomer->getLastname() ||
+            $customer->getGroupId() != $originalCustomer->getGroupId();
     }
-    
+
     private function getCustomerSubscriberStatus($customerId)
     {
         $this->subscriberModel->unsetData();
+
         return $this->subscriberModel->loadByCustomerId($customerId)->isSubscribed();
     }
-    
+
     private function getCustomerGroup($groupId)
     {
-        $group       = $this->groupRepository->getById($groupId);
+        $group = $this->groupRepository->getById($groupId);
         $groupName[] = $group->getCode();
+
         return $groupName;
     }
-    
+
     private function metriloCustomer($customer)
     {
-        return new MetriloCustomer(
-            $customer->getStoreId(),
-            $customer->getEmail(),
-            strtotime($customer->getCreatedAt()) * 1000,
-            $customer->getFirstName(),
-            $customer->getLastName(),
-            $this->getCustomerSubscriberStatus($customer->getId()),
-            $this->getCustomerGroup($customer->getGroupId())
+        return $this->customerFactory->create(
+            [
+                'storeId' => $customer->getStoreId(),
+                'email' => $customer->getEmail(),
+                'createdAt' => strtotime($customer->getCreatedAt()) * 1000,
+                'firstname' => $customer->getFirstName(),
+                'lastname' => $customer->getLastName(),
+                'subscribed' => $this->getCustomerSubscriberStatus($customer->getId()),
+                'tags' => $this->getCustomerGroup($customer->getGroupId())
+            ]
         );
     }
-    
+
     public function execute(Observer $observer)
     {
         try {
             $customer = $this->getCustomerFromEvent($observer);
             if ($customer && $this->helper->isEnabled($customer->getStoreId())) {
                 if (!trim($customer->getEmail())) {
-                    $this->helper->logError('Customer with id = '. $customer->getId(). '  has no email address!');
+                    $this->helper
+                        ->logError('Customer with id = ' . $customer->getId() . '  has no email address!');
                     return;
                 }
-                
-                $client             = $this->apiClient->getClient($customer->getStoreId());
+
+                $client = $this->apiClient->getClient($customer->getStoreId());
                 $serializedCustomer = $this->customerSerializer->serialize($customer);
                 $client->customer($serializedCustomer);
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->helper->logError($e);
         }
     }

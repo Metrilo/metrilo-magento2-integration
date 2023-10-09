@@ -4,20 +4,29 @@ namespace Metrilo\Analytics\Observer;
 
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
+use Magento\Framework\Message\ManagerInterface;
+use Metrilo\Analytics\Helper\Activity;
+use Metrilo\Analytics\Helper\Data;
 
 class Config implements ObserverInterface
 {
+    private ManagerInterface $messageManager;
+
+    private Data $dataHelper;
+
+    private Activity $activityHelper;
+
     public function __construct(
-        \Magento\Framework\Message\ManagerInterface $messageManager,
-        \Metrilo\Analytics\Helper\Data              $dataHelper,
-        \Metrilo\Analytics\Helper\Activity          $activityHelper
+        ManagerInterface $messageManager,
+        Data              $dataHelper,
+        Activity          $activityHelper
     ) {
         $this->messageManager = $messageManager;
         $this->dataHelper     = $dataHelper;
         $this->activityHelper = $activityHelper;
     }
 
-    public function execute(Observer $observer)
+    public function execute(Observer $observer): void
     {
         try {
             $storeId = $observer->getStore();

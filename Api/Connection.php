@@ -7,11 +7,13 @@ class Connection
     /**
      * Create HTTP POST request to URL
      *
-     * @param String $url
-     * @param Array $bodyArray
-     * @return void
+     * @param string $url
+     * @param array|bool $bodyArray
+     * @param string $secret
+     *
+     * @return array
      */
-    public function post($url, $bodyArray = false, $secret)
+    public function post($url, $bodyArray = false, $secret = '')
     {
         $parsedUrl = parse_url($url);
         $headers = [
@@ -21,7 +23,7 @@ class Connection
             'Connection: Close',
             'Host: '.$parsedUrl['host']
         ];
-        
+
         $headers[] = 'X-Digest: ' . hash_hmac('sha256', json_encode($bodyArray), $secret);
 
         $encodedBody = $bodyArray ? json_encode($bodyArray) : '';
@@ -35,9 +37,9 @@ class Connection
      * @param array $headers
      * @param string $body
      * @param string $method
-     * @return void
+     * @return array
      */
-    private function curlCall($url, $headers = [], $body = '', $method = "POST")
+    private function curlCall($url, $headers = [], $body = '', $method = "POST"): array
     {
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_URL, $url);

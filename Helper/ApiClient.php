@@ -2,20 +2,35 @@
 
 namespace Metrilo\Analytics\Helper;
 
-use \Metrilo\Analytics\Api\Client;
+use Magento\Framework\App\Helper\AbstractHelper;
+use Magento\Framework\App\Helper\Context;
+use Magento\Framework\App\ProductMetadata;
+use Magento\Framework\Filesystem\DirectoryList;
+use Magento\Framework\Module\ModuleListInterface;
+use Metrilo\Analytics\Api\ClientFactory;
 
-class ApiClient extends \Magento\Framework\App\Helper\AbstractHelper
+class ApiClient extends AbstractHelper
 {
+    private Data $helper;
+
+    private ModuleListInterface $moduleList;
+
+    private ProductMetadata $metaData;
+
+    private ClientFactory $clientFactory;
+
     public function __construct(
-        \Metrilo\Analytics\Helper\Data                $helper,
-        \Magento\Framework\App\ProductMetadata        $metaData,
-        \Magento\Framework\Module\ModuleListInterface $moduleList,
-        \Magento\Framework\Filesystem\DirectoryList   $dirList
+        Data $helper,
+        ProductMetadata        $metaData,
+        ModuleListInterface $moduleList,
+        ClientFactory $clientFactory,
+        Context $context
     ) {
+        parent::__construct($context);
         $this->helper       = $helper;
         $this->metaData     = $metaData;
         $this->moduleList   = $moduleList;
-        $this->dirList      = $dirList;
+        $this->clientFactory = $clientFactory;
     }
 
     public function getClient($storeId)
@@ -26,6 +41,15 @@ class ApiClient extends \Magento\Framework\App\Helper\AbstractHelper
         $platform      = 'Magento ' . $this->metaData->getEdition() . ' ' . $this->metaData->getVersion();
         $pluginVersion = $this->moduleList->getOne($helperObject::MODULE_NAME)['setup_version'];
         $apiEndpoint   = $this->helper->getApiEndpoint();
-        return new Client($token, $secret, $platform, $pluginVersion, $apiEndpoint, $this->dirList->getPath('log'));
+
+        return $this->clientFactory->create(
+            [
+                'token' => $token,
+                'secret' => $secret,
+                'platform' => $platform,
+                'pluginVersion' => $pluginVersion,
+                'apiEndpoint' => $apiEndpoint,
+            ]
+        );
     }
 }

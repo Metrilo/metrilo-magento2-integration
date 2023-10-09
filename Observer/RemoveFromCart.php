@@ -4,26 +4,35 @@ namespace Metrilo\Analytics\Observer;
 
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
-use Metrilo\Analytics\Model\Events\RemoveFromCart as RemoveFromCartEvent;
+use Metrilo\Analytics\Helper\Data;
+use Metrilo\Analytics\Helper\SessionEvents;
+use Metrilo\Analytics\Model\Events\RemoveFromCartFactory;
 
 class RemoveFromCart implements ObserverInterface
 {
-    
+    private Data $helper;
+
+    private SessionEvents $sessionEvents;
+
+    private RemoveFromCartFactory $removeFromCartFactory;
+
     public function __construct(
-        \Metrilo\Analytics\Helper\Data          $helper,
-        \Metrilo\Analytics\Helper\SessionEvents $sessionEvents
+        Data $helper,
+        SessionEvents $sessionEvents,
+        RemoveFromCartFactory $removeFromCartFactory
     ) {
-        $this->helper        = $helper;
+        $this->helper = $helper;
         $this->sessionEvents = $sessionEvents;
+        $this->removeFromCartFactory = $removeFromCartFactory;
     }
-    
+
     public function execute(Observer $observer)
     {
         try {
             if (!$this->helper->isEnabled($observer->getEvent()->getQuoteItem()->getStoreId())) {
                 return;
             }
-            $removeFromCartEvent = new RemoveFromCartEvent($observer->getEvent());
+            $removeFromCartEvent = $this->removeFromCartFactory->create(['event' => $observer->getEvent()]);
             $this->sessionEvents->addSessionEvent($removeFromCartEvent->callJs());
         } catch (\Exception $e) {
             $this->helper->logError($e);
