@@ -20,6 +20,9 @@ use Metrilo\Analytics\Model\DeletedProductData;
 use Metrilo\Analytics\Model\OrderData;
 use Metrilo\Analytics\Model\ProductData;
 
+/**
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ */
 class Ajax implements HttpPostActionInterface
 {
     private Data $helper;
@@ -52,6 +55,25 @@ class Ajax implements HttpPostActionInterface
 
     private Http $request;
 
+    /**
+     * @param Data $helper
+     * @param CustomerData $customerData
+     * @param CategoryData $categoryData
+     * @param ProductData $productData
+     * @param DeletedProductData $deletedProductData
+     * @param OrderData $orderData
+     * @param CustomerSerializer $customerSerializer
+     * @param CategorySerializer $categorySerializer
+     * @param ProductSerializer $productSerializer
+     * @param DeletedProductSerializer $deletedProductSerializer
+     * @param OrderSerializer $orderSerializer
+     * @param ApiClient $apiClient
+     * @param Activity $activityHelper
+     * @param Http $request
+     * @param JsonFactory $resultJsonFactory
+     *
+     * @SuppressWarnings(PHPMD.ExcessiveParameterList)
+     */
     public function __construct(
         Data $helper,
         CustomerData $customerData,
@@ -91,6 +113,8 @@ class Ajax implements HttpPostActionInterface
      *
      * @return ResultInterface
      * @throws \Exception
+     *
+     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      */
     public function execute(): ResultInterface
     {

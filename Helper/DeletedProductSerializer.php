@@ -2,106 +2,85 @@
 
 namespace Metrilo\Analytics\Helper;
 
+use Magento\Catalog\Model\Product\Type;
+use Magento\ConfigurableProduct\Model\Product\Type\Configurable;
 use Magento\Framework\App\Helper\AbstractHelper;
+use Magento\Sales\Model\Order;
+use Magento\Sales\Model\Order\Item;
+use Magento\Sales\Model\ResourceModel\Order\Collection;
 
 class DeletedProductSerializer extends AbstractHelper
 {
-    public function serialize($deletedProductOrders)
-    {
-        $productBatch = [];
 
+    public function serialize(Collection $deletedProductOrders): array
+    {
+        $batch = [];
+
+        /** @var Order $order */
         foreach ($deletedProductOrders as $order) {
-            foreach ($order->getAllItems() as $item) {
-                if ($this->shouldSkipItem($item, $productBatch)) {
-                    continue;
-                }
-
-                $productOptions = $this->getProductOptions($item, $order, $productBatch);
-
-                $productBatch[] = [
-                    'categories' => [],
-                    'id'         => $this->getProductId($item, $order),
-                    'sku'        => $item->getSku(),
-                    'imageUrl'   => '',
-                    'name'       => $this->getProductName($item, $order),
-                    'price'      => $this->getProductPrice($item, $order),
-                    'url'        => '',
-                    'options'    => $productOptions,
-                ];
-            }
+            $this->serializeOrder($order, $batch);
         }
 
-        return $productBatch;
+        return $batch;
     }
 
-    private function shouldSkipItem($item, $productBatch)
+    private function serializeOrder(Order $order, array &$batch): void
     {
-        return $item->getProductType() === 'configurable' ||
-            $this->isProductInBatch($item->getProductId(), $productBatch);
-    }
+        foreach ($order->getAllItems() as $item) {
+            if (isset($batch[$item->getProductId()]) && ($this->hasChildren($item) || !$item->getParentItemId())) {
+                continue;
+            }
 
-    private function isProductInBatch($productId, $productBatch)
-    {
-        return $this->getProductBatchIndexById($productId, $productBatch) !== false;
-    }
-
-    private function getProductOptions($item, $order, &$productBatch)
-    {
-        $productOptions = [];
-        $parentItemId = $item->getParentItemId();
-        $itemId = $item->getProductId();
-
-        if ($parentItemId) {
-            $parentProduct = $order->getItemById($parentItemId);
-
-            if ($parentProduct) {
-                $productOptions[] = [
-                    'id'       => $itemId,
-                    'sku'      => $item->getSku(),
-                    'name'     => $item->getName(),
-                    'price'    => $parentProduct->getPrice(),
-                    'imageUrl' => '',
-                ];
-
-                $parentIndex = $this->getProductBatchIndexById($parentProduct->getProductId(), $productBatch);
-                if ($parentIndex !== false) {
-                    if (!$this->isProductInBatchProductOptions($itemId, $productBatch[$parentIndex]['options'])) {
-                        $productBatch[$parentIndex]['options'] = array_merge(
-                            $productBatch[$parentIndex]['options'],
-                            $productOptions
-                        );
-                    }
+            if ($this->hasChildren($item) || !$item->getParentItemId()) {
+                $batch[$item->getProductId()] = $this->getRootProductData($item);
+            } elseif ($item->getParentItemId()) {
+                $parentItem = $order->getItemById($item->getParentItemId());
+                if (isset($batch[$parentItem->getProductId()])) {
+                    $batch[$parentItem->getProductId()]['options'][$item->getProductId()] =
+                        $this->getSimpleOptionData($item, $parentItem);
+                } else {
+                    $batch[$parentItem->getProductId()] = $this->serializeSimpleWithParent($item, $parentItem);
                 }
             }
         }
-
-        return $productOptions;
     }
 
-    private function getProductId($item, $order)
+    private function getSimpleOptionData(Item $item, Item $parentItem): array
     {
-        $parentProduct = $order->getItemById($item->getParentItemId());
-        return $parentProduct ? $parentProduct->getProductId() : $item->getProductId();
+        return [
+            'id' => $item->getProductId(),
+            'sku' => $item->getSku(),
+            'name' => $item->getName(),
+            'price' => $parentItem->getPrice(),
+            'imageUrl' => '',
+        ];
     }
 
-    private function getProductName($item, $order)
+    private function getRootProductData(Item $item): array
     {
-        $parentProduct = $order->getItemById($item->getParentItemId());
-        return $parentProduct ? $parentProduct->getName() : $item->getName();
+        return [
+            'categories' => [],
+            'id' => $item->getProductId(),
+            'sku' => $item->getSku(),
+            'imageUrl' => '',
+            'name' => $item->getName(),
+            'price' => $this->hasChildren($item) ? 0 : $item->getPrice(),
+            'url' => '',
+            'options' => []
+        ];
     }
 
-    private function getProductPrice($item, $order)
+    private function serializeSimpleWithParent(Item $item, Item $parentItem): array
     {
-        return $order->getItemById($item->getParentItemId()) ? 0 : $item->getPrice();
+        $data = $this->getRootProductData($parentItem);
+        $data['options'][$item->getProductId()] = $this->getSimpleOptionData($item, $parentItem);
+
+        return $data;
     }
 
-    private function getProductBatchIndexById($productId, $productBatch)
+    private function hasChildren(Item $item): bool
     {
-        return array_search($productId, array_column($productBatch, 'id'));
-    }
-
-    private function isProductInBatchProductOptions($id, $batchOptions)
-    {
-        return $this->getProductBatchIndexById($id, $batchOptions) !== false;
+        return $item->getProductType() === Configurable::TYPE_CODE ||
+            $item->getProductType() === Type::TYPE_BUNDLE;
     }
 }

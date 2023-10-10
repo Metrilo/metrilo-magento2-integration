@@ -19,13 +19,6 @@ class CustomerDataTest extends TestCase
 
     private CustomerData $customerData;
 
-    private Customer $customer;
-
-    /**
-     * @var \Metrilo\Analytics\Helper\Data::CHUNK_ITEMS
-     */
-    private int $chunkItems = 50;
-
     /**
      * @var \Magento\Framework\App\Request\Http->getParam('store', 0)
      */
@@ -73,10 +66,6 @@ class CustomerDataTest extends TestCase
         $metriloCustomerFactory = $this->getMockBuilder(MetriloCustomerFactory::class)
                                        ->disableOriginalConstructor()
                                        ->getMock();
-
-        $this->customer = $this->getMockBuilder(Customer::class)
-            ->disableOriginalConstructor()
-            ->getMock();
 
         $metriloCustomerFactory->method('create')->will($this->returnValue($metriloCustomer));
 

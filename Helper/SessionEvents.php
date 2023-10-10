@@ -6,6 +6,9 @@ use Magento\Catalog\Model\Session;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 
+/**
+ * @SuppressWarnings(PHPMD.CookieAndSessionMisuse)
+ */
 class SessionEvents extends AbstractHelper
 {
     private string $metriloSessionEvents = 'metrilo_session_key';

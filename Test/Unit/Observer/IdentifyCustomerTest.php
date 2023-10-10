@@ -72,8 +72,6 @@ class IdentifyCustomerTest extends TestCase
 
     public function testExecute()
     {
-        $email = 'test@email.com';
-
         $this->observer->expects($this->any())->method('getEvent')
             ->will($this->returnSelf());
         $this->observer->expects($this->exactly(3))->method('getName')->willReturnOnConsecutiveCalls(

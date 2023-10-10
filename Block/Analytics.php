@@ -31,6 +31,20 @@ class Analytics extends Template
 
     private CheckoutView $checkoutViewEvent;
 
+    /**
+     * @param Context $context
+     * @param Data $helper
+     * @param SessionEvents $sessionEvents
+     * @param ProductView $productViewEvent
+     * @param PageView $pageViewEvent
+     * @param CategoryView $categoryViewEvent
+     * @param CatalogSearch $catalogSearchEvent
+     * @param CartView $cartViewEvent
+     * @param CheckoutView $checkoutViewEvent
+     * @param array $data
+     *
+     * @SuppressWarnings(PHPMD.ExcessiveParameterList)
+     */
     public function __construct(
         Context $context,
         Data $helper,

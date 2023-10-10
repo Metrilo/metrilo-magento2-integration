@@ -21,6 +21,9 @@ use Metrilo\Analytics\Model\Events\CustomEvent;
 use Metrilo\Analytics\Model\Events\IdentifyCustomer;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ */
 class CustomerTest extends TestCase
 {
     private Observer $observer;

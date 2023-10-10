@@ -23,11 +23,6 @@ class ProductDataTest extends \PHPUnit\Framework\TestCase
     private $productId = 1;
 
     /**
-     * @var \Metrilo\Analytics\Helper\Data::CHUNK_ITEMS
-     */
-    private $chunkItems = 50;
-
-    /**
      * @var \Magento\Framework\App\Request\Http->getParam('store', 0)
      */
     private $storeId = 1;

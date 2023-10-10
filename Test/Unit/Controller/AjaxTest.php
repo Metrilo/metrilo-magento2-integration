@@ -3,6 +3,7 @@
 namespace Metrilo\Analytics\Test\Unit\Helper;
 
 use Magento\Backend\App\Action\Context;
+use Magento\Framework\Controller\Result\Json;
 use Metrilo\Analytics\Helper\Data;
 use Metrilo\Analytics\Model\CustomerData;
 use Magento\Customer\Model\ResourceModel\Customer\CollectionFactory as CustomerCollection;
@@ -24,144 +25,82 @@ use Magento\Framework\App\Request\Http;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Metrilo\Analytics\Api\Client;
 use Metrilo\Analytics\Controller\Adminhtml\Import\Ajax;
+use PHPUnit\Framework\TestCase;
 
-class AjaxTest extends \PHPUnit\Framework\TestCase
+/**
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ * @SuppressWarnings(PHPMD.TooManyFields)
+ */
+class AjaxTest extends TestCase
 {
-    /**
-     * @var \Magento\Backend\App\Action\Context
-     */
-    private $context;
+    private Context $context;
 
-    /**
-     * @var \Metrilo\Analytics\Helper\Data
-     */
-    private $dataHelper;
+    private Data $dataHelper;
 
-    /**
-     * @var \Metrilo\Analytics\Model\CustomerData
-     */
-    private $customerModel;
+    private CustomerData $customerModel;
 
-    /**
-     * @var \Magento\Customer\Model\ResourceModel\Customer\CollectionFactory
-     */
-    private $customerCollection;
+    private CustomerCollection $customerCollection;
 
-    /**
-     * @var \Metrilo\Analytics\Model\CategoryData
-     */
-    private $categoryModel;
+    private CategoryData $categoryModel;
 
-    /**
-     * @var \Magento\Catalog\Model\ResourceModel\Category\CollectionFactory
-     */
-    private $categoryCollection;
+    private CategoryCollection $categoryCollection;
 
-    /**
-     * @var \Metrilo\Analytics\Model\ProductData
-     */
-    private $productModel;
+    private ProductData $productModel;
 
-    /**
-     * @var \Magento\Catalog\Model\ResourceModel\Product\CollectionFactory
-     */
-    private $productCollection;
+    private ProductCollection $productCollection;
 
-    /**
-     * @var \Metrilo\Analytics\Model\DeletedProductData
-     */
-    private $deletedProductModel;
+    private DeletedProductData $deletedProductModel;
 
-    /**
-     * @var \Metrilo\Analytics\Model\OrderData
-     */
-    private $orderModel;
+    private OrderData $orderModel;
 
-    /**
-     * @var \Magento\Sales\Model\ResourceModel\Order\CollectionFactory
-     */
-    private $orderCollection;
+    private OrderCollection $orderCollection;
 
-    /**
-     * @var \Metrilo\Analytics\Helper\CustomerSerializer
-     */
-    private $customerSerializer;
+    private CustomerSerializer $customerSerializer;
 
-    /**
-     * @var \Metrilo\Analytics\Helper\CategorySerializer
-     */
-    private $categorySerializer;
+    private CategorySerializer $categorySerializer;
 
-    /**
-     * @var \Metrilo\Analytics\Helper\DeletedProductSerializer
-     */
-    private $deletedProductSerializer;
+    private DeletedProductSerializer $deletedProductSerializer;
 
-    /**
-     * @var \Metrilo\Analytics\Helper\ProductSerializer
-     */
-    private $productSerializer;
+    private ProductSerializer $productSerializer;
 
-    /**
-     * @var \Metrilo\Analytics\Helper\OrderSerializer
-     */
-    private $orderSerializer;
+    private OrderSerializer $orderSerializer;
 
-    /**
-     * @var \Metrilo\Analytics\Helper\ApiClient
-     */
-    private $apiClientHelper;
+    private ApiClient $apiClientHelper;
 
-    /**
-     * @var \Metrilo\Analytics\Helper\Activity
-     */
-    private $activityHelper;
+    private Activity $activityHelper;
 
-    /**
-     * @var \Magento\Framework\App\Request\Http
-     */
-    private $request;
+    private Http $request;
 
-    /**
-     * @var \Magento\Framework\Controller\Result\JsonFactory
-     */
-    private $jsonFactoryController;
+    private JsonFactory $jsonFactoryController;
 
-    /**
-     * @var \Metrilo\Analytics\Api\Client
-     */
-    private $apiClient;
+    private Client $apiClient;
 
-    /**
-     * @var \Metrilo\Analytics\Controller\Adminhtml\Import\Ajax
-     */
-    private $ajaxController;
+    private Ajax $ajaxController;
 
-    private $chunkItems = 50;
+    private int $chunkItems = 50;
 
-    private $storeIdKey = 'storeId';
+    private string $storeIdKey = 'storeId';
 
-    private $chunkIdKey = 'chunkId';
+    private string $chunkIdKey = 'chunkId';
 
-    private $importTypeKey = 'importType';
+    private string $importTypeKey = 'importType';
 
-    private $activityStartKey = 'import_start';
+    private string $activityStartKey = 'import_start';
 
-    private $activityEndKey = 'import_end';
+    private int $storeId = 1;
 
-    private $result = [];
+    private int $chunkId = 11;
 
-    private $storeId = 1;
-
-    private $chunkId = 11;
-
-    private $jsonFactory;
-
-    private $response = [
+    private array $response = [
         'response' => 'apiCallResponse',
         'code' => 'responseCode'
     ];
 
+    /**
+     * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
+     *
+     * @return void
+     */
     public function setUp(): void
     {
         $this->context = $this->getMockBuilder(Context::class)
@@ -298,7 +237,7 @@ class AjaxTest extends \PHPUnit\Framework\TestCase
                                             ->setMethods(['create', 'setData'])
                                             ->getMock();
 
-        $json = $this->getMockBuilder(\Magento\Framework\Controller\Result\Json::class)
+        $json = $this->getMockBuilder(Json::class)
                      ->disableOriginalConstructor()
                      ->getMock();
         $this->jsonFactoryController->expects($this->any())->method('create')->will($this->returnValue($json));
