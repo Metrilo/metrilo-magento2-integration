@@ -1,6 +1,7 @@
 <?php
 /**
  * @var $block \Metrilo\Analytics\Block\System\Config\Button\Import
+ * @var \Magento\Framework\Escaper $escaper
  */
 ?>
 <?php if ($block->buttonEnabled()): ?>
@@ -8,8 +9,8 @@
         $storeId = $block->getStoreId();
     ?>
     <div class="pp-buttons-container">
-        <button id="<?php echo $block->getHtmlId() ?>" onclick="return false;">
-            <span><?php echo __('Import'); ?></span>
+        <button id="<?= $block->getHtmlId() ?>" onclick="return false;">
+            <span><?= $escaper->escapeHtml(__('Import')) ?></span>
         </button>
     </div>
     <script>
@@ -17,18 +18,16 @@
         'jquery',
         'metriloImport'
     ], function($, metrilo) {
-        $("#<?php echo $block->getHtmlId() ?>").import({
-            storeId: <?php echo $storeId; ?>,
-            customersChunks: <?php echo $block->getCustomerChunks(); ?>,
-            categoriesChunks: <?php echo $block->getCategoryChunks(); ?>,
-            productsChunks: <?php echo $block->getProductChunks(); ?>,
-            ordersChunks: <?php echo $block->getOrderChunks(); ?>,
-            submitUrl: '<?php echo $block->getAjaxUrl(); ?>',
+        $("#<?= $escaper->escapeJs($block->getHtmlId()) ?>").import({
+            storeId: <?= $escaper->escapeJs($storeId); ?>,
+            customersChunks: <?= $escaper->escapeJs($block->getCustomerChunks()) ?>,
+            categoriesChunks: <?= $escaper->escapeJs($block->getCategoryChunks()) ?>,
+            productsChunks: <?= $escaper->escapeJs($block->getProductChunks()) ?>,
+            ordersChunks: <?= $escaper->escapeJs($block->getOrderChunks()) ?>,
+            submitUrl: '<?= $escaper->escapeUrl($block->getAjaxUrl()) ?>',
             messageSelector: '#metrilo_import_status'
         });
     });
     </script>
     <div id="metrilo_import_status"></div>
-    <?php return; ?>
 <?php endif; ?>
-

@@ -21,7 +21,7 @@ class Import extends Field
     /**
      * Path to block template
      */
-    const CHECK_TEMPLATE = 'system/config/button/import.phtml';
+    private const CHECK_TEMPLATE = 'system/config/button/import.phtml';
 
     private Data $helper;
 

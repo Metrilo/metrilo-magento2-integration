@@ -45,7 +45,7 @@ class ProductData
                 ['entity_id' => $productId,
                     'entity_type' => 'product',
                     'store_id' => $storeId,
-                    'metadata' => array('null' => true)]
+                    'metadata' => ['null' => true]]
             )
             ->getFirstItem();
 

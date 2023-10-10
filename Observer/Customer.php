@@ -38,16 +38,6 @@ class Customer implements ObserverInterface
 
     private CustomEventFactory $customEventFactory;
 
-    /**
-     * @param Data $helper
-     * @param ApiClient $apiClient
-     * @param CustomerSerializer $customerSerializer
-     * @param CustomerRepositoryInterface $customerRepository
-     * @param Subscriber $subscriberModel
-     * @param GroupRepositoryInterface $groupRepository
-     * @param SessionEvents $sessionEvents
-     * @param MetriloCustomerFactory $customerFactory
-     */
     public function __construct(
         Data $helper,
         ApiClient $apiClient,

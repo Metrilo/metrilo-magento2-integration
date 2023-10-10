@@ -24,10 +24,10 @@ class CategorySerializer extends AbstractHelper
         $storeId      = $category->getStoreId();
         $storeBaseUrl = $this->storeManager->getStore($storeId)->getBaseUrl(); // Used for multiwebsite config base url
 
-        return array(
+        return [
             'id'   => $categoryId,
             'name' => $category->getName(),
             'url'  => $storeBaseUrl . $category->getRequestPath()
-        );
+        ];
     }
 }

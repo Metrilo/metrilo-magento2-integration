@@ -10,9 +10,9 @@ use Psr\Log\LoggerInterface;
 
 class Data extends AbstractHelper
 {
-    const CHUNK_ITEMS = 50;
+    public const CHUNK_ITEMS = 50;
 
-    const MODULE_NAME = 'Metrilo_Analytics';
+    public const MODULE_NAME = 'Metrilo_Analytics';
 
     private StoreManagerInterface $storeManager;
 

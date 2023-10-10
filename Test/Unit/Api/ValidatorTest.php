@@ -130,13 +130,13 @@ class ValidatorTest extends TestCase
             'name'       => 'productName',
             'price'      => 0,
             'url'        => $baseUrl . $requestPath,
-            'options'    => array([
+            'options'    => [[
                 'id'       => 'optionSku',
                 'sku'      => 'optionSku',
                 'name'     => 'optionName',
                 'price'    => '120',
                 'imageUrl' => 'base/url/string/catalog/product/product/image/url.jpg'
-                ])
+                ]]
             ];
 
         $products[] = [
@@ -169,13 +169,13 @@ class ValidatorTest extends TestCase
             'name'       => 'failProductName',
             'price'      => 0,
             'url'        => $baseUrl . $requestPath,
-            'options'    => array([
+            'options'    => [[
                 'id'       => 'failOptionSku',
                 'sku'      => 'failOptionSku',
                 'name'     => 'failOptionName',
                 'price'    => '130',
                 'imageUrl' => 'base/url/string/catalog/product/product/image/url.jpg'
-            ])
+            ]]
         ];
 
         $result = $this->validator->validateProducts($products);
@@ -224,10 +224,10 @@ class ValidatorTest extends TestCase
             'amount'    => 1001,
             'coupons'   => ['couponCode'],
             'status'    => 'orderStatus',
-            'products'  => array([
+            'products'  => [[
                 'productId'  => 'itemSku',
                 'quantity'   => 3
-            ]),
+            ]],
             'billing'   => [
                 "firstName"     => 'orderFirstName',
                 "lastName"      => 'orderLastName',
@@ -267,7 +267,7 @@ class ValidatorTest extends TestCase
             'amount'    => 201,
             'coupons'   => [],
             'status'    => 'thirdOrderStatus',
-            'products'  => array(
+            'products'  => [
                 [
                     'productId'  => 'optionItemSku',
                     'quantity'   => 3
@@ -275,7 +275,7 @@ class ValidatorTest extends TestCase
                     'productId'  => 'secondOptionItemSku',
                     'quantity'   => 1
                 ]
-            ),
+            ],
             'billing'   => [
                 "firstName"     => 'thirdOrderFirstName',
                 "lastName"      => 'thirdOrderLastName',

@@ -2,6 +2,7 @@
 
 namespace Metrilo\Analytics\Model;
 
+use Magento\Framework\DB\Select;
 use Magento\Sales\Model\ResourceModel\Order\CollectionFactory;
 use Magento\Sales\Model\ResourceModel\Order\Item\Collection;
 
@@ -21,17 +22,17 @@ class DeletedProductData
 
     public function getDeletedProductOrders($storeId)
     {
-        $deletedProductOrdersQuery = $this->orderItemCollection->getSelect()
-                                                               ->distinct(true)
-                                                               ->reset(\Zend_Db_Select::COLUMNS)
-                                                               ->columns(['order_id'])
-                                                               ->joinLeft(
-                                                                   ['catalog' => 'catalog_product_entity'],
-                                                                   'main_table.product_id = catalog.entity_id',
-                                                                   []
-                                                               )
-                                                               ->where('catalog.entity_id IS NULL')
-                                                               ->where('main_table.store_id = ?', $storeId);
+        $deletedProductOrdersQuery = $this->orderItemCollection->getSelect();
+        $deletedProductOrdersQuery->distinct(true)
+                                  ->reset(Select::COLUMNS)
+                                  ->columns(['order_id'])
+                                  ->joinLeft(
+                                      ['catalog' => 'catalog_product_entity'],
+                                      'main_table.product_id = catalog.entity_id',
+                                      []
+                                  )
+                                  ->where('catalog.entity_id IS NULL')
+                                  ->where('main_table.store_id = ?', $storeId);
 
         $deletedProductOrderIds = $this->orderItemCollection->getConnection()->fetchAll($deletedProductOrdersQuery);
 

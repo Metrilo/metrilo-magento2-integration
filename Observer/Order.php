@@ -17,9 +17,6 @@ class Order implements ObserverInterface
 
     private OrderSerializer $orderSerializer;
 
-    /**
-     * @param Data $helper
-     */
     public function __construct(
         Data $helper,
         ApiClient $apiClient,

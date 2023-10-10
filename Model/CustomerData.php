@@ -45,8 +45,7 @@ class CustomerData
                     'lastname' => $customer->getData('lastname'),
                     'subscribed' => $this->getCustomerSubscriberStatus($customer->getId()),
                     'tags' => $this->getCustomerGroup($customer->getGroupId())
-                ]
-            );
+                ]);
         }
 
         return $metriloCustomers;

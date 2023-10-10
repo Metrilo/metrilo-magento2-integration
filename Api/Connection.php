@@ -2,32 +2,55 @@
 
 namespace Metrilo\Analytics\Api;
 
+use Laminas\Uri\UriFactory;
+use Magento\Framework\HTTP\Client\Curl;
+use Magento\Framework\HTTP\Client\CurlFactory;
+use Magento\Framework\Serialize\Serializer\Json;
+
 class Connection
 {
+    private CurlFactory $curlFactory;
+
+    private Json $json;
+
+    public function __construct(
+        CurlFactory $curlFactory,
+        Json $json
+    ) {
+        $this->curlFactory = $curlFactory;
+        $this->json = $json;
+    }
+
     /**
      * Create HTTP POST request to URL
      *
      * @param string $url
-     * @param array|bool $bodyArray
+     * @param array|null $bodyArray
      * @param string $secret
      *
      * @return array
      */
-    public function post($url, $bodyArray = false, $secret = '')
+    public function post($url, $bodyArray = null, $secret = ''): array
     {
-        $parsedUrl = parse_url($url);
+        $parsedUrl = UriFactory::factory($url);
         $headers = [
-            'Content-Type: application/json',
-            'Accept: */*',
-            'User-Agent: HttpClient/1.0.0',
-            'Connection: Close',
-            'Host: '.$parsedUrl['host']
+            'Content-Type' => 'application/json',
+            'Accept' => '*/*',
+            'User-Agent' => 'HttpClient/1.0.0',
+            'Connection' => 'Close',
+            'Host' => $parsedUrl->getHost()
         ];
+        try {
+            $body = $this->json->serialize($bodyArray);
+        } catch (\InvalidArgumentException) {
+            $body = '';
+        }
 
-        $headers[] = 'X-Digest: ' . hash_hmac('sha256', json_encode($bodyArray), $secret);
+        if ($body) {
+            $headers['X-Digest'] = hash_hmac('sha256', $body, $secret);
+        }
 
-        $encodedBody = $bodyArray ? json_encode($bodyArray) : '';
-        return $this->curlCall($url, $headers, $encodedBody);
+        return $this->curlCall($url, $headers, $body);
     }
 
     /**
@@ -36,30 +59,29 @@ class Connection
      * @param string $url
      * @param array $headers
      * @param string $body
-     * @param string $method
      * @return array
      */
-    private function curlCall($url, $headers = [], $body = '', $method = "POST"): array
+    private function curlCall(string $url, array $headers = [], string $body = ''): array
     {
-        $curl = curl_init();
-        curl_setopt($curl, CURLOPT_URL, $url);
-        curl_setopt($curl, CURLOPT_COOKIESESSION, true);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, CURLOPT_CONNECTTIMEOUT_MS, 2000);
-        curl_setopt($curl, CURLOPT_TIMEOUT_MS, 3000);
-        curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($curl, CURLOPT_ENCODING, 'gzip');
-        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
-        curl_setopt($curl, CURLOPT_POSTFIELDS, $body);
+        /** @var Curl $curl */
+        $curl = $this->curlFactory->create();
 
-        $response = curl_exec($curl);
-        $code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-        curl_close($curl);
+        $curl->setOptions([
+            CURLOPT_COOKIESESSION => true,
+            CURLOPT_CONNECTTIMEOUT_MS => 2000,
+            CURLOPT_TIMEOUT_MS => 3000,
+            CURLOPT_ENCODING => 'gzip',
+            CURLOPT_SSL_VERIFYPEER => false
+        ]);
+        foreach ($headers as $header => $value) {
+            $curl->addHeader($header, $value);
+        }
+
+        $curl->post($url, $body);
 
         return [
-            'response' => $response,
-            'code' => $code
+            'response' => $curl->getBody(),
+            'code' => $curl->getStatus()
         ];
     }
 }

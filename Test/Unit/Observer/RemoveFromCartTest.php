@@ -101,8 +101,7 @@ class RemoveFromCartTest extends TestCase
         $this->dataHelper->expects($this->any())->method('logError')
                          ->with($this->isType('object'))
                          ->will(
-                             $this->returnCallback(function ($error)
-                             {
+                             $this->returnCallback(function ($error) {
                                  $this->assertInstanceOf(ExpectationFailedException::class, $error);
                              })
                          );

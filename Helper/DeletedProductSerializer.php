@@ -9,55 +9,24 @@ class DeletedProductSerializer extends AbstractHelper
     public function serialize($deletedProductOrders)
     {
         $productBatch = [];
+
         foreach ($deletedProductOrders as $order) {
             foreach ($order->getAllItems() as $item) {
-                $parentProduct  = '';
-                $productOptions = [];
-
-                $parentItemId   = $item->getParentItemId();
-                $itemId         = $item->getProductId();
-                $itemSku        = $item->getSku();
-                $itemName       = $item->getName();
-
-                if ($item->getProductType() == 'configurable' || $this->presentInBatch($itemId, $productBatch)) {
+                if ($this->shouldSkipItem($item, $productBatch)) {
                     continue;
                 }
 
-                if ($parentItemId) {
-                    $parentProduct = $order->getItemById($parentItemId);
-
-                    if ($parentProduct) {
-                        $productOptions[] = [
-                            'id'       => $itemId,
-                            'sku'      => $itemSku,
-                            'name'     => $itemName,
-                            'price'    => $parentProduct->getPrice(),
-                            'imageUrl' => ''
-                        ];
-
-                        $parentIndex = $this->getProductBatchIndexById($parentProduct->getProductId(), $productBatch);
-                        if ($parentIndex !== false) {
-                            if ($this->presentInBatchProductOptions($itemId, $productBatch[$parentIndex]['options'])) {
-                                continue;
-                            }
-                            $productBatch[$parentIndex]['options'] = array_merge(
-                                $productBatch[$parentIndex]['options'],
-                                $productOptions
-                            );
-                            continue;
-                        }
-                    }
-                }
+                $productOptions = $this->getProductOptions($item, $order, $productBatch);
 
                 $productBatch[] = [
                     'categories' => [],
-                    'id'         => $parentProduct ? $parentProduct->getProductId() : $itemId,
-                    'sku'        => $itemSku,
+                    'id'         => $this->getProductId($item, $order),
+                    'sku'        => $item->getSku(),
                     'imageUrl'   => '',
-                    'name'       => $parentProduct ? $parentProduct->getName() : $itemName,
-                    'price'      => $parentProduct ? 0 : $item->getPrice(),
+                    'name'       => $this->getProductName($item, $order),
+                    'price'      => $this->getProductPrice($item, $order),
                     'url'        => '',
-                    'options'    => $productOptions
+                    'options'    => $productOptions,
                 ];
             }
         }
@@ -65,22 +34,74 @@ class DeletedProductSerializer extends AbstractHelper
         return $productBatch;
     }
 
+    private function shouldSkipItem($item, $productBatch)
+    {
+        return $item->getProductType() === 'configurable' ||
+            $this->isProductInBatch($item->getProductId(), $productBatch);
+    }
+
+    private function isProductInBatch($productId, $productBatch)
+    {
+        return $this->getProductBatchIndexById($productId, $productBatch) !== false;
+    }
+
+    private function getProductOptions($item, $order, &$productBatch)
+    {
+        $productOptions = [];
+        $parentItemId = $item->getParentItemId();
+        $itemId = $item->getProductId();
+
+        if ($parentItemId) {
+            $parentProduct = $order->getItemById($parentItemId);
+
+            if ($parentProduct) {
+                $productOptions[] = [
+                    'id'       => $itemId,
+                    'sku'      => $item->getSku(),
+                    'name'     => $item->getName(),
+                    'price'    => $parentProduct->getPrice(),
+                    'imageUrl' => '',
+                ];
+
+                $parentIndex = $this->getProductBatchIndexById($parentProduct->getProductId(), $productBatch);
+                if ($parentIndex !== false) {
+                    if (!$this->isProductInBatchProductOptions($itemId, $productBatch[$parentIndex]['options'])) {
+                        $productBatch[$parentIndex]['options'] = array_merge(
+                            $productBatch[$parentIndex]['options'],
+                            $productOptions
+                        );
+                    }
+                }
+            }
+        }
+
+        return $productOptions;
+    }
+
+    private function getProductId($item, $order)
+    {
+        $parentProduct = $order->getItemById($item->getParentItemId());
+        return $parentProduct ? $parentProduct->getProductId() : $item->getProductId();
+    }
+
+    private function getProductName($item, $order)
+    {
+        $parentProduct = $order->getItemById($item->getParentItemId());
+        return $parentProduct ? $parentProduct->getName() : $item->getName();
+    }
+
+    private function getProductPrice($item, $order)
+    {
+        return $order->getItemById($item->getParentItemId()) ? 0 : $item->getPrice();
+    }
+
     private function getProductBatchIndexById($productId, $productBatch)
     {
         return array_search($productId, array_column($productBatch, 'id'));
     }
 
-    private function presentInBatch($id, $batch)
+    private function isProductInBatchProductOptions($id, $batchOptions)
     {
-        $productIndex = $this->getProductBatchIndexById($id, $batch);
-
-        return ($productIndex) ? true : false;
-    }
-
-    private function presentInBatchProductOptions($id, $batchOptions)
-    {
-        $productOptionIndex = $this->getProductBatchIndexById($id, $batchOptions);
-
-        return ($productOptionIndex) ? true : false;
+        return $this->getProductBatchIndexById($id, $batchOptions) !== false;
     }
 }

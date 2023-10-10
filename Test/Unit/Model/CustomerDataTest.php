@@ -78,7 +78,6 @@ class CustomerDataTest extends TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-
         $metriloCustomerFactory->method('create')->will($this->returnValue($metriloCustomer));
 
         $this->customerData = new CustomerData(

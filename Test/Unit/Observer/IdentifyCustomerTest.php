@@ -77,7 +77,9 @@ class IdentifyCustomerTest extends TestCase
         $this->observer->expects($this->any())->method('getEvent')
             ->will($this->returnSelf());
         $this->observer->expects($this->exactly(3))->method('getName')->willReturnOnConsecutiveCalls(
-            ['customer_login'], ['customer_account_edited'], ['sales_order_save_after']
+            ['customer_login'],
+            ['customer_account_edited'],
+            ['sales_order_save_after']
         );
 
         $this->dataHelper->expects($this->any())->method('isEnabled')
