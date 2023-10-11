@@ -30,12 +30,14 @@
                 </field>
                 <field id="api_key" sortOrder="20" type="text" translate="label" showInDefault="1" showInWebsite="1" showInStore="1">
                     <depends><field id="enable">1</field></depends>
-                    <label>API Token</label>
+                    <label>API key</label>
+                    <validate>required-entry</validate>
                     <backend_model>Metrilo\Analytics\Model\Trimmed</backend_model>
                 </field>
                 <field id="api_secret" sortOrder="30" type="text" translate="label" showInDefault="1" showInWebsite="1" showInStore="1">
                     <depends><field id="enable">1</field></depends>
                     <label>API Secret</label>
+                    <validate>required-entry</validate>
                     <backend_model>Metrilo\Analytics\Model\Trimmed</backend_model>
                 </field>
                 <field id="api_endpoint" sortOrder="40" type="text" translate="label" showInDefault="0" showInWebsite="0" showInStore="0">

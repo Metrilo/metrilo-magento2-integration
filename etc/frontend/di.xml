@@ -6,11 +6,4 @@
             </argument>
         </arguments>
     </type>
-    <type name="Magento\Customer\Block\SectionConfig">
-        <arguments>
-            <argument name="clientSideSections" xsi:type="array">
-                <item name="metrilo-private-data" xsi:type="string">metrilo-private-data</item>
-            </argument>
-        </arguments>
-    </type>
 </config>

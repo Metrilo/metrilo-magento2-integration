@@ -10,7 +10,7 @@ $events = $block->getEvents();
 <script>
     require(['<?= $escaper->escapeUrl($url) ?>'], function(){
         <?php foreach ($events as $event): ?>
-            <?= $escaper->escapeJs($event) ?>
+            <?= /* @noEscape */ $event ?>
         <?php endforeach; ?>
     });
 </script>

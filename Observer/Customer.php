@@ -87,8 +87,8 @@ class Customer implements ObserverInterface
                             'storeId' => $customer->getStoreId(),
                             'email' => $customer->getEmail(),
                             'createAt' => strtotime($customer->getCreatedAt()) * 1000,
-                            'firstname' => $customer->getData('firstname'),
-                            'lastname' => $customer->getData('lastname'),
+                            'firstName' => $customer->getData('firstname'),
+                            'lastName' => $customer->getData('lastname'),
                             'subscribed' => $this->getCustomerSubscriberStatus($customer->getId()),
                             'tags' => $this->getCustomerGroup($customer->getGroupId())
                         ]
@@ -98,7 +98,7 @@ class Customer implements ObserverInterface
             case 'newsletter_subscriber_save_after':
                 $subscriber = $observer->getEvent()->getSubscriber();
                 $customerId = $subscriber->getCustomerId();
-                if ($subscriber->isStatusChanged() && $customerId !== 0) {
+                if ($subscriber->isStatusChanged() && !empty($customerId)) {
                     return $this->metriloCustomer($this->customerRepository->getById($customerId));
                 } else {
                     $subscriberEmail = $subscriber->getEmail();
@@ -179,8 +179,8 @@ class Customer implements ObserverInterface
                 'storeId' => $customer->getStoreId(),
                 'email' => $customer->getEmail(),
                 'createdAt' => strtotime($customer->getCreatedAt()) * 1000,
-                'firstname' => $customer->getFirstName(),
-                'lastname' => $customer->getLastName(),
+                'firstName' => $customer->getFirstName(),
+                'lastName' => $customer->getLastName(),
                 'subscribed' => $this->getCustomerSubscriberStatus($customer->getId()),
                 'tags' => $this->getCustomerGroup($customer->getGroupId())
             ]

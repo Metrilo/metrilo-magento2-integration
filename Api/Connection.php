@@ -47,7 +47,7 @@ class Connection
         }
 
         if ($body) {
-            $headers['X-Digest'] = hash_hmac('sha256', $body, $secret);
+            $headers['X-Digest'] = hash_hmac('sha256', $body, (string)$secret);
         }
 
         return $this->curlCall($url, $headers, $body);
