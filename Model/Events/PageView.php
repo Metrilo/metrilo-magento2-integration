@@ -2,19 +2,32 @@
 
 namespace Metrilo\Analytics\Model\Events;
 
+use Magento\Framework\Serialize\Serializer\Json;
+use Magento\Framework\UrlInterface;
+use Magento\Framework\View\Page\Title;
+
 class PageView
 {
+    private Title $pageTitle;
+
+    private UrlInterface $urlInterface;
+
+    private Json $json;
+
     public function __construct(
-        \Magento\Framework\View\Page\Title $pageTitle,
-        \Magento\Framework\UrlInterface    $urlInterface
+        Title $pageTitle,
+        UrlInterface $urlInterface,
+        Json $json
     ) {
-        $this->pageTitle    = $pageTitle;
+        $this->pageTitle = $pageTitle;
         $this->urlInterface = $urlInterface;
+        $this->json = $json;
     }
-    public function callJS()
+
+    public function callJS(): string
     {
         return "window.metrilo.viewPage('" .
             $this->urlInterface->getCurrentUrl() . "', " .
-            json_encode(array('name' => $this->pageTitle->getShort())) . ");";
+            $this->json->serialize(['name' => $this->pageTitle->getShort()]) . ");";
     }
 }

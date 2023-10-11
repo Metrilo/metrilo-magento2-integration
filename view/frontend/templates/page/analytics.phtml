@@ -1,14 +1,17 @@
 <?php
 /**
- * @see Metrilo\Analytics\Block\Analytics
+ * @var \Metrilo\Analytics\Block\Analytics $block
+ * @var \Magento\Framework\Escaper $escaper
  */
 
-$url    = $block->getLibraryUrl();
+$url = $block->getLibraryUrl();
 $events = $block->getEvents();
 ?>
-<script type="text/javascript">
-    require(['<?php echo $url; ?>'], function(){
-        <?php foreach($events as $event) { echo $event; } ?>
+<script>
+    require(['<?= $escaper->escapeUrl($url) ?>'], function(){
+        <?php foreach ($events as $event): ?>
+            <?= /* @noEscape */ $event ?>
+        <?php endforeach; ?>
     });
 </script>
 <script type="text/x-magento-init">

@@ -2,7 +2,9 @@
 
 namespace Metrilo\Analytics\Helper;
 
-class CustomerSerializer extends \Magento\Framework\App\Helper\AbstractHelper
+use Magento\Framework\App\Helper\AbstractHelper;
+
+class CustomerSerializer extends AbstractHelper
 {
     public function serialize($customer)
     {
@@ -14,7 +16,7 @@ class CustomerSerializer extends \Magento\Framework\App\Helper\AbstractHelper
             'subscribed'  => $customer->getSubscriberStatus(),
             'tags'        => $customer->getTags()
         ];
-        
+
         return $serializedCustomer;
     }
 }

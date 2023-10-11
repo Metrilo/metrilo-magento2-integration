@@ -2,12 +2,17 @@
 
 namespace Metrilo\Analytics\Model;
 
+use Magento\Sales\Model\ResourceModel\Order\CollectionFactory;
+use Metrilo\Analytics\Helper\Data;
+
 class OrderData
 {
-    private $chunkItems = \Metrilo\Analytics\Helper\Data::CHUNK_ITEMS;
+    private $chunkItems = Data::CHUNK_ITEMS;
+
+    private CollectionFactory $orderCollection;
 
     public function __construct(
-        \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $orderCollection
+        CollectionFactory $orderCollection
     ) {
         $this->orderCollection = $orderCollection;
     }
@@ -20,14 +25,15 @@ class OrderData
     public function getOrderChunks($storeId)
     {
         $totalOrders = $this->getOrderQuery($storeId)->getSize();
-        return (int) ceil($totalOrders / $this->chunkItems);
+
+        return (int)ceil($totalOrders / $this->chunkItems);
     }
 
     private function getOrderQuery($storeId)
     {
         return $this->orderCollection->create()
-            ->addAttributeToFilter('store_id', $storeId)
-            ->addAttributeToSelect('*')
-            ->setOrder('entity_id', 'asc');
+                                     ->addAttributeToFilter('store_id', $storeId)
+                                     ->addAttributeToSelect('*')
+                                     ->setOrder('entity_id', 'asc');
     }
 }
