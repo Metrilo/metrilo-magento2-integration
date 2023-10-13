@@ -2,12 +2,18 @@
 
 namespace Metrilo\Analytics\Model;
 
+use Magento\Catalog\Model\Product\Visibility;
+use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory;
+use Metrilo\Analytics\Helper\Data;
+
 class ProductData
 {
-    private $chunkItems = \Metrilo\Analytics\Helper\Data::CHUNK_ITEMS;
+    private $chunkItems = Data::CHUNK_ITEMS;
+
+    private CollectionFactory $productCollection;
 
     public function __construct(
-        \Magento\Catalog\Model\ResourceModel\Product\CollectionFactory $productCollection
+        CollectionFactory $productCollection
     ) {
         $this->productCollection = $productCollection;
     }
@@ -19,13 +25,13 @@ class ProductData
                     ->setCurPage($chunkId + 1)
                     ->setDataToAll('store_id', $storeId);
     }
-    
+
     public function getProductChunks($storeId)
     {
         $totalProducts = $this->getProductQuery($storeId)->getSize();
         return (int) ceil($totalProducts / $this->chunkItems);
     }
-    
+
     public function getProductWithRequestPath($productId, $storeId)
     {
         $productObject = $this->productCollection
@@ -39,12 +45,12 @@ class ProductData
                 ['entity_id' => $productId,
                     'entity_type' => 'product',
                     'store_id' => $storeId,
-                    'metadata' => array('null' => true)]
+                    'metadata' => ['null' => true]]
             )
             ->getFirstItem();
-        
+
         $productObject->setStoreId($storeId);
-        
+
         return $productObject;
     }
 
@@ -66,7 +72,7 @@ class ProductData
                 'request_path',
                 'visibility'
             ])
-            ->addAttributeToFilter('visibility', \Magento\Catalog\Model\Product\Visibility::VISIBILITY_BOTH)
+            ->addAttributeToFilter('visibility', Visibility::VISIBILITY_BOTH)
             ->addStoreFilter($storeId);
     }
 }

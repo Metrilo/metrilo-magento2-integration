@@ -2,26 +2,42 @@
 
 namespace Metrilo\Analytics\Helper;
 
-class ProductOptions extends \Magento\Framework\App\Helper\AbstractHelper
+use Magento\Bundle\Model\Product\Type;
+use Magento\ConfigurableProduct\Model\Product\Type\Configurable;
+use Magento\Framework\App\Helper\AbstractHelper;
+use Magento\Framework\App\Helper\Context;
+use Magento\GroupedProduct\Model\Product\Type\Grouped;
+
+class ProductOptions extends AbstractHelper
 {
+    private Configurable $configurableType;
+
+    private Grouped $groupedType;
+
+    private Type $bundleType;
+
+    private ProductImageUrl $productImageUrl;
+
     public function __construct(
-        \Magento\ConfigurableProduct\Model\Product\Type\Configurable $configurableType,
-        \Magento\Bundle\Model\Product\Type                           $bundleType,
-        \Magento\GroupedProduct\Model\Product\Type\Grouped           $groupedType,
-        \Metrilo\Analytics\Helper\ProductImageUrl                    $productImageUrl
+        Configurable $configurableType,
+        Type $bundleType,
+        Grouped $groupedType,
+        ProductImageUrl $productImageUrl,
+        Context $context
     ) {
+        parent::__construct($context);
         $this->configurableType = $configurableType;
         $this->bundleType       = $bundleType;
         $this->groupedType      = $groupedType;
         $this->productImageUrl  = $productImageUrl;
     }
-    
+
     public function getParentOptions($product)
     {
         $productOptions   = [];
         $productType      = $product->getTypeId();
         $childrenProducts = [];
-        
+
         if ($productType == 'configurable') {
             $childrenProducts = $product->getTypeInstance()
                 ->getUsedProducts($product);
@@ -36,28 +52,28 @@ class ProductOptions extends \Magento\Framework\App\Helper\AbstractHelper
                 ->getAssociatedProductCollection($product)
                 ->addAttributeToSelect(['name', 'price', 'image']);
         }
-        
+
         foreach ($childrenProducts as $childProduct) {
             $childImage = $childProduct->getImage();
             $imageUrl = (!empty($childImage)) ? $this->productImageUrl->getProductImageUrl($childImage) : '';
-            
+
             $childProductSpecialPrice = $childProduct->getSpecialPrice();
             $productOptions[] = [
                 'id'       => $childProduct->getId(),
                 'sku'      => $childProduct->getSku(),
                 'name'     => $childProduct->getName(),
-                'price'    => $childProductSpecialPrice ? $childProductSpecialPrice : $childProduct->getPrice(),
+                'price'    => $childProductSpecialPrice ?: $childProduct->getPrice(),
                 'imageUrl' => $imageUrl
             ];
         }
-        
+
         return $productOptions;
     }
-    
+
     public function getParentIds($productId, $productType)
     {
         $parentIds = [];
-        
+
         if ($productType === 'configurable') {
             $parentIds = $this->configurableType->getParentIdsByChild($productId);
         } elseif ($productType === 'bundle') {
@@ -65,7 +81,7 @@ class ProductOptions extends \Magento\Framework\App\Helper\AbstractHelper
         } elseif ($productType === 'grouped') {
             $parentIds = $this->groupedType->getParentIdsByChild($productId);
         }
-        
+
         return $parentIds;
     }
 }

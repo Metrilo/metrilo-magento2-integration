@@ -19,4 +19,46 @@
             <argument name="catalogSearchEvent" xsi:type="object">Metrilo\Analytics\Model\Events\CatalogSearch\Proxy</argument>
         </arguments>
     </type>
+
+    <virtualType name="MetriloAnalyticsLogHandler" type="Magento\Framework\Logger\Handler\Base">
+        <arguments>
+            <argument name="fileName" xsi:type="string">/var/log/metrilo.log</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="Metrilo\Analytics\Logger" type="Magento\Framework\Logger\Monolog">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="system" xsi:type="object">MetriloAnalyticsLogHandler</item>
+                <item name="debug" xsi:type="object">MetriloAnalyticsLogHandler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="MetriloAnalyticsApiLogHandler" type="Magento\Framework\Logger\Handler\Base">
+        <arguments>
+            <argument name="fileName" xsi:type="string">/var/log/MetriloApiValidationErrors.log</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="Metrilo\Analytics\Api\Logger" type="Magento\Framework\Logger\Monolog">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="system" xsi:type="object">MetriloAnalyticsApiLogHandler</item>
+                <item name="debug" xsi:type="object">MetriloAnalyticsApiLogHandler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <type name="Metrilo\Analytics\Api\Validator">
+        <arguments>
+            <argument name="log" xsi:type="object">Metrilo\Analytics\Api\Logger</argument>
+        </arguments>
+    </type>
+
+    <type name="Metrilo\Analytics\Helper\Data">
+        <arguments>
+            <argument name="logger" xsi:type="object">Metrilo\Analytics\Logger</argument>
+        </arguments>
+    </type>
 </config>

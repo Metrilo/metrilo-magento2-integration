@@ -2,11 +2,12 @@
 
 namespace Metrilo\Analytics\Helper;
 
-class OrderSerializer extends \Magento\Framework\App\Helper\AbstractHelper
+use Magento\Framework\App\Helper\AbstractHelper;
+
+class OrderSerializer extends AbstractHelper
 {
     public function serialize($order)
     {
-
         $orderItems    = $order->getAllItems();
         $orderProducts = [];
 
@@ -15,7 +16,7 @@ class OrderSerializer extends \Magento\Framework\App\Helper\AbstractHelper
             if ($itemType === 'configurable' || $itemType === 'bundle') {
                 continue; // exclude configurable/bundle parent product returned by getAllItems() method
             }
-            
+
             $orderProducts[] = [
                 'productId'  => $orderItem->getProductId(),
                 'quantity'   => (int)$orderItem->getQtyOrdered()
@@ -37,7 +38,7 @@ class OrderSerializer extends \Magento\Framework\App\Helper\AbstractHelper
             "postcode"      => $orderBillingData->getPostcode(),
             "paymentMethod" => $order->getPayment()->getMethodInstance()->getTitle()
         ];
-        
+
         if (!empty($order->getCustomerEmail())) {
             $customerEmail = $order->getCustomerEmail();
         } elseif (!empty($orderPhone)) {
@@ -45,7 +46,7 @@ class OrderSerializer extends \Magento\Framework\App\Helper\AbstractHelper
         } else {
             return false;
         }
-        
+
         $serializedOrder = [
             'id'        => $order->getIncrementId(),
             'createdAt' => strtotime($order->getCreatedAt()) * 1000,

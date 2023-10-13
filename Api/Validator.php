@@ -2,27 +2,34 @@
 
 namespace Metrilo\Analytics\Api;
 
+use Psr\Log\LoggerInterface;
+
 class Validator
 {
-    
-    public $errors = [];
+    public array $errors = [];
+
+    private $var;
+
+    private $value;
+
+    private LoggerInterface $logger;
 
     public function __construct(
-        $logPath
+        LoggerInterface $logger
     ) {
-        $this->logPath = $logPath . '/MetriloApiValidationErrors.log';
+        $this->logger = $logger;
     }
 
     public function validateCustomer($customer)
     {
         $this->check('email')->value($customer['email'])->required()->isString()->isEmail();
         $this->check('createdAt')->value($customer['createdAt'])->required()->isInt();
-    
+
         if ($this->isSuccess()) {
             return true;
         } else {
             $error = 'Customer ' . $customer['firstName'] . ' ' . $customer['lastName'] . ' errors: ';
-            $this->logger($error);
+            $this->log($error);
             $this->errors = [];
             return false;
         }
@@ -37,7 +44,7 @@ class Validator
                 $validCustomers[] = $customer;
             }
         }
-    
+
         return $validCustomers;
     }
 
@@ -45,12 +52,12 @@ class Validator
     {
         $this->check('id')->value($category['id'])->required()->isString();
         $this->check('name')->value($category['name'])->required()->isString();
-    
+
         if ($this->isSuccess()) {
             return true;
         } else {
             $error = 'Category ' . $category['url'] . ' errors: ';
-            $this->logger($error);
+            $this->log($error);
             $this->errors = [];
             return false;
         }
@@ -65,7 +72,7 @@ class Validator
                 $validCategories[] = $category;
             }
         }
-    
+
         return $validCategories;
     }
 
@@ -76,7 +83,7 @@ class Validator
         }
         $this->check('id')->value($product['id'])->required()->isString();
         $this->check('name')->value($product['name'])->required()->isString();
-    
+
         if (empty($product['options'])) {
             $this->check('price')->value($product['price'])->required()->isNumeric();
         } else {
@@ -86,12 +93,12 @@ class Validator
                 $this->check('optionPrice')->value($option['price'])->required()->isNumeric();
             }
         }
-    
+
         if ($this->isSuccess()) {
             return true;
         } else {
             $error = 'Product with SKU - ' . $product['sku'] . ' errors: ';
-            $this->logger($error);
+            $this->log($error);
             $this->errors = [];
             return false;
         }
@@ -106,7 +113,7 @@ class Validator
                 $validProducts[] = $product;
             }
         }
-    
+
         return $validProducts;
     }
 
@@ -117,17 +124,17 @@ class Validator
         $this->check('amount')->value($order['amount'])->required()->isNumeric();
         $this->check('status')->value($order['status'])->required()->isString();
         $this->check('products')->value($order['products'])->required();
-    
+
         foreach ($order['products'] as $product) {
             $this->check('productId')->value($product['productId'])->required()->isString();
             $this->check('quantity')->value($product['quantity'])->required()->isNumeric();
         }
-    
+
         if ($this->isSuccess()) {
             return true;
         } else {
             $error = 'Order with email - ' . $order['email'] . ' errors: ';
-            $this->logger($error);
+            $this->log($error);
             $this->errors = [];
             return false;
         }
@@ -142,21 +149,21 @@ class Validator
                 $validOrders[] = $order;
             }
         }
-    
+
         return $validOrders;
     }
 
     private function check($var)
     {
         $this->var = $var;
-        
+
         return $this;
     }
 
     private function value($value)
     {
         $this->value = $value;
-        
+
         return $this;
     }
 
@@ -165,10 +172,10 @@ class Validator
         if ($this->value === '' || $this->value === null || $this->value === []) {
             $this->errors[] = 'Field ' . $this->var . ' is required. ';
         }
-        
+
         return $this;
     }
-    
+
     private function isSuccess()
     {
         if (empty($this->errors)) {
@@ -188,7 +195,7 @@ class Validator
         if (!is_string($this->value)) {
             $this->errors[] = 'Field ' . $this->var . ' is not String type. ';
         }
-        
+
         return $this;
     }
 
@@ -197,7 +204,7 @@ class Validator
         if (!is_int($this->value)) {
             $this->errors[] = 'Field ' . $this->var . ' is not Integer type. ';
         }
-        
+
         return $this;
     }
 
@@ -206,7 +213,7 @@ class Validator
         if (!filter_var($this->value, FILTER_VALIDATE_EMAIL)) {
             $this->errors[] = 'Field ' . $this->var . ' is not a valid email address. ';
         }
-        
+
         return $this;
     }
 
@@ -215,14 +222,14 @@ class Validator
         if (!is_numeric($this->value)) {
             $this->errors[] = 'Field ' . $this->var . ' is not Number. ';
         }
-        
+
         return $this;
     }
-    
-    private function logger($error)
+
+    private function log($error)
     {
         $validationErrors = implode("| ", $this->getErrors());
         $error           .= $validationErrors;
-        return error_log($error . PHP_EOL, 3, $this->logPath);
+        $this->logger->error($error);
     }
 }

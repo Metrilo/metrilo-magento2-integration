@@ -2,30 +2,41 @@
 
 namespace Metrilo\Analytics\Observer;
 
+use Exception;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
-use Metrilo\Analytics\Model\Events\AddToCart as AddToCartEvent;
+use Metrilo\Analytics\Helper\Data;
+use Metrilo\Analytics\Helper\SessionEvents;
+use Metrilo\Analytics\Model\Events\AddToCartFactory;
 
 class AddToCart implements ObserverInterface
 {
 
+    private Data $helper;
+
+    private SessionEvents $sessionEvents;
+
+    private AddToCartFactory $addToCartFactory;
+
     public function __construct(
-        \Metrilo\Analytics\Helper\Data          $helper,
-        \Metrilo\Analytics\Helper\SessionEvents $sessionEvents
+        Data $helper,
+        SessionEvents $sessionEvents,
+        AddToCartFactory $addToCartFactory
     ) {
-        $this->helper        = $helper;
+        $this->helper = $helper;
         $this->sessionEvents = $sessionEvents;
+        $this->addToCartFactory = $addToCartFactory;
     }
-    
-    public function execute(Observer $observer)
+
+    public function execute(Observer $observer): void
     {
         try {
             if (!$this->helper->isEnabled($observer->getEvent()->getProduct()->getStoreId())) {
                 return;
             }
-            $addToCartEvent = new AddToCartEvent($observer->getEvent());
+            $addToCartEvent = $this->addToCartFactory->create(['event' => $observer->getEvent()]);
             $this->sessionEvents->addSessionEvent($addToCartEvent->callJs());
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->helper->logError($e);
         }
     }

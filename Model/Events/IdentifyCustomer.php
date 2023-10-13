@@ -4,12 +4,14 @@ namespace Metrilo\Analytics\Model\Events;
 
 class IdentifyCustomer
 {
+    private string $email;
+
     public function __construct(
-        $email
+        string $email
     ) {
         $this->email = $email;
     }
-    public function callJS()
+    public function callJS(): string
     {
         return 'window.metrilo.identify("' . $this->email . '");';
     }

@@ -2,44 +2,60 @@
 
 namespace Metrilo\Analytics\Block\System\Config\Button;
 
-use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Backend\Block\Template\Context;
+use Magento\Config\Block\System\Config\Form\Field;
 use Magento\Framework\Data\Form\Element\AbstractElement;
+use Metrilo\Analytics\Helper\Data;
+use Metrilo\Analytics\Model\CategoryData;
+use Metrilo\Analytics\Model\CustomerData;
+use Metrilo\Analytics\Model\OrderData;
+use Metrilo\Analytics\Model\ProductData;
 
 /**
  * Block for import button in metrilo configuration
  *
  * @author Miroslav Petrov <miro91tn@gmail.com>
  */
-class Import extends \Magento\Config\Block\System\Config\Form\Field
+class Import extends Field
 {
     /**
      * Path to block template
      */
-    const CHECK_TEMPLATE = 'system/config/button/import.phtml';
+    private const CHECK_TEMPLATE = 'system/config/button/import.phtml';
+
+    private Data $helper;
+
+    private CustomerData $customerData;
+
+    private CategoryData $categoryData;
+
+    private ProductData $productData;
+
+    private OrderData $orderData;
 
     /**
-     * Import constructor.
-     *
-     * @param \Magento\Backend\Block\Template\Context $context
-     * @param \Metrilo\Analytics\Helper\Data $helper
+     * @param Context $context
+     * @param Data $helper
+     * @param CustomerData $customerData
+     * @param CategoryData $categoryData
+     * @param ProductData $productData
+     * @param OrderData $orderData
      * @param array $data
      */
     public function __construct(
-        \Magento\Backend\Block\Template\Context $context,
-        \Metrilo\Analytics\Helper\Data          $helper,
-        \Metrilo\Analytics\Model\CustomerData   $customerData,
-        \Metrilo\Analytics\Model\CategoryData   $categoryData,
-        \Metrilo\Analytics\Model\ProductData    $productData,
-        \Metrilo\Analytics\Model\OrderData      $orderData,
-        \Magento\Framework\App\Request\Http     $request,
+        Context $context,
+        Data $helper,
+        CustomerData $customerData,
+        CategoryData $categoryData,
+        ProductData $productData,
+        OrderData $orderData,
         array $data = []
     ) {
-        $this->helper       = $helper;
+        $this->helper = $helper;
         $this->customerData = $customerData;
         $this->categoryData = $categoryData;
-        $this->productData  = $productData;
-        $this->orderData    = $orderData;
-        $this->request      = $request;
+        $this->productData = $productData;
+        $this->orderData = $orderData;
         parent::__construct($context, $data);
     }
 
@@ -54,25 +70,29 @@ class Import extends \Magento\Config\Block\System\Config\Form\Field
         if (!$this->getTemplate()) {
             $this->setTemplate(self::CHECK_TEMPLATE);
         }
+
         return $this;
     }
 
     /**
      * Render button and remove scope label
      *
-     * @param  AbstractElement $element
+     * @param AbstractElement $element
+     *
      * @return string
      */
     public function render(AbstractElement $element)
     {
         $element->unsScope()->unsCanUseWebsiteValue()->unsCanUseDefaultValue();
+
         return parent::render($element);
     }
 
     /**
      * Get block custom template html for the button
      *
-     * @param  AbstractElement $element
+     * @param AbstractElement $element
+     *
      * @return string
      */
     protected function _getElementHtml(AbstractElement $element)
@@ -84,6 +104,7 @@ class Import extends \Magento\Config\Block\System\Config\Form\Field
                 'html_id' => $element->getHtmlId(),
             ]
         );
+
         return $this->_toHtml();
     }
 
@@ -95,9 +116,10 @@ class Import extends \Magento\Config\Block\System\Config\Form\Field
     public function buttonEnabled()
     {
         $storeId = $this->getStoreId();
-         return $this->helper->isEnabled($storeId)
-             && $this->helper->getApiToken($storeId)
-             && $this->helper->getApiSecret($storeId);
+
+        return $this->helper->isEnabled($storeId)
+            && $this->helper->getApiToken($storeId)
+            && $this->helper->getApiSecret($storeId);
     }
 
     /**
@@ -114,17 +136,17 @@ class Import extends \Magento\Config\Block\System\Config\Form\Field
     {
         return $this->orderData->getOrderChunks($this->getStoreId());
     }
-    
+
     public function getCustomerChunks()
     {
         return $this->customerData->getCustomerChunks($this->getStoreId());
     }
-    
+
     public function getCategoryChunks()
     {
         return $this->categoryData->getCategoryChunks($this->getStoreId());
     }
-    
+
     public function getProductChunks()
     {
         return $this->productData->getProductChunks($this->getStoreId());
@@ -135,8 +157,8 @@ class Import extends \Magento\Config\Block\System\Config\Form\Field
      *
      * @return int
      */
-    public function getStoreId()
+    public function getStoreId(): int
     {
-        return (int)$this->request->getParam('store', 0);
+        return (int)$this->_request->getParam('store', 0);
     }
 }

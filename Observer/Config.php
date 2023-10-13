@@ -4,25 +4,39 @@ namespace Metrilo\Analytics\Observer;
 
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
+use Magento\Framework\Message\ManagerInterface;
+use Magento\Store\Model\StoreManagerInterface;
+use Metrilo\Analytics\Helper\Activity;
+use Metrilo\Analytics\Helper\Data;
 
 class Config implements ObserverInterface
 {
+    private ManagerInterface $messageManager;
+
+    private Data $dataHelper;
+
+    private Activity $activityHelper;
+
+    private StoreManagerInterface $storeManager;
+
     public function __construct(
-        \Magento\Framework\Message\ManagerInterface $messageManager,
-        \Metrilo\Analytics\Helper\Data              $dataHelper,
-        \Metrilo\Analytics\Helper\Activity          $activityHelper
+        ManagerInterface $messageManager,
+        Data $dataHelper,
+        Activity $activityHelper,
+        StoreManagerInterface $storeManager
     ) {
         $this->messageManager = $messageManager;
-        $this->dataHelper     = $dataHelper;
+        $this->dataHelper = $dataHelper;
         $this->activityHelper = $activityHelper;
+        $this->storeManager = $storeManager;
     }
 
-    public function execute(Observer $observer)
+    public function execute(Observer $observer): void
     {
         try {
-            $storeId = $observer->getStore();
+            $storeId = $this->getStoreId($observer);
             if (!$this->activityHelper->createActivity($storeId, 'integrated')) {
-                if ((int)$storeId === 0) {
+                if ($storeId === 0) {
                     $this->messageManager->addError(
                         'You\'ve just entered the API token and API Secret to the default configuration scope.
                         This means that the Metrilo module will be added to all your store views.
@@ -39,6 +53,17 @@ class Config implements ObserverInterface
             }
         } catch (\Exception $e) {
             $this->dataHelper->logError($e);
+        }
+    }
+
+    private function getStoreId(Observer $observer): int
+    {
+        if (!empty($observer->getStore())) {
+            return (int)$observer->getStore();
+        } elseif (!empty($observer->getWebsite())) {
+            return (int)$this->storeManager->getWebsite($observer->getWebsite())->getDefaultStore()->getId();
+        } else {
+            return 0;
         }
     }
 }

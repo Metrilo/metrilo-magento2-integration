@@ -2,13 +2,15 @@
 
 namespace Metrilo\Analytics\Model;
 
-class Trimmed extends \Magento\Framework\App\Config\Value
+use Magento\Framework\App\Config\Value;
+
+class Trimmed extends Value
 {
     public function beforeSave()
     {
         $value = trim($this->getValue());
         $this->setValue($value);
 
-        parent::beforeSave();
+        return parent::beforeSave();
     }
 }

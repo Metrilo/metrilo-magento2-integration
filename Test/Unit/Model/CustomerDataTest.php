@@ -2,90 +2,81 @@
 
 namespace Metrilo\Analytics\Test\Unit\Model;
 
+use Magento\Customer\Model\Customer;
+use Magento\Customer\Model\ResourceModel\Customer\Collection;
 use Magento\Customer\Model\ResourceModel\Customer\CollectionFactory;
 use Magento\Newsletter\Model\Subscriber;
 use Magento\Customer\Api\GroupRepositoryInterface;
 use Metrilo\Analytics\Model\CustomerData;
-use Metrilo\Analytics\Helper\MetriloCustomer;
+use Metrilo\Analytics\Model\MetriloCustomer;
+use Metrilo\Analytics\Model\MetriloCustomerFactory;
+use PHPUnit\Framework\TestCase;
 
-class CustomerDataTest extends \PHPUnit\Framework\TestCase
+class CustomerDataTest extends TestCase
 {
-    /**
-     * @var \Magento\Customer\Model\ResourceModel\Customer\Collection
-     */
-    private $customerCollection;
-    
-    /**
-     * @var \Magento\Newsletter\Model\Subscriber
-     */
-    private $subscriberModel;
-    
-    /**
-     * @var \Magento\Customer\Api\GroupRepositoryInterface
-     */
-    private $groupRepositoryInterface;
-    
-    /**
-     * @var \Metrilo\Analytics\Model\CustomerData
-     */
-    private $customerData;
-    
-    /**
-     * @var \Metrilo\Analytics\Helper\MetriloCustomer
-     */
-    private $metriloCustomer;
-    
-    /**
-     * @var \Metrilo\Analytics\Helper\Data::CHUNK_ITEMS
-     */
-    private $chunkItems = 50;
-    
+    private Collection $customerCollection;
+    private CollectionFactory $customerCollectionFactory;
+
+    private CustomerData $customerData;
+
     /**
      * @var \Magento\Framework\App\Request\Http->getParam('store', 0)
      */
-    private $storeId = 1;
-    
+    private int $storeId = 1;
+
     /**
      * @var \Magento\Framework\App\Request\Http->getParam('chunkId')
      */
-    private $chunkId = 1;
-    
+    private int $chunkId = 1;
+
     public function setUp(): void
     {
-        $this->customerCollection = $this->getMockBuilder(CollectionFactory::class)
+        $this->customerCollectionFactory = $this->getMockBuilder(CollectionFactory::class)
             ->disableOriginalConstructor()
-            ->setMethods(array_merge(get_class_methods(CollectionFactory::class), [
+            ->getMock();
+
+        $this->customerCollection = $this->getMockBuilder(Collection::class)
+            ->disableOriginalConstructor()
+            ->setMethods([
                 'addAttributeToFilter',
                 'setPageSize',
                 'setCurPage',
-                'getSize']))
+                'getSize',
+                'getIterator'
+            ])
             ->getMock();
-    
-        $this->customerCollection->expects($this->any())->method('create')
-            ->will($this->returnSelf());
+        $this->customerCollectionFactory->method('create')->will($this->returnValue($this->customerCollection));
+
         $this->customerCollection->expects($this->any())->method('addAttributeToFilter')
             ->with($this->isType('string'), $this->isType('int'))
             ->will($this->returnSelf());
-    
-        $this->subscriberModel = $this->getMockBuilder(Subscriber::class)
+
+        $subscriberModel = $this->getMockBuilder(Subscriber::class)
             ->disableOriginalConstructor()
             ->getMock();
-    
-        $this->groupRepositoryInterface = $this->getMockBuilder(GroupRepositoryInterface::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-    
-        $this->metriloCustomer = $this->getMockBuilder(MetriloCustomer::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        
+
+        $groupRepositoryInterface = $this->getMockBuilder(GroupRepositoryInterface::class)
+                                         ->disableOriginalConstructor()
+                                         ->getMock();
+
+        $metriloCustomer = $this->getMockBuilder(MetriloCustomer::class)
+                                ->disableOriginalConstructor()
+                                ->getMock();
+
+        $metriloCustomerFactory = $this->getMockBuilder(MetriloCustomerFactory::class)
+                                       ->disableOriginalConstructor()
+                                       ->getMock();
+
+        $metriloCustomerFactory->method('create')->will($this->returnValue($metriloCustomer));
+
         $this->customerData = new CustomerData(
-            $this->customerCollection,
-            $this->subscriberModel,
-            $this->groupRepositoryInterface
+            $this->customerCollectionFactory,
+            $subscriberModel,
+            $groupRepositoryInterface,
+            $metriloCustomerFactory
         );
     }
-    
+
     public function testGetCustomers()
     {
         $this->customerCollection->expects($this->any())->method('setPageSize')
@@ -94,15 +85,18 @@ class CustomerDataTest extends \PHPUnit\Framework\TestCase
         $this->customerCollection->expects($this->any())->method('setCurPage')
             ->with($this->greaterThan($this->chunkId))
             ->will($this->returnSelf());
-        
+
+        $this->customerCollection->expects($this->any())->method('getIterator')
+            ->will($this->returnValue(new \ArrayIterator([])));
+
         $customers = $this->customerData->getCustomers($this->storeId, $this->chunkId);
         $this->assertContainsOnlyInstancesOf(MetriloCustomer::class, $customers);
     }
-    
+
     public function testGetCustomerChunks()
     {
         $this->customerCollection->expects($this->any())->method('getSize')->willReturn(1000);
-        
+
         $this->assertEquals(20, $this->customerData->getCustomerChunks($this->storeId));
     }
 }

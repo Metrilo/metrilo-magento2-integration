@@ -4,18 +4,28 @@ namespace Metrilo\Analytics\Observer;
 
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
-use Metrilo\Analytics\Model\Events\IdentifyCustomer as IdentifyCustomerEvent;
+use Metrilo\Analytics\Helper\Data;
+use Metrilo\Analytics\Helper\SessionEvents;
+use Metrilo\Analytics\Model\Events\IdentifyCustomerFactory;
 
 class IdentifyCustomer implements ObserverInterface
 {
+    private Data $helper;
+
+    private SessionEvents $sessionEvents;
+
+    private IdentifyCustomerFactory $identifyCustomerFactory;
+
     public function __construct(
-        \Metrilo\Analytics\Helper\Data          $helper,
-        \Metrilo\Analytics\Helper\SessionEvents $sessionEvents
+        Data $helper,
+        SessionEvents $sessionEvents,
+        IdentifyCustomerFactory $identifyCustomerFactory
     ) {
-        $this->helper        = $helper;
+        $this->helper = $helper;
         $this->sessionEvents = $sessionEvents;
+        $this->identifyCustomerFactory = $identifyCustomerFactory;
     }
-    
+
     private function getEventEmail($observer)
     {
         switch ($observer->getEvent()->getName()) {
@@ -31,17 +41,17 @@ class IdentifyCustomer implements ObserverInterface
             default:
                 break;
         }
-        
+
         return false;
     }
-    
-    public function execute(Observer $observer)
+
+    public function execute(Observer $observer): void
     {
         try {
             $identifyEmail = $this->getEventEmail($observer);
-            
+
             if ($identifyEmail && $this->helper->isEnabled($observer->getEvent()->getStoreId())) {
-                $identifyCustomerEvent = new IdentifyCustomerEvent($identifyEmail);
+                $identifyCustomerEvent = $this->identifyCustomerFactory->create(['email' => $identifyEmail]);
                 $this->sessionEvents->addSessionEvent($identifyCustomerEvent->callJs());
             }
         } catch (\Exception $e) {

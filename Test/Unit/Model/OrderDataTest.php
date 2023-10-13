@@ -4,33 +4,23 @@ namespace Metrilo\Analytics\Test\Unit\Model;
 
 use Magento\Sales\Model\ResourceModel\Order\CollectionFactory;
 use Metrilo\Analytics\Model\OrderData;
+use PHPUnit\Framework\TestCase;
 
-class OrderDataTest extends \PHPUnit\Framework\TestCase
+class OrderDataTest extends TestCase
 {
-    /**
-     * @var \Magento\Sales\Model\ResourceModel\Order\Collection
-     */
-    private $orderCollection;
+    private CollectionFactory $orderCollection;
 
-    /**
-     * @var OrderData
-     */
-    private $orderData;
-
-    /**
-     * @var \Metrilo\Analytics\Helper\Data::CHUNK_ITEMS
-     */
-    private $chunkItems = 50;
+    private OrderData $orderData;
 
     /**
      * @var \Magento\Framework\App\Request\Http->getParam('store', 0)
      */
-    private $storeId = 1;
+    private int $storeId = 1;
 
     /**
      * @var \Magento\Framework\App\Request\Http->getParam('chunkId')
      */
-    private $chunkId = 1;
+    private int $chunkId = 1;
 
     public function setUp(): void
     {
