@@ -135,23 +135,27 @@ class Ajax implements HttpPostActionInterface
                         $this->customerData->getCustomers($storeId, $chunkId),
                         $this->customerSerializer
                     );
-                    $result['success'] = $client->customerBatch($serializedCustomers);
+                    $result = $this->batchResult($client->customerBatch($serializedCustomers));
                     break;
                 case 'categories':
                     $serializedCategories = $this->serializeRecords(
                         $this->categoryData->getCategories($storeId, $chunkId),
                         $this->categorySerializer
                     );
-                    $result['success'] = $client->categoryBatch($serializedCategories);
+                    $result = $this->batchResult($client->categoryBatch($serializedCategories));
                     break;
                 case 'deletedProducts':
+                    $result = $this->batchResult(null);
                     $deletedProductOrders = $this->deletedProductData->getDeletedProductOrders($storeId);
                     if ($deletedProductOrders) {
                         $helperObject = $this->helper; // for backward compatibility for php ~5.5, ~5.6
                         $serializedDeletedProducts = $this->deletedProductSerializer->serialize($deletedProductOrders);
                         $deletedProductChunks = array_chunk($serializedDeletedProducts, $helperObject::CHUNK_ITEMS);
                         foreach ($deletedProductChunks as $chunk) {
-                            $client->productBatch($chunk);
+                            $result = $this->batchResult($client->productBatch($chunk));
+                            if (!$result['success']) {
+                                break;
+                            }
                         }
                     }
                     break;
@@ -160,20 +164,20 @@ class Ajax implements HttpPostActionInterface
                         $this->productData->getProducts($storeId, $chunkId),
                         $this->productSerializer
                     );
-                    $result['success'] = $client->productBatch($serializedProducts);
+                    $result = $this->batchResult($client->productBatch($serializedProducts));
                     break;
                 case 'orders':
                     $serializedOrders = $this->serializeRecords(
                         $this->orderData->getOrders($storeId, $chunkId),
                         $this->orderSerializer
                     );
-                    $result['success'] = $client->orderBatch($serializedOrders);
+                    $result = $this->batchResult($client->orderBatch($serializedOrders));
                     if ($chunkId == (int)$this->request->getParam('ordersChunks') - 1) {
                         $this->activityHelper->createActivity($storeId, 'import_end');
                     }
                     break;
                 default:
-                    $result['success'] = false;
+                    $result = ['success' => false, 'message' => (string)__('Unknown import type.')];
                     break;
             }
 
@@ -185,6 +189,50 @@ class Ajax implements HttpPostActionInterface
                 'success' => false,
                 'message' => $e->getMessage()
             ]);
+        }
+    }
+
+    /**
+     * Turn an API client batch result into the JSON result for the import widget.
+     *
+     * A null result means there was nothing valid to send, which is not an error.
+     *
+     * @param array|null $apiResult ['response' => string, 'code' => int] from Api\Connection::post()
+     * @return array
+     */
+    private function batchResult($apiResult): array
+    {
+        if ($apiResult === null) {
+            return ['success' => true];
+        }
+
+        $code = (int)($apiResult['code'] ?? 0);
+        if ($code >= 200 && $code < 300) {
+            return ['success' => true];
+        }
+
+        $this->helper->logError('Metrilo import request failed with HTTP ' . $code . ': '
+            . substr(trim((string)($apiResult['response'] ?? '')), 0, 200));
+
+        return ['success' => false, 'message' => $this->describeApiError($code, $apiResult['response'] ?? '')];
+    }
+
+    private function describeApiError(int $code, $response): string
+    {
+        switch ($code) {
+            case 401:
+                return (string)__('Metrilo rejected the import: the API Token is missing or invalid (HTTP 401). '
+                    . 'Check the API Token in Stores > Configuration > Metrilo for this store view.');
+            case 402:
+                return (string)__('Metrilo rejected the import: your Metrilo project is not accepting data (HTTP 402). '
+                    . 'Check your Metrilo subscription.');
+            case 403:
+                return (string)__('Metrilo rejected the import: the API Secret does not match your Metrilo project '
+                    . '(HTTP 403). Check the API Secret in Stores > Configuration > Metrilo for this store view.');
+            default:
+                $details = substr(trim(strip_tags((string)$response)), 0, 200);
+
+                return (string)__('Metrilo rejected the import (HTTP %1). %2', $code, $details);
         }
     }
 
