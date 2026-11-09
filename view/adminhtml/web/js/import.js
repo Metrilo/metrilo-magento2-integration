@@ -71,7 +71,15 @@ define(
                     'form_key': window.FORM_KEY
                 };
 
-                self.ajaxPostWithRetry(self.options.submitUrl, data, 3, function () {
+                self.ajaxPostWithRetry(self.options.submitUrl, data, 3, function (response) {
+                    if (!response || typeof response !== 'object') {
+                        self.showError($t('Unexpected response from Magento (your admin session may have expired). Reload the page and try again.'));
+                        return;
+                    }
+                    if (response.success !== true) {
+                        self.showError(response.message || $t('Metrilo did not accept the data.'));
+                        return;
+                    }
                     var newChunkId = chunkId + 1;
                     if (retryStatus) {
                         newChunkId++;
@@ -122,10 +130,10 @@ define(
             },
 
             ajaxPostWithRetry: function (url, data, retryCount, callback) {
-                self = this;
+                var self = this;
                 if (retryCount) {
                     $.post(url, data, function (response) {
-                        callback();
+                        callback(response);
                     }).fail(function () {
                         console.log('fail!', data, retryCount);
                         setTimeout(function () {
@@ -133,8 +141,27 @@ define(
                         }, 5000);
                     })
                 } else {
-                    self.chunkSync(data.chunkId + 1, data.importType, true);
+                    self.showError($t('The import request to your Magento server failed. Please try again.'));
                 }
+            },
+
+            /**
+             * Stop the import and show why it failed
+             *
+             * @param  {string} message
+             * @return {void}
+             */
+            showError: function (message) {
+                var importType = this.options.importType;
+                $(this.options.messageSelector).empty().append(
+                    $('<span>').css('color', 'red').text(
+                        $t('Import failed while importing ') + importType + ': ' + message
+                    )
+                );
+                // Allow a fresh retry from the beginning
+                this.options.importType = 'customers';
+                this.options.percentage = 100;
+                this.element.removeClass('disabled').removeAttr('disabled').text($t('Retry Import'));
             },
 
             /**

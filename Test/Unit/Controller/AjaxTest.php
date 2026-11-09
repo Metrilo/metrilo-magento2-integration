@@ -73,6 +73,8 @@ class AjaxTest extends TestCase
 
     private JsonFactory $jsonFactoryController;
 
+    private Json $json;
+
     private Client $apiClient;
 
     private Ajax $ajaxController;
@@ -93,7 +95,7 @@ class AjaxTest extends TestCase
 
     private array $response = [
         'response' => 'apiCallResponse',
-        'code' => 'responseCode'
+        'code' => 200
     ];
 
     /**
@@ -237,12 +239,12 @@ class AjaxTest extends TestCase
                                             ->setMethods(['create', 'setData'])
                                             ->getMock();
 
-        $json = $this->getMockBuilder(Json::class)
+        $this->json = $this->getMockBuilder(Json::class)
                      ->disableOriginalConstructor()
                      ->getMock();
-        $this->jsonFactoryController->expects($this->any())->method('create')->will($this->returnValue($json));
+        $this->jsonFactoryController->expects($this->any())->method('create')->will($this->returnValue($this->json));
 
-        $json->expects($this->any())
+        $this->json->expects($this->any())
              ->method('setData')
              ->with($this->isType('array'))
              ->will($this->returnSelf());
@@ -273,6 +275,33 @@ class AjaxTest extends TestCase
             $this->request,
             $this->jsonFactoryController
         );
+    }
+
+    public function testExecuteReturnsErrorWhenMetriloRejectsTheBatch()
+    {
+        $this->request->expects($this->any())->method('getParam')
+                      ->willReturnMap([
+                          [$this->storeIdKey, $this->storeId],
+                          [$this->chunkIdKey, $this->chunkId],
+                          [$this->importTypeKey, 'categories']
+                      ]);
+
+        $this->categoryModel->expects($this->any())->method('getCategories')
+                            ->will($this->returnValue([]));
+
+        $this->apiClient->expects($this->once())->method('categoryBatch')
+                        ->will($this->returnValue(['response' => 'Invalid signature!', 'code' => 403]));
+
+        $this->dataHelper->expects($this->once())->method('logError');
+
+        $this->json->expects($this->once())
+                   ->method('setData')
+                   ->with($this->callback(function ($data) {
+                       return $data['success'] === false && strpos($data['message'], 'API Secret') !== false;
+                   }))
+                   ->will($this->returnSelf());
+
+        $this->ajaxController->execute();
     }
 
     public function testExecuteCustomers()
